@@ -85,29 +85,21 @@ class Login(Screen):
 		# If the disabled var cuntinues being False it means
 		# all is ok
 		disabled = False
-		if self.ids.account_text.text == "Estudiante:":
-			# A UANL student account is always an 'int'
-			account.input_filter = "int"
-			# This conditional is necesary because if we
-			# valid 'int(account.text)' first and the 
-			# textinput is empty, the program brakes
-			if account.text != "":
-				# The student account can not be less than 1000
-				# nor greater 2000000, if it happens, invalid input,
-				# so, disabled = True
-				if int(account.text) < 1000 or int(account.text) >= 2000000:
-					disabled = True
-			else: # It means the textinput is empty
-				# so, it is invalid
+		# Account is always an 'int'
+		account.input_filter = "int"
+		# This conditional is necesary because if we
+		# valid 'int(account.text)' first and the 
+		# textinput is empty, the program brakes
+		if account.text != "":
+			# The student account can not be less than 1000
+			# nor greater 2000000, if it happens, invalid input,
+			# so, disabled = True
+			if int(account.text) < 1000 or int(account.text) >= 2000000:
 				disabled = True
-		else: # it means that it is a rectoria account, so...
-			# we accept different chars because it is an email
-			account.input_filter = None
-			expression = re.compile(r"\w+\.\w+@uanl\.edu\.mx")
-			# if the input not satisfy the expression...
-			if not expression.fullmatch(account.text):
-				# invalid input
-				disabled = True
+		else: # It means the textinput is empty
+			# so, it is invalid
+			disabled = True
+		
 
 		# if diabled = True, password continues disabled
 		# else it would be enable
@@ -145,6 +137,18 @@ class Login(Screen):
 			password.background_color = 168/255, 214/255, 172/255, 1
 
 		return disabled
+
+
+	def onPressHiddenEye(self):
+		icon = self.ids.hidden_eye
+		password = self.ids.password
+		if icon.icon == "eye":
+			icon.icon = 'eye-off'
+			password.password = True
+
+		else:
+			icon.icon = 'eye'
+			password.password = False
 
 
 	def signIn(self):
@@ -200,7 +204,7 @@ class Add(Screen):
 				if self.name_ == True:
 					if self.email == True:
 						if self.date_birth == True:
-							verifier2 = True
+							#verifier2 = True
 							verifier2 = not self.ids.middle_name.disabled
 							if self.student_faculty == True:
 								if self.student_career == True:
@@ -209,7 +213,7 @@ class Add(Screen):
 		self.ids.student_faculty.disabled = not verifier2
 
 		enabled_widgets = [self.middle_name, self.last_name, self.name_, 
-						 self.email, self.date_birth, self.student_faculty]
+						   self.email, self.date_birth, self.student_faculty]
 		verifier = False
 		for widget in enabled_widgets:
 			if widget == True:
@@ -395,25 +399,32 @@ class Add(Screen):
 		month = actual_date[1]
 		day = actual_date[2]
 
-		valid_date_birth = re.compile(fr"(19[6-9][0-9]|20[0-{year[2]}][0-{year[3]}])/(0[1-9]|1[0-2])/(0[1-9]|[1-2][0-9]|31)")
-		if valid_date_birth.fullmatch(date_birth.text):
-			year_birth = date_birth.text.split('/')[0]
-			if (int(year) - int(year_birth)) > 16 :
-				date_birth.text = date_birth.text[:len(date_birth.text)-2] + str(self.validDay(date_birth))
+		invalid_chars:list = list('|°¬!"#$%&()=?\'\\¡¿¨´+*~{[^}]`}-_.:,;abcdefghijklmnñopqrstuvwxyz'.upper())
+		if not set(date_birth.text.upper()) & set(invalid_chars):
+			valid_date_birth = re.compile(fr"(19[6-9][0-9]|20[0-{year[2]}][0-{year[3]}])/(0[1-9]|1[0-2])/(0[1-9]|[1-2][0-9]|31)")
+			if valid_date_birth.fullmatch(date_birth.text):
+				year_birth = date_birth.text.split('/')[0]
+				if (int(year) - int(year_birth)) > 16 :
+					date_birth.text = date_birth.text[:len(date_birth.text)-2] + str(self.validDay(date_birth))
+					
+				else:
+					year_birth = self.validYear(year, date_birth.text.split('/')[0])
+					month_birth = self.validMonth(date_birth.text.split('/')[1])
+					day_birth = self.validDay(date_birth)
+
+					date_birth.text = f'{year_birth}/{month_birth}/{day_birth}'
 				
+				self.date_birth = True
+
 			else:
-				year_birth = self.validYear(year, date_birth.text.split('/')[0])
-				month_birth = self.validMonth(date_birth.text.split('/')[1])
-				day_birth = self.validDay(date_birth)
-
-				date_birth.text = f'{year_birth}/{month_birth}/{day_birth}'
-			
-			self.date_birth = True
-
+				if len(date_birth.text) == 10:
+					date_birth.text = ''
+				self.date_birth = False
 		else:
-			if len(date_birth.text) == 10:
-				date_birth.text = ''
-			self.date_birth = False
+			date_birth.text = '2005/01/01'
+
+		if len(date_birth.text) < 8 and date_birth.text.count('/') == 2:
+			date_birth.text = '2005/01/01'
 
 
 	def delFaculties(self, faculty:list):
@@ -592,10 +603,14 @@ MDRaisedButton:
 
 	def saveKardex(self):
 		self.revalidate = True
-		#########
-		#########
-		#########
-		#########
+		n = 0
+		for subject in self.actual_kardex:
+			n += 1
+			textfield = f'textfield{n}'
+			for i in range(1, 7, 1):
+				print(subject, f'{textfield}{i}')
+				self.actual_kardex[subject][f'OP{i}'] = self.ids[f'{textfield}{i}'].text
+		print(self.actual_kardex)
 
 
 	def onPressRevalidate(self):
@@ -631,7 +646,6 @@ MDLabel:
 			"""
 			self.ids[f'mdlabel{n}'] = Builder.load_string(x)
 			layout.add_widget(self.ids[f'mdlabel{n}'])
-			self.actual_kardex[f'mdlabel{n}'] = ''
 
 			i = 1
 			while i < 7:
@@ -652,6 +666,9 @@ TextInput:
 				if i > 1:
 					self.ids[f'textfield{n}{i}'].disabled = True
 				i += 1
+
+			self.actual_kardex[self.ids[f'mdlabel{n}'].text] = {'OP1':'', 'OP2':'', 'OP3':'', 'OP4':'', 'OP5':'', 'OP6':''}
+		
 		student_show_layout = self.ids.student_show
 
 		saver_layout = """

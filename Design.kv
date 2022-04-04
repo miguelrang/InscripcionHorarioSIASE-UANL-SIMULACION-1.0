@@ -158,6 +158,14 @@ WindowManager:
 		size_hint: .19, .076
 		pos_hint: {"center_x": .25, "center_y": .22}
 
+	MDIconButton:
+		id: hidden_eye
+		name: 'hidden_eye'
+
+		icon: 'eye-off'
+		pos_hint: {'center_x': .37, 'center_y': .22}
+		on_press: root.onPressHiddenEye()
+
 	Button:
 		id: login
 		name: "login"
@@ -337,6 +345,9 @@ WindowManager:
 						hint_text: 'Fecha de Nacimiento (YYYY/MM/DD)'
 						on_text: root.onTextDateBirth()
 						on_focus: root.onTextDateBirth()
+						on_text_validate: 
+							if date_birth.focus == False:\
+							date_birth.text = '2005/01/01'
 
 						max_text_length: 10
 						color_mode: 'custom'
