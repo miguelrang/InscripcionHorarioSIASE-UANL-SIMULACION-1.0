@@ -1,0 +1,464 @@
+WindowManager:
+	Login:
+	Rectoria:
+	Student:
+	Add:
+	Mod:
+	Delete:
+	
+
+<Login>:
+	id: login
+	name: "login"
+
+	Image:
+		id: wallpaper
+		name: "wallpaper"
+
+		source: "images/wallpaper.png"
+
+	Image:
+		id: img_text
+		name: "img_text"
+
+		pos_hint: {"center_x": .59, "center_y": .9}
+		color: 200/255, 200/255, 200/255, 1
+		source: "images/text2.png"
+
+		Label:
+			text: "[b][i]¡ Ingresa con una sola cuenta![/i][/b]"
+			markup: True
+			font_size: 25 
+			center_x: self.parent.center_x - 120
+			center_y: self.parent.center_y
+			color: 220/255, 140/255, 0, 1
+
+	Image:
+		id: img_correo
+		name: "img_correo"
+
+		pos_hint: {"center_x": .14, "center_y": .7}
+		source: "images/correo.png"
+
+	Image:
+		id: img_siase
+		name: "img_siase"
+	
+		pos_hint: {"center_x": .37, "center_y": .695}
+		source: "images/siase.png"
+
+	Image:
+		id: img_codice
+		name: "img_codice"
+
+		pos_hint: {"center_x": .6, "center_y": .695}
+		source: "images/codice.png"
+
+	Image:
+		id: img_nexus
+		name: "img_nexus"
+
+		pos_hint: {"center_x": .839, "center_y": .7}
+		source: "images/nexus.png"
+
+	MDIconButton:
+		id: calendar
+		name: "calendar"
+
+		icon: "calendar-month"
+		pos_hint: {"center_x": .3, "center_y": .55}
+
+	Label:
+		id: calendar_text
+		name: "calendar_text"
+
+		text: ""
+		pos_hint: {"center_x": .38, "center_y": .55}
+
+	MDIconButton:
+		id: clock
+		name: "clock"
+
+		icon: "clock-outline"
+		pos_hint: {"center_x": .5, "center_y": .55}
+		on_press: root.getInfo()
+		on_touch_move: root.getInfo()
+	
+	Label:
+		id: clock_text
+		name: "clock_text"
+		
+		text: ""
+		pos_hint: {"center_x": .55, "center_y": .55}
+
+	Label:
+		text: "Tipo:"
+		pos_hint: {"center_x": .095, "center_y": .43}
+
+	MDRaisedButton:
+		id: type_
+		name: "type_"
+
+		text: "Alumno                         "
+		theme_text_color: "Custom"
+		text_color: .1, .1, .1, 1
+		size_hint: .19, .076
+		pos_hint: {"center_x": .25, "center_y": .43}
+		md_bg_color: .95, .95, .95, 1
+		on_press:
+			account.text = "" 
+			account.focus = True
+			root.onPressType_()
+	MDIconButton:
+		pos_hint: {"center_x": .32, "center_y": .43}
+		icon:"arrow-down-drop-circle-outline"
+		
+	Label:
+		id: account_text
+		name: "account_text"
+
+		text: "Estudiante:"
+		pos_hint: {"center_x": .095, "center_y": .33}
+
+	TextInput:
+		id: account
+		name: "account"
+
+		text: ""
+		focus: True
+		on_text: root.onTextAccount()
+		on_focus: root.onTextAccount()
+		on_text_validate:
+			if password.disabled == False and login.disabled == True:\
+			password.focus = True
+			elif password.disabled == False and login.disabled == False:\
+			root.signIn()
+
+		input_filter: "int"
+		multiline: False
+		size_hint: .19, .076
+		pos_hint: {"center_x": .25, "center_y": .33}
+
+	Label:
+		text: "Contraseña:"
+		pos_hint: {"center_x": .09, "center_y": .225}
+
+	TextInput:
+		id: password
+		name: "password"
+
+		text: ""
+		password: True
+		on_text: root.onTextPassword()
+		on_text_validate: 
+			if root.onTextPassword() == False:\
+			root.signIn()
+		disabled: True
+		multiline: False
+		size_hint: .19, .076
+		pos_hint: {"center_x": .25, "center_y": .22}
+
+	Button:
+		id: login
+		name: "login"
+
+		text: "[b]Entrar[/b]"
+		markup: True
+		background_color: 600/255, 435/255, 0/255, 1
+		color: 25/255, 70/255, 100/255, 1
+		size_hint: .19, .076
+		pos_hint: {"center_x": .25, "center_y": .12}
+		disabled: True
+		on_press: root.signIn()
+
+	Label:
+		text: "Consulta de matricula para"
+		color: 249/255, 179/255, 0/255, 1
+		pos_hint: {"center_x": .45, "center_y": .14}
+		font_size: 10
+
+	Label:
+		text: "alumnos de primer ingreso"
+		color: 249/255, 179/255, 0/255, 1
+		pos_hint: {"center_x": .452, "center_y": .11}
+		font_size: 10
+
+	Label:
+		text: "Sección de preguntas"
+		pos_hint: {"center_x": .435, "center_y": .08}
+		font_size: 10
+
+	Label:
+		text: "frecuentes"
+		pos_hint: {"center_x": .402, "center_y": .05}
+		font_size: 10
+
+<Rectoria>:
+	id: rectoria
+	name: "rectoria"
+
+	Image:
+		source: 'images/wallpaper2.png'
+
+	BoxLayout:
+		orientation: 'vertical'
+
+		MDRaisedButton:
+
+			text: 'Agregar'
+			size_hint_x: 1
+			size_hint_y: 1
+			md_bg_color: .5, .5, .5, .5
+			opacity: .8
+			on_press: app.root.current = 'add'
+
+		MDRaisedButton:
+
+			text: 'Modificar'
+			size_hint_x: 1
+			size_hint_y: 1
+			md_bg_color: .5, .5, .5, .5
+			opacity: .8
+			on_press: app.root.current = 'mod'
+
+		MDRaisedButton:
+
+			text: 'Eliminar'
+			size_hint_x: 1
+			size_hint_y: 1
+			md_bg_color: .5, .5, .5, .5
+			opacity: .8
+			on_press: app.root.current = 'del'
+
+<Add>:
+	id: add
+	name: 'add'
+
+	MDBottomNavigation:
+		panel_color: .9, .5, 0, 1
+		size_hint_x: 1
+		size_hint_y: 1
+
+		MDBottomNavigationItem:
+			id: student
+			name: 'student'
+
+			icon: 'school'
+			text: 'Estudiante'
+
+			Image:
+				source: 'images/wallpaper3.png'
+
+			BoxLayout:
+				orientation: 'horizontal'
+				size_hint_x: .99
+				size_hint_y: .95
+				pos_hint: {'center_y': .5}
+				
+				#BoxLayout:
+				#	orientation: 'vertical'
+
+				#	#ScrollView:
+				#	#	do_scroll_y: True
+
+				GridLayout:
+					id: student_fields
+					name: 'student_fields'
+
+					padding: 10
+					spacing: 15
+					#size_hint_y: None
+					cols: 1
+					#rows: 8
+
+					MDTextField
+						id: middle_name
+						name: 'middle_name'
+
+						hint_text: 'Apellido Paterno'
+						on_text: root.onTextMiddleName()
+						on_focus: root.onTextMiddleName()
+
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						multiline: False
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+						size_hint_x: .9
+
+					MDTextField
+						id: last_name
+						name: 'last_name'
+
+						hint_text: 'Apellido Materno'
+						on_text: root.onTextLastName()
+						on_focus: root.onTextLastName()
+
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						multiline: False
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+						size_hint_x: .9
+
+					MDTextField
+						id: name
+						name: 'name'
+
+						hint_text: 'Nombre del Estudiante'
+						on_text: root.onTextName()
+						on_focus: root.onTextName()
+
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						multiline: False
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+						size_hint_x: .9
+
+					MDTextField
+						id: email
+						name: 'email'
+
+						hint_text: 'Correo Universitario'
+						on_text: root.onTextEmail()
+						on_focus: root.onTextEmail()
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						multiline: False
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+						size_hint_x: .9
+
+					MDTextField
+						id: date_birth
+						name: 'date_birth'
+
+						hint_text: 'Fecha de Nacimiento (YYYY/MM/DD)'
+						on_text: root.onTextDateBirth()
+						on_focus: root.onTextDateBirth()
+
+						max_text_length: 10
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						multiline: False
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+						size_hint_x: .9
+
+					MDRaisedButton:
+						id: student_faculty
+						name: 'student_faculty'
+
+						text: 'Seleccionar Facultad'
+						disabled: True
+						size_hint_x: .9
+						md_bg_color: 0, .2, .9, 1
+						line_color: 1, 1, 1, 1
+						on_press: root.onPressStudentFaculty()
+
+					MDRaisedButton:
+						id: student_career
+						name: 'student_career'
+
+						text: 'Seleccionar Carrera'
+						disabled: True
+						size_hint_x: .9
+						md_bg_color: 0, .2, .9, 1
+						line_color: 1, 1, 1, 1
+						on_press: root.onPressStudentCareer()
+
+					MDRaisedButton:
+						id: revalidate
+						name: 'revalidate'
+
+						text: 'Revalidación'
+						disabled: True
+						md_bg_color: 0, .2, .9, 1
+						line_color: 1, 1, 1, 1
+						size_hint_x: .9
+						on_press: root.onPressRevalidate()
+						
+					MDRaisedButton:
+						id: save_student
+						name: 'save_student'
+
+						text: 'Guardar'
+						disabled: True
+						pos_hint: {'center_x': .5}
+						md_bg_color: 0, .2, .9, 1
+						line_color: 1, 1, 1, 1
+						size_hint_x: .9
+						on_press: root.onPressSaveStudent()
+
+						
+				BoxLayout:
+					id: student_show
+					name: 'student_show'
+
+					orientation: 'vertical'
+					#size_hint_x: 1
+					canvas.before:
+						Color:
+							rgb: .9, .5, 0, 1
+						Rectangle:
+							size: self.size
+							pos: self.pos
+					
+					ScrollView:
+						id: student_scroll
+						name: 'student_scroll'
+
+						do_scroll_y: True
+
+						GridLayout:
+							id: student_button
+							name: 'student_button'
+
+							cols: 1
+							padding: 5
+							spacing: 1
+							size_hint_y: None
+							row_default_height: 50
+							height: self.minimum_height
+
+
+		MDBottomNavigationItem:
+			id: teacher
+			name: 'teacher'
+
+			icon: 'teach'
+			text: 'Profesor'
+
+			Image:
+				source: 'images/wallpaper3.png'
+
+
+		MDBottomNavigationItem:
+			id: schedule
+			name: 'schedule'
+
+			icon: 'timetable'
+			text: 'Horario'
+
+			Image:
+				source: 'images/wallpaper3.png'
+
+			TextInput:
+				text: 'schedule'
+
+<Mod>:
+	id: mod
+	name: 'mod'
+
+	Image:
+		source: 'images/wallpaper2.png'
+
+
+<Delete>:
+	id: del
+	name: 'del'
+
+	Image:
+		source: 'images/wallpaper2.png'
+
