@@ -157,7 +157,7 @@ class Login(Screen):
 		######
 		app = MDApp.get_running_app()
 		if self.ids.account_text.text == "Estudiante:":
-			window = "student"
+			window = "siase"
 		else:
 			window = "rectoria"
 		app.root.current = window
@@ -168,14 +168,14 @@ class Login(Screen):
 		Window.top = ( 750 - 650)/2
 
 
+class SIASE(Screen):
+	def __init__(self, **kwargs):
+		super(SIASE, self).__init__(**kwargs)
+
+
 class Rectoria(Screen):
 	def __init__(self, **kwargs):
 		super(Rectoria, self).__init__(**kwargs)
-
-
-class Student(Screen):
-	def __init__(self, **kwargs):
-		super(Student, self).__init__(**kwargs)
 
 
 class Add(Screen):
@@ -725,12 +725,12 @@ class main(MDApp):
 		self.theme_cls.theme_style = "Light"
 		
 		return Builder.load_file("Design.kv")
-
-	#def on_start(self):
-	#	Window.size = 1100, 650
-	#	Window.left = (1400 - 1100)/2
-	#	Window.top = ( 750 - 650)/2
-	#	self.root.current = "add"
+		
+	def on_start(self):
+		Window.size = 1100, 650
+		Window.left = (1400 - 1100)/2
+		Window.top = ( 750 - 650)/2
+		self.root.current = "siase"
 
 def sqlCONNECTION():
 	try:

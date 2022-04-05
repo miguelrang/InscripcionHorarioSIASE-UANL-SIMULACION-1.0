@@ -1,7 +1,7 @@
 WindowManager:
 	Login:
 	Rectoria:
-	Student:
+	SIASE:
 	Add:
 	Mod:
 	Delete:
@@ -201,6 +201,349 @@ WindowManager:
 		pos_hint: {"center_x": .402, "center_y": .05}
 		font_size: 10
 
+<SIASE>:
+	id: siase
+	name: 'siase'
+
+	Image:
+		source: 'images/siase2.png'
+		pos_hint: {'center_x': .1, 'center_y': .9}
+
+	TextInput:
+		id: input_
+		on_focus: input_.focus = False
+		size_hint: .1, .2
+		pos_hint: {'center_x': .25, 'center_y': .89}
+
+	Label:
+		text: '[b]       FOTO\n         NO\n DISPONIBLE[/b]'
+		markup: True
+		color: 120/255, 120/255, 120/255, 1
+		size_hint: .1, .2
+		pos_hint: {'center_x': .25, 'center_y': .89}
+
+	Image:
+		source: 'images/line.png'
+		pos_hint: {'center_x': .25, 'center_y': .80}
+		color: 0, 0, 0, 1
+
+	Image:
+		source: 'images/line.png'
+		pos_hint: {'center_x': .7634, 'center_y': .80}
+		color: 0, 0, 0, 1
+
+	Image:
+		source: 'images/vertical_line.png'
+		pos_hint: {'center_x': .5, 'center_y': .9}
+
+	Image:
+		source: 'images/uanl.png'
+		pos_hint: {'center_x': .55, 'center_y': .9}
+
+	Label:
+		text: 'UNIVERSIDAD AUTÓNOMA\nDE NUEVO LEÓN'
+		font_size: 30
+		color: 0, 0, 0, 1
+		pos_hint: {'center_x': .78, 'center_y': .9}
+
+	BoxLayout:
+		orientation: 'horizontal'
+		padding: 2
+		pos_hint: {'center_x': .65, 'center_y': .7949}
+		size_hint_x: .7
+		size_hint_y: .02
+
+		canvas.before:
+			Color:
+				rgb: .1, .29, .54
+			Rectangle:
+				size: self.size
+				pos: self.pos
+
+		Button:
+			text: 'Escolar'
+			size_hint_x: .7
+			font_size: 11
+			background_color: 0, 0, 0, 0
+
+		Button:
+			text: 'Tesoreria'
+			size_hint_x: .63
+			font_size: 11
+			background_color: 0, 0, 0, 0
+
+		Button:
+			text: 'DGPPE'
+			size_hint_x: .7
+			font_size: 11
+			background_color: 0, 0, 0, 0
+
+		Button:
+			text: 'AFI'
+			font_size: 11
+			size_hint_x: .4
+			background_color: 0, 0, 0, 0
+
+		Button:
+			text: 'EXCI'
+			size_hint_x: .4
+			font_size: 11
+			background_color: 0, 0, 0, 0
+
+		Button:
+			text: 'Contraseña'
+			size_hint_x: .8
+			font_size: 11
+			background_color: 0, 0, 0, 0
+
+		Button:
+			text: 'Clave de Seguridad'
+			font_size: 11
+			background_color: 0, 0, 0, 0
+
+		Button:
+			text: 'Aviso de Privacidad'
+			font_size: 11
+			background_color: 0, 0, 0, 0
+
+		Button:
+			text: 'Salir'
+			size_hint_x: .4
+			font_size: 11
+			background_color: 0, 0, 0, 0
+
+		Label:
+			text: ''
+
+	#Button:
+	#	size_hint_x: .05
+	#	size_hint_y: .05
+	#	pos_hint: {'center_x': .5, 'center_y': .5}
+	#	background_color: 299/255, 127/255, 0, 1
+	MDIconButton:
+		icon: 'twitter'
+
+	GridLayout:
+		cols: 1
+		spacing: -50
+		pos_hint: {'center_x': .325, 'center_y': .92}
+		size_hint_x: .1
+		size_hint_y: .2
+
+		Label:
+			text: '[b]Matricula:[/b]'
+			markup: True
+			font_size: 11
+			color: 0, 0, 0, 1
+			
+		Label:
+			text: '[b]Nombre:  [/b]'
+			markup: True
+			font_size: 11
+			color: 0, 0, 0, 1
+			
+		Label:
+			text: '[b]Carrera:   [/b]'
+			markup: True
+			font_size: 11
+			color: 0, 0, 0, 1
+	#GridLayout:
+	#
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint_x: .2
+		size_hint_y: .778
+
+		canvas.before:
+			Color:
+				rgb: .1, .29, .54
+
+			Rectangle:
+				size: self.size
+				pos: self.pos
+
+		ScrollView:
+			do_scroll_y: True
+			
+			GridLayout:
+				cols: 1
+				size_hint_y: None
+				height: self.minimum_height
+
+				MDRaisedButton:
+					text: 'subir foto del alumno'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'carga documentos pendientes'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Situacion estudiante UANL'
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Inscripción'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Becas'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Kardex'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Horario'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Calificaciones'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'datos personales'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Aviso de Pago'
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'subir foto del alumno'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Consulta Fecha Inscripción'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Consulta de Evaluación'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Cuotas escolares rectoria'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'aviso de inscripcion'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Otros adeudos'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Encuestas'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Encuestas tutoria'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Registro servicio social'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'formato inscripcion rectoria'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Trámites DEyA'
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'boleta pago '.title() + 'EXENS'
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Inscripción PROVERICYT'
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Programa Futbol Americano'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Cuestionario Huella CO2'
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Registro IMSS'
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Encuestas - CEV'
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'Prácticas Profesionales'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+
+				MDRaisedButton:
+					text: 'voluntariado'.title()
+					size_hint_x: 2
+					md_bg_color: .1, .29, .54, 1
+					line_color: 1, 1, 1, 1
+			
 <Rectoria>:
 	id: rectoria
 	name: "rectoria"
