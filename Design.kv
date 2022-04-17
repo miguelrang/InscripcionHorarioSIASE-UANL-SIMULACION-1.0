@@ -315,32 +315,49 @@ WindowManager:
 		Label:
 			text: ''
 
-	#Button:
-	#	size_hint_x: .05
-	#	size_hint_y: .05
-	#	pos_hint: {'center_x': .5, 'center_y': .5}
-	#	background_color: 299/255, 127/255, 0, 1
-	Button:
-		background_color: 200/255, 190/255, 42/255, 1
-		size_hint_x: .025
-		size_hint_y: .04
-		pos_hint: {'center_x': .92, 'center_y': .805}
+	BoxLayout:# COLOR 'BUTTON'
+		size_hint_x: .012
+		size_hint_y: .018
+		pos_hint: {'center_x': .91, 'center_y': .796}
+		canvas.before:
+			Color:
+				rgb: 255/255, 204/255, 20/255
+			Rectangle:
+				size: self.size
+				pos: self.pos
+	BoxLayout: # COLOR LETTER 'F' of facebook
+		size_hint_x: .004
+		size_hint_y: .014
+		pos_hint: {'center_x': .91, 'center_y': .7955}
+		canvas.before:
+			Color:
+				rgb: .1, .29, .54, 1
+			Rectangle:
+				size: self.size
+				pos: self.pos
 	MDIconButton:
 		icon: 'facebook'
-		size_hint_x: .025
-		size_hint_y: .04
-		pos_hint: {'center_x': .92, 'center_y': .805}
-
-	Button:
-		background_color: 242/255, 216/255, 42/255, 1
-		size_hint_x: .025
-		size_hint_y: .04
-		pos_hint: {'center_x': .96, 'center_y': .805}
+		user_font_size: '12sp'
+		pos_hint: {'center_x': .91, 'center_y': .797}
+		theme_text_color: 'Custom'
+		text_color: 255/255, 204/255, 20/255, 1
+	
+	BoxLayout:# COLOR 'BUTTON'
+		size_hint_x: .012
+		size_hint_y: .018
+		pos_hint: {'center_x': .94, 'center_y': .796}
+		canvas.before:
+			Color:
+				rgb: 255/255, 204/255, 20/255
+			Rectangle:
+				size: self.size
+				pos: self.pos
 	MDIconButton:
 		icon: 'twitter'
-		size_hint_x: .025
-		size_hint_y: .04
-		pos_hint: {'center_x': .96, 'center_y': .805}
+		user_font_size: '12sp'
+		pos_hint: {'center_x': .94, 'center_y': .796}
+		theme_text_color: 'Custom'
+		text_color: .1, .29, .54, 1
 
 	GridLayout:
 		cols: 1
@@ -625,12 +642,6 @@ WindowManager:
 				size_hint_y: .95
 				pos_hint: {'center_y': .5}
 				
-				#BoxLayout:
-				#	orientation: 'vertical'
-
-				#	#ScrollView:
-				#	#	do_scroll_y: True
-
 				GridLayout:
 					id: student_fields
 					name: 'student_fields'
@@ -645,6 +656,7 @@ WindowManager:
 						id: middle_name
 						name: 'middle_name'
 
+						text: 'guerra'
 						hint_text: 'Apellido Paterno'
 						on_text: root.onTextMiddleName()
 						on_focus: root.onTextMiddleName()
@@ -660,6 +672,7 @@ WindowManager:
 						id: last_name
 						name: 'last_name'
 
+						text: 'rangel'
 						hint_text: 'Apellido Materno'
 						on_text: root.onTextLastName()
 						on_focus: root.onTextLastName()
@@ -675,6 +688,7 @@ WindowManager:
 						id: name
 						name: 'name'
 
+						text: 'miguel angel'
 						hint_text: 'Nombre del Estudiante'
 						on_text: root.onTextName()
 						on_focus: root.onTextName()
@@ -704,6 +718,7 @@ WindowManager:
 						id: date_birth
 						name: 'date_birth'
 
+						text: '2001/01/26'
 						hint_text: 'Fecha de Nacimiento (YYYY/MM/DD)'
 						on_text: root.onTextDateBirth()
 						on_focus: root.onTextDateBirth()
@@ -742,15 +757,15 @@ WindowManager:
 						on_press: root.onPressStudentCareer()
 
 					MDRaisedButton:
-						id: revalidate
-						name: 'revalidate'
+						id: kardex#revalidate
+						name: 'kardex'#'revalidate'
 
-						text: 'Revalidación'
+						text: 'Kardex'
 						disabled: True
 						md_bg_color: 0, .2, .9, 1
 						line_color: 1, 1, 1, 1
 						size_hint_x: .9
-						on_press: root.onPressRevalidate()
+						on_press: root.onPressKardex()
 						
 					MDRaisedButton:
 						id: save_student
@@ -770,7 +785,7 @@ WindowManager:
 					name: 'student_show'
 
 					orientation: 'vertical'
-					#size_hint_x: 1
+					padding: 5
 					canvas.before:
 						Color:
 							rgb: .9, .5, 0, 1
@@ -789,7 +804,7 @@ WindowManager:
 							name: 'student_button'
 
 							cols: 1
-							padding: 5
+							#padding: 5
 							spacing: 1
 							size_hint_y: None
 							row_default_height: 50
@@ -817,8 +832,6 @@ WindowManager:
 			Image:
 				source: 'images/wallpaper3.png'
 
-			TextInput:
-				text: 'schedule'
 
 <Mod>:
 	id: mod

@@ -1,6 +1,8 @@
 import pyodbc as SQLServer
 
 from kivymd.app import MDApp
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.button import MDRectangleFlatButton
 
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -13,13 +15,14 @@ from kivy.clock import Clock
 from nltk.tokenize import word_tokenize
 
 from datetime import datetime
+import random
 import os
 import re
 
 #from PIL import Image
-#img = Image.open("images/wallpaper2.png")
-#img = img.resize((1210, 655), Image.ANTIALIAS)
-#img.save("images/wallpaper3.png")
+#img = Image.open("images/yellow2.png")
+#img = img.resize((25, 25), Image.ANTIALIAS)
+#img.save("images/yellow.png")
 
 
 class WindowManager(ScreenManager):
@@ -188,10 +191,14 @@ class Add(Screen):
 		self.date_birth = False
 		self.student_faculty = False
 		self.student_career = False
-		self.revalidate = False
+		self.valid_kardex = False
 		##
 		self.actual_kardex = dict()
+		self.last_kardex_field = ''
+		self.kardex = {}
 
+		self.id_subject = []
+		##
 
 		Clock.schedule_interval(self.interval, 1)
 
@@ -208,17 +215,33 @@ class Add(Screen):
 							verifier2 = not self.ids.middle_name.disabled
 							if self.student_faculty == True:
 								if self.student_career == True:
-									verifier = True
+									if self.valid_kardex == True:
+										verifier = True
 		self.ids.save_student.disabled = not verifier
 		self.ids.student_faculty.disabled = not verifier2
 
-		enabled_widgets = [self.middle_name, self.last_name, self.name_, 
-						   self.email, self.date_birth, self.student_faculty]
+		widget = [self.middle_name, self.last_name, self.name_, 
+				  self.email, self.date_birth, self.student_faculty]
 		verifier = False
-		for widget in enabled_widgets:
-			if widget == True:
-				verifier = True
-				break
+		if widget[0] == True:
+			verifier = True
+		
+		if widget[1] == True:
+			verifier = True
+		
+		if widget[2] == True:
+			verifier = True
+		
+		if widget[3] == True:
+			verifier = True
+		
+		if widget[4] == True:
+			verifier = True
+		
+		if widget[5] == True:
+			verifier = True
+		
+		##
 		if verifier == True:
 			self.ids['teacher'].disabled = True
 			self.ids['schedule'].disabled = True
@@ -233,7 +256,6 @@ class Add(Screen):
 		for char in range(len(list(var.text).copy())):
 			if var.text[char] in numbs or var.text[char] in chars:
 				var.text = var.text.replace(var.text[char], "")
-				print(var.text)
 				break
 
 
@@ -378,15 +400,12 @@ class Add(Screen):
 	def validYear(self, actual_year, year_birth):
 		valid = re.compile(fr"(19[6-9][0-9]|20[0-{actual_year[2]}][0-9])")
 		
-		print(actual_year)
-		print(year_birth)
 		if valid.fullmatch(year_birth) and (int(actual_year) - int(year_birth)) > 16:
 			year = year_birth
 
 		else:
 			year = int(actual_year) - 17
 
-		print(year)
 		return year
 
 
@@ -455,14 +474,13 @@ class Add(Screen):
 				self.ids[n].size_hint_x = .9
 		
 		self.ids.student_career.text = 'Seleccionar Carrera'
-		self.ids.revalidate.text = 'Revalidación'
 
 		self.student_faculty = True
 
 
 	def onPressStudentFaculty(self):
 		##
-		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, revalidate'
+		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, kardex'
 		var:list = var.split(', ')
 		for n in var:
 			self.ids[n].disabled = True
@@ -508,7 +526,7 @@ MDRaisedButton:
 			n += 1
 			del self.ids[f'A{n}']
 
-		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, revalidate'
+		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, kardex'
 		var:list = var.split(', ')
 		valid = True
 		for n in var:
@@ -525,14 +543,12 @@ MDRaisedButton:
 				self.ids[n].fill_color = .9, .5, 0, .1
 				self.ids[n].size_hint_x = .9
 		
-		self.ids.revalidate.text = 'Revalidación'
-
 		self.student_career = True
 
 
 	def onPressStudentCareer(self):
 		##
-		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, revalidate'
+		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, kardex'
 		var:list = var.split(', ')
 		for n in var:
 			self.ids[n].disabled = True
@@ -566,71 +582,273 @@ MDRaisedButton:
 			"""
 			self.ids[f'A{n}'] = Builder.load_string(c)
 			layout.add_widget(self.ids[f'A{n}'])
+	
 
+	def validKardex(self, oportunity):
+		self.last_kardex_field = oportunity.name
 
-	def validRevalidate(self, revalidated):
-		oportunity = self.ids[revalidated.name]
+		oportunity.text = oportunity.text.replace(' ', '')
+		oportunity.text = oportunity.text.upper()
+		chars = list('abcdefghijklmnñopqrstuvwxyz|°¬!"#$%&/()=\'?\\¿¡´¨+~*{[^}]`,;.:-_<>'.upper())		
 		try:
-			actual = int(oportunity.name[len(oportunity.name)-1]) # '#' of oportunity
-			neutral = oportunity.name[:len(oportunity.name)-1] # textfield
-			grade_op = int(oportunity.text)
-			if grade_op > -1 and grade_op < 70:
-				self.ids[f'{neutral + str(actual + 1)}'].disabled = False
-				for i in range(1, 7, 1):
-					if i > actual:
-						self.ids[f'{neutral}{i}'].disabled = False
-						break
-			
-			elif grade_op < 0 or grade_op > 100:
-				oportunity.text = ''
-				for i in range(1, 7, 1):
-					if i > actual:
-						self.ids[f'{neutral}{i}'].text = ''
-						self.ids[f'{neutral}{i}'].disabled = True
-
+			if oportunity.text == '':
+				actual_oportunity:int = int(oportunity.name[len(oportunity.name)-1])
+				next_oportunity1:str = oportunity.name[:len(oportunity.name)-1] + str(actual_oportunity+1)
+				self.ids[next_oportunity1].disabled = True
+				if actual_oportunity == 1 or actual_oportunity == 3 or actual_oportunity == 5:
+					self.ids.save_kardex.disabled = False
+				else:
+					self.ids.save_kardex.disabled = True
+			elif (oportunity.text == 'N' or oportunity.text == 'NP' or 
+				oportunity.text == 'NA' or oportunity.text == 'A' or oportunity.text == 'AC'):
+				if oportunity.text == 'N' and oportunity.focus == False:
+					oportunity.text = 'NP'
+				elif oportunity.text == 'A' and oportunity.focus == False:
+					oportunity.text = 'AC'
+				grade = oportunity.text
+				
+				if grade == 'NP' or grade == 'NA':
+					next_oportunity1:int = int(oportunity.name[len(oportunity.name)-1]) + 1
+					if (next_oportunity1-1) == 6:
+						self.ids.save_kardex.disabled = True
+					else:
+						next_oportunity:str = oportunity.name[:len(oportunity.name)-1] + str(next_oportunity1)
+						self.ids[next_oportunity].disabled = False
+						if next_oportunity1 == 3 or next_oportunity1 == 5:
+							self.ids.save_kardex.disabled = False
+						else:
+							self.ids.save_kardex.disabled = True
+				elif grade == 'AC':
+					next_oportunity1:int = int(oportunity.name[len(oportunity.name)-1]) + 1
+					if (next_oportunity1-1) == 6:
+						pass
+					else:
+						next_oportunity:str = oportunity.name[:len(oportunity.name)-1] + str(next_oportunity1)
+					self.ids[next_oportunity].disabled = True
+					self.ids.save_kardex.disabled = False
+			elif set(oportunity.text) & set(chars):
+				oportunity.text = 'NP'
 			else:
-				for i in range(1, 7, 1):
-					if i > actual:
-						self.ids[f'{neutral}{i}'].text = ''
-						self.ids[f'{neutral}{i}'].disabled = True
+				grade = int(oportunity.text)
 
-		except:
-			for i in range(1, 7, 1):
-				if i > actual:
-					self.ids[f'{neutral}{i}'].text = ''
-					self.ids[f'{neutral}{i}'].disabled = True
+				if grade > 100:
+					oportunity.text = '100'
+				if grade >= 0 and grade < 70:
+					next_oportunity1:int = int(oportunity.name[len(oportunity.name)-1]) + 1
+					if grade < 0 or grade > 100 and (next_oportunity1-1) == 6:
+						self.ids.save_kardex.disabled = True
+					else:
+						next_oportunity:str = oportunity.name[:len(oportunity.name)-1] + str(next_oportunity1)
+						if (next_oportunity1-1 == 6):
+							pass
+						else:
+							self.ids[next_oportunity].disabled = False
+						if next_oportunity1 == 3 or next_oportunity1 == 5:
+							self.ids.save_kardex.disabled = False
+						else:
+							self.ids.save_kardex.disabled = True
+				elif grade > 69 and grade < 101:
+					next_oportunity1:int = int(oportunity.name[len(oportunity.name)-1]) + 1
+					next_oportunity:str = oportunity.name[:len(oportunity.name)-1] + str(next_oportunity1)
+					self.ids[next_oportunity].disabled = True
+					self.ids.save_kardex.disabled = False
+		except Exception as e:
+			print(e)
+			print(e)
+			print(e)
+			print(e)
+			print(e)
+			print(e)
+			print(e)
+			print(e)
+			print(e)
+			print(e)
+
+			exp = re.compile(r'textfield[0-9][0-9]*6')
+			if exp.fullmatch(oportunity.name):
+				num = 0
+				try:
+					num = int(oportunity.text)
+				except:
+					pass
+				if oportunity.text == 'AC' or (num > 69 and num < 101):
+					self.ids.save_kardex.disabled = False
+				else:
+					self.ids.save_kardex.disabled = True
+			
+		return self.ids.save_kardex.disabled
+
+
+	def delKardex(self, len_kardex):
+		layout = self.ids.student_button
+		
+		layout.clear_widgets()
+		for i in range(1, len_kardex):
+			del self.ids[f'mdlabel{i}']
+
+			del self.ids[f'textfield{i}{1}']
+			del self.ids[f'textfield{i}{2}']
+			del self.ids[f'textfield{i}{3}']
+			del self.ids[f'textfield{i}{4}']
+			del self.ids[f'textfield{i}{5}']
+			del self.ids[f'textfield{i}{6}']
+
+		self.ids.saver_layout.clear_widgets()#remove_widget(self.ids.save_kardex)
+
+		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, kardex'
+		var:list = var.split(', ')
+		valid = True
+		for n in var:
+			self.ids[n].disabled = False
+			
+			if n == "student_faculty":
+				valid = False
+	
+			if valid:
+				self.ids[n].color_mode = 'custom'
+				self.ids[n].line_color_focus = .9, .5, 0, 1
+				self.ids[n].multiline = False
+				self.ids[n].mode = 'fill'
+				self.ids[n].fill_color = .9, .5, 0, .1
+				self.ids[n].size_hint_x = .9
 	
 
 	def saveKardex(self):
-		self.revalidate = True
+		#self.ids[self.last_kardex_field].focus = False
+		# We get the kardex data
+		self.valid_kardex = True
 		n = 0
 		for subject in self.actual_kardex:
 			n += 1
 			textfield = f'textfield{n}'
-			for i in range(1, 7, 1):
-				print(subject, f'{textfield}{i}')
-				self.actual_kardex[subject][f'OP{i}'] = self.ids[f'{textfield}{i}'].text
-		print(self.actual_kardex)
+			try:
+				for i in range(1, 7, 1):
+					self.actual_kardex[subject][f'OP{i}'] = self.ids[f'{textfield}{i}'].text
+			except Exception as e:
+				print(e)
+				print(e)
+				print(e)
+				print(e)
+				print(e)
+				print(e)
+				print(e)
+				print(e)
+				print(e)
+				print(e)
+
+		nums = list('0123456789')
+		for i in range(1, len(self.actual_kardex)):
+			accepter = False # VALID
+			if self.ids[f'textfield{i}{1}'].text != '' and self.ids[f'textfield{i}{2}'].text == '':
+				if set(self.ids[f'textfield{i}{1}'].text) & set(nums):
+					if int(self.ids[f'textfield{i}{1}'].text) > -1 and int(self.ids[f'textfield{i}{1}'].text) < 70:
+						accepter = True
+						break
+				else:
+					if self.ids[f'textfield{i}{1}'].text == 'NP' or self.ids[f'textfield{i}{1}'].text == 'NA':
+						accepter = True
+						break
+			else:
+				if self.ids[f'textfield{i}{3}'].text != '' and self.ids[f'textfield{i}{4}'].text == '':
+					if set(self.ids[f'textfield{i}{3}'].text) & set(nums):
+						if int(self.ids[f'textfield{i}{1}'].text) > -1 and int(self.ids[f'textfield{i}{3}'].text) < 70:
+							accepter = True
+							break
+					else:
+						if self.ids[f'textfield{i}{3}'].text == 'NP' or self.ids[f'textfield{i}{3}'].text == 'NA':
+							accepter = True
+							break
+				else:
+					if self.ids[f'textfield{i}{5}'].text != '' and self.ids[f'textfield{i}{6}'].text == '':
+						if set(self.ids[f'textfield{i}{5}'].text) & set(nums):
+							if int(self.ids[f'textfield{i}{5}'].text) > -1 and int(self.ids[f'textfield{i}{5}'].text) < 70:
+								accepter = True
+								break
+						else:
+							if self.ids[f'textfield{i}{5}'].text == 'NP' or self.ids[f'textfield{i}{5}'].text == 'NA':
+								accepter = True
+								break
+		print(accepter)# 1
+		print(accepter)# 2
+		print(accepter)# 3
+		print(accepter)# 4
+		print(accepter)# 5
+		print(accepter)# 6
+		print(accepter)# 7
+		print(accepter)# 8
+		print(accepter)# 9
+		print(accepter)# 10
+		print(accepter)# 11
+		print(accepter)# 12
+		print(accepter)# 13
+		
+		self.ids.save_kardex.disabled = accepter
+		if accepter == False:
+			faculty = self.ids.student_faculty.text
+			career = self.ids.student_career.text
+			i = 0
+			self.kardex = {}
+			for subject in self.actual_kardex:
+				ids = sql.execute(f'EXECUTE getIds \'{faculty}\', \'{career}\', \'{subject}\'')
+				n_id: int = 0
+				for id_ in ids:
+					id_faculty = id_[0]
+					id_career = id_[1]
+					id_subject = id_[2]
+				self.id_faculty = id_faculty
+				self.id_career = id_career
+				self.id_subject.append(id_subject)
+
+				op1 = self.actual_kardex[subject]['OP1']
+				op2 = self.actual_kardex[subject]['OP2']
+				op3 = self.actual_kardex[subject]['OP3']
+				op4 = self.actual_kardex[subject]['OP4']
+				op5 = self.actual_kardex[subject]['OP5']
+				op6 = self.actual_kardex[subject]['OP6']
+				#sql.execute('EXECUTE getIDSubject')
+				self.kardex[str(i)] = [op1, op2, op3, op4, op5, op6]
+				i += 1
+
+			self.delKardex(len(self.actual_kardex))
+			var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, kardex, save_student'
+			var:list = var.split(', ')
+			valid = True
+			for n in var:
+				self.ids[n].disabled = False
+		else:
+			self.ids.save_kardex.disabled = True
+			#self.valid_kardex = False
 
 
-	def onPressRevalidate(self):
+	def onPressKardex(self):
 		##
-		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, revalidate'
+		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, kardex, save_student'
 		var:list = var.split(', ')
 		for n in var:
 			self.ids[n].disabled = True
+
 		##
 		layout = self.ids.student_button
 		layout.cols = 7
 		layout.row_default_height = 50
 
-		careers = sql.execute(f'EXECUTE dbo.getSubjects \'{self.ids.student_faculty.text}\', \'{self.ids.student_career.text}\'')
-		career = []
-		for c in careers:
-			career.append(c[0])
+		try:
+			self.ids.student_show.remove_widget(self.ids.saver_layout)
+			del self.ids.saver_layout
+		except:
+			pass
+
+		self.actual_kardex = {}
+
+		subjects = f'EXECUTE dbo.getSubjects \'{self.ids.student_faculty.text}\','
+		subjects += f'\'{self.ids.student_career.text}\''
+		subjects = sql.execute(subjects)
+		subject = []
+		for s in subjects:
+			subject.append(s[0])
 
 		n = 0
-		for c in career:
+		for s in subject:
 			n += 1
 
 			x = f"""
@@ -638,7 +856,7 @@ MDLabel:
 	id: mdlabel{n}
 	name: 'mdlabel{n}'
 
-	text: f'{c}'
+	text: f'{s}'
 	#size_hint_x: .9
 	text_color: .9, .5, 0, 1
 	md_bg_color: 1, 1, 1, 1
@@ -648,7 +866,7 @@ MDLabel:
 			layout.add_widget(self.ids[f'mdlabel{n}'])
 
 			i = 1
-			while i < 7:
+			for i in range(1, 7, 1):
 				y = f"""
 TextInput:
 	id: textfield{n}{i}
@@ -656,17 +874,16 @@ TextInput:
 
 	size_hint_x: .15
 	multiline: False
-	input_filter: 'int'
-	on_text: app.root.get_screen('add').validRevalidate(textfield{n}{i})
-	on_focus: app.root.get_screen('add').validRevalidate(textfield{n}{i})
+	#input_filter: 'int'
+	on_text: app.root.get_screen('add').validKardex(textfield{n}{i})
+	on_focus: app.root.get_screen('add').validKardex(textfield{n}{i})
 	"""
 				self.ids[f'textfield{n}{i}'] = Builder.load_string(y)
 				layout.add_widget(self.ids[f'textfield{n}{i}'])
 
 				if i > 1:
 					self.ids[f'textfield{n}{i}'].disabled = True
-				i += 1
-
+				
 			self.actual_kardex[self.ids[f'mdlabel{n}'].text] = {'OP1':'', 'OP2':'', 'OP3':'', 'OP4':'', 'OP5':'', 'OP6':''}
 		
 		student_show_layout = self.ids.student_show
@@ -674,7 +891,7 @@ TextInput:
 		saver_layout = """
 BoxLayout:
 	id: saver_layout
-	name: 'saver_ layout'
+	name: 'saver_layout'
 	
 	orientation: 'horizontal'
 	padding: 7.5
@@ -682,30 +899,318 @@ BoxLayout:
 	cols: 2
 	rows: 1
 		"""
+
 		self.ids.saver_layout = Builder.load_string(saver_layout)
 		student_show_layout.add_widget(self.ids.saver_layout)
 		saver_layout = self.ids.saver_layout
 
-		save_kardex = """
+		self.ids.save_kardex = """
 MDRaisedButton:
 	id: save_kardex
 	name: 'save_kardex'
 
 	text: 'Guardar Kardex'
-	size_hint_x: .9
+	size_hint_x: 1
 	text_color: .9, .5, 0, 1
 	md_bg_color: 1, 1, 1, 1
 	line_color: 0, 0, 1, 1
-	on_press: app.root.get_screen('add').saveKardex()
+	on_press: 
+		del save_kardex
+		app.root.get_screen('add').saveKardex()
 		"""
-		self.ids.save_kardex = Builder.load_string(save_kardex)
+
+		self.ids.save_kardex = Builder.load_string(self.ids.save_kardex)
 		saver_layout.add_widget(self.ids.save_kardex)
 
 
+	def getPassword(self):
+		chars = list('ABCDEFGHIHKLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz0123456789')
+		password = ''
+		for i in range(8):
+			try:
+				password += chars[random.randint(0, len(chars))]
+			except:
+				password += chars[random.randint(0, len(chars)-1)]
+
+		return password
+
+
+	def closeStudentExist(self, *args):
+		self.student_exist.dismiss()
+
+
+	def studentExist(self):
+		self.student_exist = MDDialog(
+				title = 'A ocurrido un error.',
+				text = 'Este estudiante ya existe.',
+				buttons = [
+					MDRectangleFlatButton(
+							text = 'Aceptar',
+							on_press = self.closeStudentExist
+						)
+				]
+			)
+		self.student_exist.open()
+
+
+	def clearShowStudentInfo(self):
+		self.ids.student_show.remove_widget(self.ids.clean_student_info)
+
+		self.ids.student_button.clear_widgets()
+		self.ids.teacher.disabled = False
+		self.ids.schedule.disabled = False
+		##
+		var = 'middle_name, last_name, name, email, date_birth'.split(', ')
+		for v in var:
+			self.ids[v].disabled = False
+		#for v in var:
+			self.ids[v].line_color_focus = .9, .5, 0, 1
+			self.ids[v].mode = 'fill'
+			self.ids[v].fill_color = .9, .5, 0, .1
+		##
+
+
+	def showStudentInfo(self,faculty,career,enrollment,middle_name,
+		last_name,name,date_birth,email,password,student_status):
+		layout = self.ids.student_button
+		layout.cols = 1
+
+		##
+		var = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career, kardex, save_student'.split(', ')
+		for v in var:
+			self.ids[v].disabled = True
+		##
+
+		self.ids.show_student1 = f"""
+Label:
+	text: '[b]DATOS DEL ESTUDIANTE[/b]'
+	markup: True
+	font_size: 30
+	color: 1, 1, 1, 1"""
+		extra = f"""
+Label:
+	text: ''
+		"""
+		self.ids.show_student2 = f"""
+
+Label:
+	text: '[b]FACULTAD: [/b] {faculty}'
+	markup: True
+	font_size: 14
+	color: 1, 1, 1, 1"""
+		self.ids.show_student3 = f"""
+
+Label:
+	text: '[b]CARRERA: [/b] {career}'
+	markup: True
+	font_size: 14
+	color: 1, 1, 1, 1"""
+		self.ids.show_student4 = f"""
+
+Label:
+	text: '[b]MATRICULA: [/b]{enrollment}'
+	markup: True
+	font_size: 14
+	color: 1, 1, 1, 1"""
+		self.ids.show_student5 = f"""
+
+Label:
+	text: '[b]ESTUDIANTE: [/b] {name} {middle_name} {last_name}'
+	markup: True
+	font_size: 14
+	color: 1, 1, 1, 1"""
+		self.ids.show_student6 = f"""
+
+Label:
+	text: '[b]ESTADO: [/b] {student_status}'
+	markup: True
+	font_size: 14
+	color: 1, 1, 1, 1
+		"""
+
+		self.ids.show_student7 = f"""
+Label:
+	text: '[b]FECHA DE NACIMIENTO: [/b] {date_birth}'
+	markup: True
+	font_size: 14
+	color: 1, 1, 1, 1"""
+
+		self.ids.show_student8 = f"""
+Label:
+	text: '[b]CORREO UNIVERSITARIO: [/b] {email}'
+	markup: True
+	font_size: 14
+	color: 1, 1, 1, 1"""
+
+		self.ids.show_student9 = f"""
+Label:
+	text: '[b]CONTRASEÑA: [/b] {password}'
+	markup: True
+	font_size: 14
+	color: 1, 1, 1, 1"""
+		self.ids.clean_student_info = f"""
+
+MDRectangleFlatButton:
+	id: clean_student_info
+	name: 'clean_student_info'
+	
+	text: 'Limpiar'
+	size_hint_x: 1
+	md_bg_color: 1, 1, 1, 1
+	on_press: 
+		del clean_student_info
+		app.root.get_screen('add').clearShowStudentInfo()
+		"""
+		self.ids.show_student1 = Builder.load_string(self.ids.show_student1)
+		self.ids.extra = Builder.load_string(extra)
+		self.ids.show_student2 = Builder.load_string(self.ids.show_student2)
+		self.ids.show_student3 = Builder.load_string(self.ids.show_student3)
+		self.ids.show_student4 = Builder.load_string(self.ids.show_student4)
+		self.ids.show_student5 = Builder.load_string(self.ids.show_student5)
+		self.ids.show_student6 = Builder.load_string(self.ids.show_student6)
+		self.ids.show_student7 = Builder.load_string(self.ids.show_student7)
+		self.ids.show_student8 = Builder.load_string(self.ids.show_student8)
+		self.ids.show_student9 = Builder.load_string(self.ids.show_student9)
+		self.ids.clean_student_info = Builder.load_string(self.ids.clean_student_info)
+		layout.add_widget(self.ids.show_student1)
+		layout.add_widget(self.ids.extra)
+		layout.add_widget(self.ids.show_student2)
+		layout.add_widget(self.ids.show_student3)
+		layout.add_widget(self.ids.show_student4)
+		layout.add_widget(self.ids.show_student5)
+		layout.add_widget(self.ids.show_student6)
+		layout.add_widget(self.ids.show_student7)
+		layout.add_widget(self.ids.show_student8)
+		layout.add_widget(self.ids.show_student9)
+		self.ids.student_show.add_widget(self.ids.clean_student_info)
+
+
+	def clearAddStudentInfo(self):
+		middle_name = self.ids.middle_name
+		last_name = self.ids.last_name
+		name = self.ids.name
+		email = self.ids.email
+		date_birth = self.ids.date_birth
+		faculty = self.ids.student_faculty
+		career = self.ids.student_career
+		kardex = self.ids.kardex
+		save = self.ids.save_student
+
+		middle_name.text = ''
+		self.middle_name = False
+		last_name.text = ''
+		self.last_name
+		name.text = ''
+		self.name_ = False
+		email.text = ''
+		self.email = False
+		date_birth.text = ''
+		self.date_birth = False
+		faculty.text = 'Seleccionar Facultad'
+		faculty.disabled = True
+		self.student_faculty = False
+		career.text = 'Seleccionar Carrera'
+		career.disabled = True
+		self.student_career = False
+		kardex.disabled = True
+		self.valid_kardex = False
+		save.disabled = True
+		##
+		self.actual_kardex = dict()
+		self.last_kardex_field = ''
+		self.kardex = {}
+		self.id_subject = []
+
+
 	def onPressSaveStudent(self):
-		pass
+		self.onTextEmail()
+		existing_student = f"EXECUTE verifyExistingStudent '{self.ids.middle_name.text}',"
+		existing_student += f"'{self.ids.last_name.text}', '{self.ids.name.text}', '{self.ids.date_birth.text}'"
+		existing_student = sql.execute(existing_student)
+		for n in existing_student:
+			student = n[0]
 
+		if student != '':
+			self.studentExist()
+		else:
+			id_faculty = self.id_faculty
+			id_career = self.id_career
+			id_subject = self.id_subject
+			middle_name = self.ids.middle_name.text
+			last_name = self.ids.last_name.text
+			name = self.ids.name.text
+			date_birth = self.ids.date_birth.text
+			##
+			email = self.ids.email.text
+			num_email = 1
+			while True:
+				got = ''
+				existing_email = sql.execute(f"EXECUTE verifYExistingEmail '{email}'")
+				for e_m in existing_email:
+					got = str(e_m[0])
+					break
+				
+				print(got, email)
+				print(got, email)
+				print(got, email)
+				print(got, email)
+				print(got, email)
+				print(got, email)
+				print(got, email)
+				
+				if got == email:
+					if num_email > 1:
+						email = got.replace(f'{num_email-1}@', f'{num_email}@')
+					else:
+						email = got.replace('@', f'{num_email}@')
+				else:
+					break
+				
+				num_email += 1
+				print(num_email)
+			##
+			password = self.getPassword()
+			student_status = 'ALTA'
+			
+			save_student = f"EXECUTE saveStudent {id_faculty},{id_career},'{middle_name}','{last_name}',"
+			save_student += f"'{name}','{date_birth}','{email}','{password}','{student_status}'"
+			save_student = sql.execute(save_student)
+			sql.commit()
+			
+			get_student = sql.execute(f"EXECUTE getStudent '{middle_name}','{last_name}','{name}'")
+			for get in get_student:
+				enrollment = get[2] # ID_student
+				#password = get[8]
 
+			kard = self.kardex
+			for i in range(len(self.kardex)):
+				op1 = kard[str(i)][0]
+				op2 = kard[str(i)][1]
+				op3 = kard[str(i)][2]
+				op4 = kard[str(i)][3]
+				op5 = kard[str(i)][4]
+				op6 = kard[str(i)][5]
+				
+				save_kardex = f"EXECUTE saveKardex '{id_faculty}', '{id_career}', '{enrollment}', "
+				save_kardex += f"'{id_subject[i]}', '{op1}', '{op2}', '{op3}', '{op4}', '{op5}', '{op6}'"
+				sql.execute(save_kardex)
+				sql.commit()
+
+			self.showStudentInfo(
+				faculty=self.ids.student_faculty.text,
+				career=self.ids.student_career.text,
+				enrollment=enrollment,
+				middle_name=middle_name,
+				last_name=last_name,
+				name=name,
+				date_birth=date_birth,
+				email=email,
+				password=password,
+				student_status=student_status
+				)
+			self.clearAddStudentInfo()
+
+			
 class Mod(Screen):
 	def __init__(self, **kwargs):
 		super(Mod, self).__init__(**kwargs)
@@ -730,7 +1235,7 @@ class main(MDApp):
 		Window.size = 1100, 650
 		Window.left = (1400 - 1100)/2
 		Window.top = ( 750 - 650)/2
-		self.root.current = "siase"
+		self.root.current = "add"
 
 def sqlCONNECTION():
 	try:
