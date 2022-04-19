@@ -67,6 +67,8 @@ WindowManager:
 
 		icon: "calendar-month"
 		pos_hint: {"center_x": .3, "center_y": .55}
+		theme_text_color: 'Custom'
+		text_color: 1, 1, 1, 1
 
 	Label:
 		id: calendar_text
@@ -81,9 +83,9 @@ WindowManager:
 
 		icon: "clock-outline"
 		pos_hint: {"center_x": .5, "center_y": .55}
-		on_press: root.getInfo()
-		on_touch_move: root.getInfo()
-	
+		theme_text_color: 'Custom'
+		text_color: 1, 1, 1, 1
+		
 	Label:
 		id: clock_text
 		name: "clock_text"
@@ -107,6 +109,7 @@ WindowManager:
 		md_bg_color: .95, .95, .95, 1
 		on_press:
 			account.text = "" 
+			password.text = ""
 			account.focus = True
 			root.onPressType_()
 	MDIconButton:
@@ -222,16 +225,60 @@ WindowManager:
 		size_hint: .1, .2
 		pos_hint: {'center_x': .25, 'center_y': .89}
 
-	Image:
-		source: 'images/line.png'
-		pos_hint: {'center_x': .25, 'center_y': .80}
-		color: 0, 0, 0, 1
+	GridLayout:
+		cols: 1
+		spacing: -50
+		pos_hint: {'center_x': .325, 'center_y': .92}
+		size_hint_x: .1
+		size_hint_y: .22
 
-	Image:
-		source: 'images/line.png'
-		pos_hint: {'center_x': .7634, 'center_y': .80}
-		color: 0, 0, 0, 1
+		Label:
+			text: '[b]Matricula:[/b]'
+			markup: True
+			font_size: 11
+			color: 0, 0, 0, 1
+			
+		Label:
+			text: '[b]Nombre:  [/b]'
+			markup: True
+			font_size: 11
+			color: 0, 0, 0, 1
+			
+		Label:
+			text: '[b]Carrera:   [/b]'
+			markup: True
+			font_size: 11
+			color: 0, 0, 0, 1
+	
+	TextInput:
+		id: enrollment
+		name: 'enrollment'
 
+		font_size: 9
+		pos_hint: {'center_x': .42, 'center_y': .967}
+		size_hint_x: .14
+		size_hint_y: .035
+		background_color: 0, 0, 0, 0
+
+	TextInput:
+		id: name
+		name: 'name'
+
+		font_size: 9
+		background_color: 0, 0, 0, 0
+		pos_hint: {'center_x': .42, 'center_y': .911}
+		size_hint_x: .14
+		size_hint_y: .053
+
+	TextInput:
+		id: career
+		name: 'career'
+
+		font_size: 9
+		pos_hint: {'center_x': .42, 'center_y': .865}
+		size_hint_x: .14
+		size_hint_y: .053
+		background_color: 0, 0, 0, 0
 	Image:
 		source: 'images/vertical_line.png'
 		pos_hint: {'center_x': .5, 'center_y': .9}
@@ -245,6 +292,16 @@ WindowManager:
 		font_size: 30
 		color: 0, 0, 0, 1
 		pos_hint: {'center_x': .78, 'center_y': .9}
+
+	Image:
+		source: 'images/line.png'
+		pos_hint: {'center_x': .25, 'center_y': .80}
+		color: 0, 0, 0, 1
+
+	Image:
+		source: 'images/line.png'
+		pos_hint: {'center_x': .7634, 'center_y': .80}
+		color: 0, 0, 0, 1
 
 	BoxLayout:
 		orientation: 'horizontal'
@@ -311,6 +368,12 @@ WindowManager:
 			size_hint_x: .4
 			font_size: 11
 			background_color: 0, 0, 0, 0
+			on_press:
+				app.root.current = 'login'
+				login = app.root.get_screen('login')
+				login.ids.account.text = ''
+				login.ids.password.text = ''
+				root.resizeWindow()
 
 		Label:
 			text: ''
@@ -358,33 +421,7 @@ WindowManager:
 		pos_hint: {'center_x': .94, 'center_y': .796}
 		theme_text_color: 'Custom'
 		text_color: .1, .29, .54, 1
-
-	GridLayout:
-		cols: 1
-		spacing: -50
-		pos_hint: {'center_x': .325, 'center_y': .92}
-		size_hint_x: .1
-		size_hint_y: .2
-
-		Label:
-			text: '[b]Matricula:[/b]'
-			markup: True
-			font_size: 11
-			color: 0, 0, 0, 1
-			
-		Label:
-			text: '[b]Nombre:  [/b]'
-			markup: True
-			font_size: 11
-			color: 0, 0, 0, 1
-			
-		Label:
-			text: '[b]Carrera:   [/b]'
-			markup: True
-			font_size: 11
-			color: 0, 0, 0, 1
-	#GridLayout:
-	#
+	
 	BoxLayout:
 		orientation: 'vertical'
 		size_hint_x: .2
@@ -633,6 +670,8 @@ WindowManager:
 			icon: 'school'
 			text: 'Estudiante'
 
+			on_tab_press: root.resizeWindowStudent()
+
 			Image:
 				source: 'images/wallpaper3.png'
 
@@ -817,10 +856,117 @@ WindowManager:
 
 			icon: 'teach'
 			text: 'Profesor'
+			on_tab_press: root.resizeWindowTeacher()
+				
+			BoxLayout:
+				padding: 6
+				spacing: 3
+				orientation: 'vertical'
+				cols: 1
+				rows: 2
 
-			Image:
-				source: 'images/wallpaper3.png'
+				canvas.before:
+					Color:
+						rgb: 15/255, 43/255, 111/255, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
+				
+				GridLayout:
+					id: teachear_content
+					name: 'teachear_content'
 
+					padding: 2
+					spacing: 3
+					cols: 1
+
+					MDTextField:
+						id: teacher_middle_name
+						name: 'teacher_middle_name'
+
+						hint_text: 'Apellido Paterno'
+						multiline: False
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+
+					MDTextField:
+						id: teacher_last_name
+						name: 'teacher_last_name'
+
+						hint_text: 'Apellido Materno'
+						multiline: False
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+
+					MDTextField:
+						id: teacher_name
+						name: 'teacher_name'
+
+						hint_text: 'Nombre del Profesor'
+						multiline: False
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+					
+					MDTextField:
+						id: teacher_email
+						name: 'teacher_email'
+
+						hint_text: 'Correo Universitario'
+						multiline: False
+						color_mode: 'custom'
+						line_color_focus: .9, .5, 0, 1
+						mode: 'fill'
+						fill_color: .9, .5, 0, .1
+						
+					MDRaisedButton:
+						id: teacher_faculty
+						name: 'teacher_faculty'
+
+						text: 'Seleccionar Facultad'
+						#theme_text_color: 'Custom'
+						#text_color: 1, 1, 1, 1
+						size_hint_x: 1
+						disabled: True
+						md_bg_color: .9, .5, 0, 1
+						line_color: 1, 1, 1, 1
+						on_press:
+					
+					MDRaisedButton:
+						id: save_teacher
+						name: 'save_teacher'
+
+						text: 'Guardar'
+						#theme_text_color: 'Custom'
+						#text_color: 1, 1, 1, 1
+						size_hint_x: 1
+						disabled: True
+						md_bg_color: .24, .74, .53, 1
+						line_color: 1, 1, 1, 1
+						on_press:
+
+				GridLayout:
+					#padding: 4
+					size_hint_y: .76
+					
+					canvas.before:
+						Color:
+							rgb: .8, .8, .8, .5#.14, .64, .43, 1
+						Rectangle:
+							size: self.size
+							pos: self.pos
+					
+					ScrollView:
+						do_scroll_y: True
+
+						GridLayout:
+							size_hint_y: None
+							cols: 1
 
 		MDBottomNavigationItem:
 			id: schedule
@@ -829,8 +975,71 @@ WindowManager:
 			icon: 'timetable'
 			text: 'Horario'
 
+
+		MDBottomNavigationItem:
+			id: logout
+			name: 'logout'
+
+			icon: 'logout-variant'
+			text: 'Salir'
+
 			Image:
 				source: 'images/wallpaper3.png'
+
+			GridLayout:
+				cols: 1
+				padding: 50
+				spacing: 5
+	
+				MDRaisedButton:
+					id: previous_page
+					name: 'previous_page'
+
+					text: 'Volver a la Página Anterior'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					md_bg_color: 0, .2, .9, 1
+					text_color: 1, 1, 1, 1
+					on_release: app.root.current = 'rectoria'
+
+				MDRaisedButton:
+					id: mod
+					name: 'mod'
+
+					text: 'Modificar Usuario'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: .35, .55, .1, 1
+					on_release: app.root.current = 'mod'
+
+				MDRaisedButton:
+					id: del
+					name: 'del'
+					
+					text: 'Eliminar Usuario'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: .9, .5, 0, 1
+					on_release: app.root.current = 'del'
+
+				MDRaisedButton:
+					id: sign_off
+					name: 'sign_off'
+
+					text: 'Cerrar Sesión'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: 1, .2, 0, 1
+					on_press: 
+						app.root.current = 'login'
+						root.resizeWindowLogin()
 
 
 <Mod>:
