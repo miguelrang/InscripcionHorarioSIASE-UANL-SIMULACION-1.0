@@ -22,6 +22,7 @@ class Add(Screen):
 		super(Add, self).__init__(**kwargs)
 		self.sql = self.sqlCONNECTION()
 
+		####### S T U D E N T ########
 		self.middle_name = False
 		self.last_name = False
 		self.name_ = False
@@ -36,9 +37,16 @@ class Add(Screen):
 		self.kardex = {}
 
 		self.id_subject = []
-		##
 
 		Clock.schedule_interval(self.interval, 1)
+		####### T E A C H E R ########
+		###### S C H E D U L E #######
+		self.teacher_middle_name = False
+		self.teacher_last_name = False
+		self.teacher_name_ = False
+		self.teacher_email = False
+		self.teacher_faculty = False
+		self.teacher_career = False
 
 
 	def sqlCONNECTION(self):
@@ -52,8 +60,10 @@ class Add(Screen):
 		except:
 			print("Error connection")
 
+	######################################### S T U D E N T ########################################
 
 	def interval(self, dt):
+		########################### S T U D E N T #########################
 		verifier:bool = False
 		verifier2:bool = False
 		if self.middle_name == True:
@@ -100,6 +110,23 @@ class Add(Screen):
 			self.ids['logout'].disabled = False
 			self.ids['teacher'].disabled = False
 			self.ids['schedule'].disabled = False
+
+		########################### T E A C H E R #########################
+		########################## S C H E D U L E ########################
+		verifier:bool = False
+		verifier2:bool = False
+		if self.teacher_middle_name == True:
+			if self.teacher_last_name == True:
+				if self.teacher_name_ == True:
+					if self.teacher_email == True:
+						verifier2 = not self.ids.teacher_middle_name.disabled
+						if self.teacher_faculty == True:
+							if self.teacher_career == True:
+								verifier = True
+						
+							
+		self.ids.save_teacher.disabled = not verifier
+		self.ids.teacher_faculty.disabled = not verifier2
 
 
 	def delNumber(self, var):
@@ -623,19 +650,6 @@ MDRaisedButton:
 							if self.ids[f'textfield{i}{5}'].text == 'NP' or self.ids[f'textfield{i}{5}'].text == 'NA':
 								accepter = True
 								break
-		print(accepter)# 1
-		print(accepter)# 2
-		print(accepter)# 3
-		print(accepter)# 4
-		print(accepter)# 5
-		print(accepter)# 6
-		print(accepter)# 7
-		print(accepter)# 8
-		print(accepter)# 9
-		print(accepter)# 10
-		print(accepter)# 11
-		print(accepter)# 12
-		print(accepter)# 13
 		
 		self.ids.save_kardex.disabled = accepter
 		if accepter == False:
@@ -997,14 +1011,6 @@ MDRaisedButton:
 					got = str(e_m[0])
 					break
 				
-				print(got, email)
-				print(got, email)
-				print(got, email)
-				print(got, email)
-				print(got, email)
-				print(got, email)
-				print(got, email)
-				
 				if got == email:
 					if num_email > 1:
 						email = got.replace(f'{num_email-1}@', f'{num_email}@')
@@ -1014,7 +1020,6 @@ MDRaisedButton:
 					break
 				
 				num_email += 1
-				print(num_email)
 			##
 			password = self.getPassword()
 			student_status = 'ALTA'
@@ -1057,7 +1062,6 @@ MDRaisedButton:
 				)
 			self.clearAddStudentInfo()
 
-
 	def resizeWindowLogin(self):
 		Window.size = 700, 450
 		Window.left = 300
@@ -1074,3 +1078,69 @@ MDRaisedButton:
 		Window.size = 500, 650
 		Window.left = 400
 		Window.top = (750 - 650)/2
+
+
+	def resizeWindowSchedule(self):
+		Window.size = 500, 690
+		Window.left = 400
+		Window.top = 35
+
+
+	def resizeWindowLogout(self):
+		self.resizeWindowTeacher()
+
+	###################################### T E A C H E R ############################################
+	##################################### S C H E D U L E ###########################################
+	def onTextTeacherMiddleName(self):
+		middle_name = self.ids.teacher_middle_name
+		
+		middle_name.text = middle_name.text.replace(' ', '')
+		middle_name.text = middle_name.text.upper()
+		self.delNumber(middle_name)
+		if len(middle_name.text) > 2:
+			self.teacher_middle_name = True
+		else:
+			self.teacher_middle_name = False
+
+
+	def onTextTeacherLastName(self):
+		last_name = self.ids.teacher_last_name
+		last_name.text = last_name.text.replace(' ', '')
+		last_name.text = last_name.text.upper()
+		self.delNumber(last_name)
+		if len(last_name.text) > 2:
+			self.teacher_last_name = True
+		else:
+			self.teacher_last_name = False
+
+
+	def onTextTeacherName(self):
+		name:str = self.ids.teacher_name
+		name.text = name.text.upper()
+		names:list = word_tokenize(name.text)
+		self.delNumber(name)
+		for x in names:
+			if len(x) <= 2:
+				self.teacher_name_ = False
+
+		self.teacher_name_ = True
+
+	def onTextEmail(self):
+		email = self.ids.teacher_email
+	
+		name = self.ids.teacher_name.text
+		middle_name = self.ids.teacher_middle_name.text
+		last_name = self.ids.teacher_last_name.text
+		if len(name) > 2 and len(middle_name) > 2 and len(last_name) > 2:
+			name:str = word_tokenize(name)[0]
+			middle_name:str = middle_name
+			last_name:str = last_name[0] + last_name[len(last_name)-1]
+
+			email.text = f'{name}.{middle_name + last_name}@uanl.edu.mx'.lower()
+			email.hint_text = ''
+			self.teacher_email = True
+
+		else:
+			email.focus = False
+			email.hint_text = 'Correo Universitario'
+			self.teacher_email = False

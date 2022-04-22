@@ -66,5 +66,4 @@ def sqlCONNECTION():
 
 if __name__ == "__main__":
 	sql = sqlCONNECTION()
-	
 	main().run()

@@ -936,6 +936,19 @@ WindowManager:
 						md_bg_color: .9, .5, 0, 1
 						line_color: 1, 1, 1, 1
 						on_press:
+
+					MDRaisedButton:
+						id: teacher_career
+						name: 'teacher_career'
+
+						text: 'Seleccionar Carrera'
+						#theme_text_color: 'Custom'
+						#text_color: 1, 1, 1, 1
+						size_hint_x: 1
+						disabled: True
+						md_bg_color: .9, .5, 0, 1
+						line_color: 1, 1, 1, 1
+						on_press:
 					
 					MDRaisedButton:
 						id: save_teacher
@@ -952,11 +965,11 @@ WindowManager:
 
 				GridLayout:
 					#padding: 4
-					size_hint_y: .76
+					size_hint_y: .57
 					
 					canvas.before:
 						Color:
-							rgb: .8, .8, .8, .5#.14, .64, .43, 1
+							rgb: .3, .3, .3, .3#.14, .64, .43, 1
 						Rectangle:
 							size: self.size
 							pos: self.pos
@@ -965,6 +978,9 @@ WindowManager:
 						do_scroll_y: True
 
 						GridLayout:
+							id: teacher_info
+							name: 'teacher_info'
+
 							size_hint_y: None
 							cols: 1
 
@@ -974,6 +990,211 @@ WindowManager:
 
 			icon: 'timetable'
 			text: 'Horario'
+			on_tab_press: root.resizeWindowSchedule()
+
+			GridLayout:
+				cols: 1
+				padding: 4
+				
+				canvas.before:
+					Color:
+						rgb: 100/255, 63/255, 65/255, 1
+
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+				ScrollView:
+					do_scroll_y: True
+
+					GridLayout:
+						#size_hint_x: 1
+						#size_hint_y: 1
+						spacing: 12
+						cols: 1
+						size_hint_y: None
+						#row_default_height: 50
+						height: self.minimum_height
+						
+						MDRaisedButton:
+							id: schedule_faculty
+							name: 'schedule_faculty'
+
+							text: 'Seleccionar Facultad'
+							theme_text_color: 'Custom'
+							text_color: .1, .1, .1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press:
+
+
+						MDTextField:
+							id: classroom
+							name: 'classroom'
+
+							hint_text: 'Nombre del Aula'
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: 1, 1, 1, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: banches
+							name: 'banches'
+
+							hint_text: 'Capacidad de Alumnos'
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: save_classroom
+							name: 'save_classroom'
+
+							text: 'Guardar Aula'
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.saveClassroom()
+
+						MDTextField:
+							id: enabled_schedule
+							name: 'enabled_schedule'
+
+							hint_text: 'Horarios Disponibles'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: disabled_schedule
+							name: 'disabled_schedule'
+
+							hint_text: 'Horarios Ocupados'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: specific_career
+							name: 'specific_career'
+
+							text: 'Seleccionar Carrera'
+							disbled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.saveClassroom()
+
+						MDTextField:
+							id: fullname_teacher
+							name: 'fullname_teacher'
+
+							hint_text: 'Nombre Completo del Profesor'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: name_subject
+							name: 'name_subject'
+
+							hint_text: 'Capacidad de Alumnos'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: schedules
+							name: 'schedules'
+
+							hint_text: 'Horarios en que se llevara a cabo la materia'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: save_schedule
+							name: 'save_schedule'
+
+							text: 'Guardar Horario'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.saveClassroom()
+
+						MDRaisedButton:
+							id: finalize
+							name: 'finalize'
+
+							text: 'Finalizar'
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.saveClassroom()
 
 
 		MDBottomNavigationItem:
@@ -982,14 +1203,19 @@ WindowManager:
 
 			icon: 'logout-variant'
 			text: 'Salir'
-
-			Image:
-				source: 'images/wallpaper3.png'
+			on_tab_press: root.resizeWindowLogout()
 
 			GridLayout:
 				cols: 1
 				padding: 50
 				spacing: 5
+
+				canvas.before:
+					Color:
+						rgb: .3, .3, .3, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
 	
 				MDRaisedButton:
 					id: previous_page

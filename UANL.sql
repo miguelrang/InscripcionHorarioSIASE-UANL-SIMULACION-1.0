@@ -1,14 +1,15 @@
 ﻿USE [UANL]
 
-/*
+
 DROP TABLE Kardex
+DROP TABLE Schedule
 DROP TABLE SemesterSubject
 DROP TABLE Student
 DROP TABLE Teacher
 DROP TABLE Career
 DROP TABLE Classroom
 DROP TABLE Faculty
-DROP TABLE Rector*/
+DROP TABLE Rector
 DROP PROCEDURE getInfo
 DROP PROCEDURE verifyLoginStudent
 DROP PROCEDURE verifyLoginRector
@@ -23,7 +24,7 @@ DROP PROCEDURE getCareers
 DROP PROCEDURE getSubjects
 GO
 
-/*
+
 CREATE TABLE Rector(
 	ID_rector INT NOT NULL PRIMARY KEY IDENTITY(1000,1),
 	password_ varchar(16)
@@ -42,9 +43,9 @@ GO
 CREATE TABLE Classroom(
 	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
 
-	ID_classroom INT NOT NULL PRIMARY KEY,
-	classroom INT NOT NULL,
-	benches INT NOT NULL
+	ID_classroom INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+	classroom VARCHAR(3) NOT NULL,
+	banches INT NOT NULL
 )
 GO
 
@@ -5262,6 +5263,20 @@ INSERT INTO SemesterSubject(ID_faculty,ID_career,ID_semester,name_subject) VALUE
 INSERT INTO SemesterSubject(ID_faculty,ID_career,ID_semester,name_subject) VALUES(26,87,8,'EMPRESAS SOCIALES DE ALTO IMPACTO');
 INSERT INTO SemesterSubject(ID_faculty,ID_career,ID_semester,name_subject) VALUES(26,87,8,'FINANCIAMIENTO INTERNACIONAL');
 GO
+--
+--
+
+CREATE TABLE Schedule(
+	ID_faculty INT REFERENCES Faculty(ID_faculty),
+	ID_classroom INT REFERENCES Classroom(ID_classroom),
+	ID_career INT REFERENCES Career(ID_career),
+	ID_teacher INT REFERENCES Teacher(ID_teacher),
+	ID_subject INT REFERENCES SemesterSubject(ID_subject),
+	ID_schedule INT PRIMARY KEY IDENTITY(1,1),
+	enabled_schedule VARCHAR(MAX),
+	schedule VARCHAR(MAX)
+)
+GO
 
 CREATE TABLE Kardex(
 	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
@@ -5279,8 +5294,8 @@ CREATE TABLE Kardex(
 	op6 VARCHAR(3)
 )
 GO
-*/
 
+-------------------------------------- L O G I N ---------------------------------------------
 CREATE PROCEDURE verifyLoginStudent(@enrollment INT, @password VARCHAR(16)) AS
 	SELECT ISNULL(MAX(ID_student), '') FROM Student
 	WHERE ID_student = @enrollment and password_ = @password
@@ -5291,6 +5306,7 @@ CREATE PROCEDURE verifyLoginRector(@enrollment INT, @password VARCHAR(16)) AS
 	WHERE ID_rector = @enrollment and password_ = @password
 GO
 
+-------------------------------------- S I A S E ---------------------------------------------
 CREATE PROCEDURE getInfo(@enrollment INT) AS
 	SELECT s.ID_student, s.name_, s.middle_name, s.last_name, c.name_career FROM Student s
 		INNER JOIN(
@@ -5298,6 +5314,10 @@ CREATE PROCEDURE getInfo(@enrollment INT) AS
 		)c
 		ON s.ID_student = @enrollment and c.ID_career = s.ID_career
 GO
+
+------------------------------------- R E C T O R --------------------------------------------
+--------------------------------------    ADD    ---------------------------------------------
+------------------------------------ S t u d e n t -------------------------------------------
 
 CREATE PROCEDURE getFaculties AS
 	SELECT name_faculty FROM Faculty
@@ -5379,16 +5399,55 @@ CREATE PROCEDURE verifyExistingEmail(@email VARCHAR(40)) AS
 	SELECT ISNULL(MAX(email), '') FROM Student
 	WHERE email = @email
 GO
+------------------------------------ T e a c h e r -------------------------------------------
+CREATE TRIGGER TEnabledSchedules
+	ON Classroom FOR INSERT AS
+		INSERT INTO Schedule(enabled_schedule) 
+			VALUES('7:00-7:30;7:30-8:00;
+					8:00-8:30;8:30-9:00;
+					9:00-9:30;9:30-10:00;
+					10:00-10:30;10:30-11:00;
+					11:00-11:30;11:30-12:00;
+					12:00-12:30;12:30-13:00;
+					13:00-13:30;13:30-14:00;
+					14:00-14:30;14:30-15:00;
+					15:00-15:30;15:30-16:00;
+					16:00-16:30;16:30-17:00;
+					17:00-17:30;17:30-18:00;
+					18:00-18:30;18:30-19:00;
+					19:00-19:30;19:30-20:00;
+					20:00-20:30;20:30-21:00;
+					21:00-21:30;21:30-22:00;')
+GO
+
+CREATE PROCEDURE 
+
+CREATE PROCEDURE saveSchedule(@ID_faculty INT,@ID_classroom INT,@ID_career INT,@ID_teacher INT,@ID_subject INT,@schedule VARCHAR(MAX)) AS
+	UPDATE Schedule
+		SET ID_faculty = @ID_faculty,
+			ID_classroom = @ID_classroom,
+			ID_career = @ID_faculty,
+			ID_teacher = @ID_teacher,
+			ID_subject = @ID_subject,
+			schedule = @schedule
+			WHERE ID_schedule = len(Schedule.ID_schedule)
+GO
+---------------------------------- C l a s s r o o m -----------------------------------------
+--
+--
+--
+----------------------------------------- M O D ----------------------------------------------
+-------------------------------------- D E L E T E -------------------------------------------
+
 --EXECUTE saveStudent '8','29','GUERRA','RANGEL','MIGUEL ANGEL','2001/01/26','miguel.guerrarl@uanl.edu.mx','5FxT2Wzk','ALTA'
 --EXECUTE saveKardex 8, 29, 1000, 1546, '', '', '', '', '', ''
 --EXECUTE saveKardex 8, 29, 1000, 1547, '', '', '', '', '', ''
 --EXECUTE verifyExistingStudent 'GUERRA', 'RANGEL', 'MIGUEL ANGEL', '2001/01/26'
 --EXECUTE verifyExistingEmail 'miguel.guerrarl1@uanl.edu.mx'
 
-SELECT * FROM Rector
-SELECT * FROM Student
-SELECT * FROM Kardex
-GO
+
+
+
 
 
 
