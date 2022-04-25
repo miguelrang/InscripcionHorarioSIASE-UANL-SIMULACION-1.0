@@ -885,6 +885,8 @@ WindowManager:
 						name: 'teacher_middle_name'
 
 						hint_text: 'Apellido Paterno'
+						on_text: root.onTextTeacherMiddleName()
+						on_focus: root.onTextTeacherMiddleName()
 						multiline: False
 						color_mode: 'custom'
 						line_color_focus: .9, .5, 0, 1
@@ -896,6 +898,8 @@ WindowManager:
 						name: 'teacher_last_name'
 
 						hint_text: 'Apellido Materno'
+						on_text: root.onTextTeacherLastName()
+						on_focus: root.onTextTeacherLastName()
 						multiline: False
 						color_mode: 'custom'
 						line_color_focus: .9, .5, 0, 1
@@ -907,6 +911,8 @@ WindowManager:
 						name: 'teacher_name'
 
 						hint_text: 'Nombre del Profesor'
+						on_text: root.onTextTeacherName()
+						on_focus: root.onTextTeacherName()
 						multiline: False
 						color_mode: 'custom'
 						line_color_focus: .9, .5, 0, 1
@@ -918,6 +924,8 @@ WindowManager:
 						name: 'teacher_email'
 
 						hint_text: 'Correo Universitario'
+						on_text: root.onTextTeacherEmail()
+						on_focus: root.onTextTeacherEmail()
 						multiline: False
 						color_mode: 'custom'
 						line_color_focus: .9, .5, 0, 1
@@ -935,7 +943,7 @@ WindowManager:
 						disabled: True
 						md_bg_color: .9, .5, 0, 1
 						line_color: 1, 1, 1, 1
-						on_press:
+						on_press: root.onPressTeacherFaculty()
 
 					MDRaisedButton:
 						id: teacher_career
@@ -948,7 +956,7 @@ WindowManager:
 						disabled: True
 						md_bg_color: .9, .5, 0, 1
 						line_color: 1, 1, 1, 1
-						on_press:
+						on_press: root.onPressTeacherCareer()
 					
 					MDRaisedButton:
 						id: save_teacher
@@ -961,10 +969,14 @@ WindowManager:
 						disabled: True
 						md_bg_color: .24, .74, .53, 1
 						line_color: 1, 1, 1, 1
-						on_press:
+						on_press:root.onPressSaveTeacher()
 
 				GridLayout:
-					#padding: 4
+					id: show_teacher
+					name: 'show_teacher'
+
+					cols: 1
+					padding: 5
 					size_hint_y: .57
 					
 					canvas.before:
@@ -981,8 +993,11 @@ WindowManager:
 							id: teacher_info
 							name: 'teacher_info'
 
-							size_hint_y: None
 							cols: 1
+							size_hint_y: None
+							row_default_height: 50
+							height: self.minimum_height
+							
 
 		MDBottomNavigationItem:
 			id: schedule
@@ -1272,14 +1287,189 @@ WindowManager:
 	id: mod
 	name: 'mod'
 
-	Image:
-		source: 'images/wallpaper2.png'
+	MDBottomNavigation:
+		MDBottomNavigationItem:
+			id: student
+			name: 'student'
 
+			text: 'Estudiante'
+			icon: 'school'
 
+		MDBottomNavigationItem:
+			id: teacher
+			name: 'teacher'
+
+			text: 'Profesor'
+			icon: 'teach'
+
+		MDBottomNavigationItem:
+			id: schedule
+			name: 'schedule'
+
+			icon: 'timetable'
+			text: 'Horario'
+
+		MDBottomNavigationItem:
+			id: logout
+			name: 'logout'
+
+			icon: 'logout-variant'
+			text: 'Salir'
+			#on_tab_press: root.resizeWindowLogout()
+
+			GridLayout:
+				cols: 1
+				padding: 50
+				spacing: 5
+
+				canvas.before:
+					Color:
+						rgb: .3, .3, .3, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
+	
+				MDRaisedButton:
+					id: previous_page
+					name: 'previous_page'
+
+					text: 'Volver a la Página Anterior'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					md_bg_color: 0, .2, .9, 1
+					text_color: 1, 1, 1, 1
+					on_release: app.root.current = 'rectoria'
+
+				MDRaisedButton:
+					id: add
+					name: 'add'
+
+					text: 'Agregar Usuario'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: .35, .55, .1, 1
+					on_release: app.root.current = 'add'
+
+				MDRaisedButton:
+					id: del
+					name: 'del'
+					
+					text: 'Eliminar Usuario'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: .9, .5, 0, 1
+					on_release: app.root.current = 'del'
+
+				MDRaisedButton:
+					id: sign_off
+					name: 'sign_off'
+
+					text: 'Cerrar Sesión'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: 1, .2, 0, 1
+					on_press: 
+						app.root.current = 'login'
+						root.resizeWindowLogin()
 <Delete>:
 	id: del
 	name: 'del'
 
-	Image:
-		source: 'images/wallpaper2.png'
+	MDBottomNavigation:
+		MDBottomNavigationItem:
+			id: student
+			name: 'student'
 
+			text: 'Estudiante'
+			icon: 'school'
+
+		MDBottomNavigationItem:
+			id: teacher
+			name: 'teacher'
+
+			text: 'Profesor'
+			icon: 'teach'
+
+		MDBottomNavigationItem:
+			id: schedule
+			name: 'schedule'
+
+			icon: 'timetable'
+			text: 'Horario'
+
+		MDBottomNavigationItem:
+			id: logout
+			name: 'logout'
+
+			icon: 'logout-variant'
+			text: 'Salir'
+			#on_tab_press: root.resizeWindowLogout()
+
+			GridLayout:
+				cols: 1
+				padding: 50
+				spacing: 5
+
+				canvas.before:
+					Color:
+						rgb: .3, .3, .3, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
+	
+				MDRaisedButton:
+					id: previous_page
+					name: 'previous_page'
+
+					text: 'Volver a la Página Anterior'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					md_bg_color: 0, .2, .9, 1
+					text_color: 1, 1, 1, 1
+					on_release: app.root.current = 'rectoria'
+
+				MDRaisedButton:
+					id: add
+					name: 'add'
+
+					text: 'Agregar Usuario'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: .35, .55, .1, 1
+					on_release: app.root.current = 'add'
+
+				MDRaisedButton:
+					id: mod
+					name: 'mod'
+					
+					text: 'Modificar Usuario'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: .9, .5, 0, 1
+					on_release: app.root.current = 'mod'
+
+				MDRaisedButton:
+					id: sign_off
+					name: 'sign_off'
+
+					text: 'Cerrar Sesión'
+					size_hint_x: 1
+					size_hint_y: 1
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					md_bg_color: 1, .2, 0, 1
+					on_press: 
+						app.root.current = 'login'
+						root.resizeWindowLogin()

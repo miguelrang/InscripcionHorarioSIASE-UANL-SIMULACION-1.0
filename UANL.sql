@@ -10,6 +10,12 @@ DROP TABLE Career
 DROP TABLE Classroom
 DROP TABLE Faculty
 DROP TABLE Rector
+--
+DROP PROCEDURE getTeacher
+DROP PROCEDURE verifyExistingTeacherEmail
+DROP PROCEDURE getTeacherIds
+DROP PROCEDURE verifyExistingTeacher
+--
 DROP PROCEDURE getInfo
 DROP PROCEDURE verifyLoginStudent
 DROP PROCEDURE verifyLoginRector
@@ -179,11 +185,14 @@ CREATE TABLE Teacher(
 	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
 	ID_career INT NOT NULL REFERENCES Career(ID_career),
 	
-	ID_teacher INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+	ID_teacher INT NOT NULL PRIMARY KEY IDENTITY(1000,1),
 
 	middle_name VARCHAR(20),
 	last_name VARCHAR(20),
-	name_ VARCHAR(50)
+	name_ VARCHAR(50),
+	email VARCHAR(40),
+	password_ VARCHAR(16),
+	teacher_status VARCHAR(4)
 )
 GO
 
@@ -5265,7 +5274,6 @@ INSERT INTO SemesterSubject(ID_faculty,ID_career,ID_semester,name_subject) VALUE
 GO
 --
 --
-
 CREATE TABLE Schedule(
 	ID_faculty INT REFERENCES Faculty(ID_faculty),
 	ID_classroom INT REFERENCES Classroom(ID_classroom),
@@ -5277,6 +5285,8 @@ CREATE TABLE Schedule(
 	schedule VARCHAR(MAX)
 )
 GO
+
+SELECT * FROM Rector
 
 CREATE TABLE Kardex(
 	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
@@ -5316,7 +5326,7 @@ CREATE PROCEDURE getInfo(@enrollment INT) AS
 GO
 
 ------------------------------------- R E C T O R --------------------------------------------
---------------------------------------    ADD    ---------------------------------------------
+--------------------------------------   A D D   ---------------------------------------------
 ------------------------------------ S t u d e n t -------------------------------------------
 
 CREATE PROCEDURE getFaculties AS
@@ -5374,17 +5384,6 @@ CREATE PROCEDURE verifyExistingStudent(@middle_name VARCHAR(20), @last_name VARC
 		WHERE s.middle_name = @middle_name and s.last_name = @last_name and s.name_ = @name and s.date_birth = @date_birth
 GO
 
-
-CREATE PROCEDURE saveStudent @ID_faculty INT, @ID_career INT, @middle_name VARCHAR(20), @last_name VARCHAR(20), @name VARCHAR(40), @date_birth DATE, @email VARCHAR(50), @password VARCHAR(16), @student_status VARCHAR(4) AS
-	INSERT INTO Student(ID_faculty , ID_career, middle_name, last_name, name_, date_birth, email, password_, student_status)
-		VALUES(@ID_faculty , @ID_career, @middle_name, @last_name, @name, @date_birth, @email, @password, @student_status);
-GO
-
-CREATE PROCEDURE saveKardex(@ID_faculty INT, @ID_career INT, @ID_student INT, @ID_subject INT,@op1 VARCHAR(3),@op2 VARCHAR(3),@op3 VARCHAR(3),@op4 VARCHAR(3),@op5 VARCHAR(3),@op6 VARCHAR(3)) AS
-	INSERT INTO Kardex (ID_faculty,ID_career,ID_student,ID_subject,op1,op2,op3,op4,op5,op6) 
-		VALUES(@ID_faculty,@ID_career,@ID_student,@ID_subject,@op1,@op2,@op3,@op4,@op5,@op6);
-GO
-
 CREATE PROCEDURE getStudent(@middle_name VARCHAR(20), @last_name VARCHAR(20), @name VARCHAR(40)) AS
 	SELECT ISNULL(ID_faculty,''),ISNULL(ID_career,''),ISNULL(ID_student,''),ISNULL(middle_name,''),ISNULL(last_name,''),ISNULL(name_,''),ISNULL(date_birth,''),ISNULL(email,''),ISNULL(password_, '')
 		FROM Student s
@@ -5398,6 +5397,16 @@ GO
 CREATE PROCEDURE verifyExistingEmail(@email VARCHAR(40)) AS
 	SELECT ISNULL(MAX(email), '') FROM Student
 	WHERE email = @email
+GO
+
+CREATE PROCEDURE saveStudent @ID_faculty INT, @ID_career INT, @middle_name VARCHAR(20), @last_name VARCHAR(20), @name VARCHAR(40), @date_birth DATE, @email VARCHAR(50), @password VARCHAR(16), @student_status VARCHAR(4) AS
+	INSERT INTO Student(ID_faculty , ID_career, middle_name, last_name, name_, date_birth, email, password_, student_status)
+		VALUES(@ID_faculty , @ID_career, @middle_name, @last_name, @name, @date_birth, @email, @password, @student_status);
+GO
+
+CREATE PROCEDURE saveKardex(@ID_faculty INT, @ID_career INT, @ID_student INT, @ID_subject INT,@op1 VARCHAR(3),@op2 VARCHAR(3),@op3 VARCHAR(3),@op4 VARCHAR(3),@op5 VARCHAR(3),@op6 VARCHAR(3)) AS
+	INSERT INTO Kardex (ID_faculty,ID_career,ID_student,ID_subject,op1,op2,op3,op4,op5,op6) 
+		VALUES(@ID_faculty,@ID_career,@ID_student,@ID_subject,@op1,@op2,@op3,@op4,@op5,@op6);
 GO
 ------------------------------------ T e a c h e r -------------------------------------------
 CREATE TRIGGER TEnabledSchedules
@@ -5420,8 +5429,46 @@ CREATE TRIGGER TEnabledSchedules
 					21:00-21:30;21:30-22:00;')
 GO
 
-CREATE PROCEDURE 
+CREATE PROCEDURE verifyExistingTeacher(@middle_name VARCHAR(20), @last_name VARCHAR(20), @name VARCHAR(40)) AS
+	SELECT ISNULL(MAX(s.name_), '') AS Estudiante FROM Student s
+		WHERE s.middle_name = @middle_name and s.last_name = @last_name and s.name_ = @name
+GO
 
+CREATE PROCEDURE getTeacherIds(@faculty VARCHAR(100), @career VARCHAR(100)) AS
+	SELECT fac.ID_faculty, car.ID_career FROM Career car
+		INNER JOIN(
+			SELECT ID_faculty FROM Faculty fac
+			WHERE fac.name_faculty = @faculty
+		) fac
+		ON fac.ID_faculty = car.ID_faculty
+
+		INNER JOIN(
+			SELECT ID_career FROM Career car
+			WHERE car.name_career = @career
+		) car2
+		ON car2.ID_career = car.ID_career
+GO
+
+CREATE PROCEDURE getTeacher(@middle_name VARCHAR(20), @last_name VARCHAR(20), @name VARCHAR(40)) AS
+	SELECT ISNULL(ID_faculty,''),ISNULL(ID_career,''),ISNULL(ID_teacher,''),ISNULL(middle_name,''),ISNULL(last_name,''),ISNULL(name_,''),ISNULL(email,''),ISNULL(password_, '')
+		FROM Teacher t
+		RIGHT JOIN(
+			SELECT ISNULL(MAX(t.name_), '') AS Profesor FROM Teacher t
+				WHERE t.middle_name = @middle_name and t.last_name = @last_name and t.name_ = @name
+		) t2
+		ON t2.Profesor = '' or t2.Profesor != ''
+GO
+
+CREATE PROCEDURE verifyExistingTeacherEmail(@email VARCHAR(40)) AS
+	SELECT ISNULL(MAX(email), '') FROM Student
+	WHERE email = @email
+GO
+
+CREATE PROCEDURE saveTeacher @ID_faculty INT, @ID_career INT, @middle_name VARCHAR(20), @last_name VARCHAR(20), @name VARCHAR(40), @email VARCHAR(50), @password VARCHAR(16), @teacher_status VARCHAR(4) AS
+	INSERT INTO Teacher(ID_faculty , ID_career, middle_name, last_name, name_, email, password_, teacher_status)
+		VALUES(@ID_faculty , @ID_career, @middle_name, @last_name, @name, @email, @password, @teacher_status);
+GO
+--------------
 CREATE PROCEDURE saveSchedule(@ID_faculty INT,@ID_classroom INT,@ID_career INT,@ID_teacher INT,@ID_subject INT,@schedule VARCHAR(MAX)) AS
 	UPDATE Schedule
 		SET ID_faculty = @ID_faculty,

@@ -40,13 +40,13 @@ class Add(Screen):
 
 		Clock.schedule_interval(self.interval, 1)
 		####### T E A C H E R ########
-		###### S C H E D U L E #######
 		self.teacher_middle_name = False
 		self.teacher_last_name = False
 		self.teacher_name_ = False
 		self.teacher_email = False
 		self.teacher_faculty = False
 		self.teacher_career = False
+		###### S C H E D U L E #######
 
 
 	def sqlCONNECTION(self):
@@ -112,7 +112,6 @@ class Add(Screen):
 			self.ids['schedule'].disabled = False
 
 		########################### T E A C H E R #########################
-		########################## S C H E D U L E ########################
 		verifier:bool = False
 		verifier2:bool = False
 		if self.teacher_middle_name == True:
@@ -127,6 +126,35 @@ class Add(Screen):
 							
 		self.ids.save_teacher.disabled = not verifier
 		self.ids.teacher_faculty.disabled = not verifier2
+
+		widget = [self.teacher_middle_name, self.teacher_last_name, self.teacher_name_, 
+				  self.teacher_email, self.teacher_faculty]
+		verifier = False
+		if widget[0] == True:
+			verifier = True
+		
+		if widget[1] == True:
+			verifier = True
+		
+		if widget[2] == True:
+			verifier = True
+		
+		if widget[3] == True:
+			verifier = True
+		
+		if widget[4] == True:
+			verifier = True
+		
+		##
+		if verifier == True:
+			self.ids['student'].disabled = True
+			self.ids['schedule'].disabled = True
+			self.ids['logout'].disabled = True
+		else:
+			self.ids['logout'].disabled = False
+			self.ids['student'].disabled = False
+			self.ids['schedule'].disabled = False
+		########################## S C H E D U L E ########################
 
 
 	def delNumber(self, var):
@@ -751,22 +779,6 @@ TextInput:
 		
 		student_show_layout = self.ids.student_show
 
-		'''saver_layout = """
-BoxLayout:
-	id: saver_layout
-	name: 'saver_layout'
-	
-	orientation: 'horizontal'
-	padding: 7.5
-	size_hint_y: .1
-	cols: 2
-	rows: 1
-		"""'''
-
-		#self.ids.saver_layout = Builder.load_string(saver_layout)
-		#student_show_layout.add_widget(self.ids.saver_layout)
-		#saver_layout = self.ids.saver_layout
-
 		self.ids.save_kardex = """
 MDRaisedButton:
 	id: save_kardex
@@ -919,7 +931,7 @@ MDRaisedButton:
 	
 	text: 'Limpiar'
 	size_hint_x: 1
-	md_bg_color: 1, 1, 1, 1
+	md_bg_color: .6, .6, .6, 1
 	on_press: 
 		del clean_student_info
 		app.root.get_screen('add').clearShowStudentInfo()
@@ -1089,8 +1101,49 @@ MDRaisedButton:
 	def resizeWindowLogout(self):
 		self.resizeWindowTeacher()
 
+
+	def enableWidgets(self):
+		################### T E A C H E R ##################
+		teacher_middle_name = self.ids.teacher_middle_name
+		teacher_last_name = self.ids.teacher_last_name
+		teacher_name = self.ids.teacher_name
+		teacher_email = self.ids.teacher_email
+
+		teacher_middle_name.disabled = False
+		teacher_middle_name.color_mode = 'custom'
+		teacher_middle_name.line_color_focus = .9, .5, 0, 1
+		teacher_middle_name.mode = 'fill'
+		teacher_middle_name.fill_color = .9, .5, 0, .1
+		teacher_last_name.disabled = False
+		teacher_last_name.color_mode = 'custom'
+		teacher_last_name.line_color_focus = .9, .5, 0, 1
+		teacher_last_name.mode = 'fill'
+		teacher_last_name.fill_color = .9, .5, 0, .1
+		teacher_name.disabled = False
+		teacher_name.color_mode = 'custom'
+		teacher_name.line_color_focus = .9, .5, 0, 1
+		teacher_name.mode = 'fill'
+		teacher_name.fill_color = .9, .5, 0, .1
+		teacher_email.disabled = False
+		teacher_email.color_mode = 'custom'
+		teacher_email.line_color_focus = .9, .5, 0, 1
+		teacher_email.mode = 'fill'
+		teacher_email.fill_color = .9, .5, 0, .1
+		################## S C H E D U L E #################
+		#self.ids.schedule_faculty
+		#self.ids.classroom
+		#self.ids.banches
+		#self.ids.save_classroom
+		#self.ids.enable_schedule
+		#self.ids.disabled_schedule
+		#self.ids.specific_career
+		#self.ids.fullname_teacher
+		#self.ids.name_subject
+		#self.ids.schedules
+		#self.ids.schedule
+
+
 	###################################### T E A C H E R ############################################
-	##################################### S C H E D U L E ###########################################
 	def onTextTeacherMiddleName(self):
 		middle_name = self.ids.teacher_middle_name
 		
@@ -1125,7 +1178,7 @@ MDRaisedButton:
 
 		self.teacher_name_ = True
 
-	def onTextEmail(self):
+	def onTextTeacherEmail(self):
 		email = self.ids.teacher_email
 	
 		name = self.ids.teacher_name.text
@@ -1144,3 +1197,409 @@ MDRaisedButton:
 			email.focus = False
 			email.hint_text = 'Correo Universitario'
 			self.teacher_email = False
+
+	def delFaculties(self, faculty:list):
+		layout = self.ids.student_button
+
+		layout.clear_widgets()
+		
+		n = 0
+		for facu in faculty:
+			n += 1
+			del self.ids[f'A{n}']
+
+		var:str = 'middle_name, last_name, name, email, date_birth, student_faculty, student_career'
+		var:list = var.split(', ')
+		valid = True
+		for n in var:
+			self.ids[n].disabled = False
+			
+			if n == "student_faculty":
+				valid = False
+	
+			if valid:
+				self.ids[n].color_mode = 'custom'
+				self.ids[n].line_color_focus = .9, .5, 0, 1
+				self.ids[n].multiline = False
+				self.ids[n].mode = 'fill'
+				self.ids[n].fill_color = .9, .5, 0, .1
+				self.ids[n].size_hint_x = .9
+		
+		self.ids.student_career.text = 'Seleccionar Carrera'
+
+		self.student_faculty = True
+
+
+	def delTeacherFaculties(self, faculty:list):
+		layout = self.ids.teacher_info
+
+		layout.clear_widgets()
+		
+		n = 0
+		for facu in faculty:
+			n += 1
+			del self.ids[f'A{n}']
+
+		var:str = 'teacher_middle_name, teacher_last_name, teacher_name, email, teacher_faculty, teacher_career'
+		var:list = var.split(', ')
+		valid = True
+		for n in var:
+			self.ids[n].disabled = False
+			
+			if n == "teacher_faculty":
+				valid = False
+	
+			if valid:
+				self.ids[n].color_mode = 'custom'
+				self.ids[n].line_color_focus = .9, .5, 0, 1
+				self.ids[n].multiline = False
+				self.ids[n].mode = 'fill'
+				self.ids[n].fill_color = .9, .5, 0, .1
+				self.ids[n].size_hint_x = .9
+		
+		self.ids.teacher_career.text = 'Seleccionar Carrera'
+
+		self.teacher_faculty = True
+
+
+	def onPressTeacherFaculty(self):
+		##
+		var:str = 'teacher_middle_name, teacher_last_name, teacher_name, teacher_email, teacher_faculty, teacher_career, save_teacher'
+		var:list = var.split(', ')
+		for n in var:
+			self.ids[n].disabled = True
+		self.teacher_career = False
+		##
+		layout = self.ids.teacher_info
+		layout.cols = 1
+		layout.row_default_height = 10
+		
+		faculties = self.sql.execute('EXECUTE dbo.getFaculties')
+		faculty = []
+		for facu in faculties:
+			faculty.append(facu[0])
+
+		n = 0
+		for facu in faculty:
+			n += 1
+			facu = f"""
+MDRaisedButton:
+	id: A{n}
+	name: 'A{n}'
+
+	text: '{facu}'
+	size_hint_x: .9
+	text_color: .9, .5, 0, 1
+	md_bg_color: 1, 1, 1, 1
+	line_color: 0, 0, 1, 1
+	on_press: 
+		screen = app.root.get_screen('add')
+		screen.ids.teacher_faculty.text = A{n}.text
+		screen.delTeacherFaculties({faculty})
+			"""
+			self.ids[f'A{n}'] = Builder.load_string(facu)
+			layout.add_widget(self.ids[f'A{n}'])
+
+
+	def delTeacherCareers(self, career:list):
+		layout = self.ids.teacher_info
+
+		layout.clear_widgets()
+		
+		n = 0
+		for c in career:
+			n += 1
+			del self.ids[f'A{n}']
+
+		var:str = 'teacher_middle_name, teacher_last_name, teacher_name, teacher_email, teacher_faculty, teacher_career'
+		var:list = var.split(', ')
+		valid = True
+		for n in var:
+			self.ids[n].disabled = False
+			
+			if n == "teacher_faculty":
+				valid = False
+	
+			if valid:
+				self.ids[n].color_mode = 'custom'
+				self.ids[n].line_color_focus = .9, .5, 0, 1
+				self.ids[n].multiline = False
+				self.ids[n].mode = 'fill'
+				self.ids[n].fill_color = .9, .5, 0, .1
+				self.ids[n].size_hint_x = .9
+		
+		self.teacher_career = True
+
+
+	def onPressTeacherCareer(self):
+		##
+		var:str = 'teacher_middle_name, teacher_last_name, teacher_name, teacher_email, teacher_faculty, teacher_career, save_teacher'
+		var:list = var.split(', ')
+		for n in var:
+			self.ids[n].disabled = True
+		##
+		layout = self.ids.teacher_info
+		layout.cols = 1
+		layout.row_default_height = 10
+		
+		careers = self.sql.execute(f'EXECUTE dbo.getCareers \'{self.ids.teacher_faculty.text}\'')
+		career = []
+		for c in careers:
+			career.append(c[0])
+
+		n = 0
+		for c in career:
+			n += 1
+			c = f"""
+MDRaisedButton:
+	id: A{n}
+	name: 'A{n}'
+
+	text: '{c}'
+	size_hint_x: .9
+	text_color: .9, .5, 0, 1
+	md_bg_color: 1, 1, 1, 1
+	line_color: 0, 0, 1, 1
+	on_press: 
+		screen = app.root.get_screen('add')
+		screen.ids.teacher_career.text = A{n}.text
+		screen.delTeacherCareers({career})
+			"""
+			self.ids[f'A{n}'] = Builder.load_string(c)
+			layout.add_widget(self.ids[f'A{n}'])
+
+
+	def closeTeacherExist(self, *args):
+		self.teacher_exist.dismiss()
+
+
+	def teacherExist(self):
+		self.teacher_exist = MDDialog(
+				title = 'A ocurrido un error.',
+				text = 'Este profesor ya existe.',
+				buttons = [
+					MDRectangleFlatButton(
+							text = 'Aceptar',
+							on_press = self.closeTeacherExist
+						)
+				]
+			)
+		self.teacher_exist.open()
+
+
+	def clearShowTeacherInfo(self):
+		#self.ids.teacher_show.remove_widget(self.ids.clean_student_info)
+
+		self.ids.show_teacher.clear_widgets()
+		self.ids.student.disabled = False
+		self.ids.schedule.disabled = False
+		self.ids.logout.disabled = False
+		##
+		var = 'teacher_middle_name, teacher_last_name, teacher_name, teacher_email'.split(', ')
+		for v in var:
+			self.ids[v].disabled = False
+		#for v in var:
+			self.ids[v].line_color_focus = .9, .5, 0, 1
+			self.ids[v].mode = 'fill'
+			self.ids[v].fill_color = .9, .5, 0, .1
+		##
+
+
+	def showTeacherInfo(self,faculty,career,enrollment,middle_name,
+		last_name,name,email,password,teacher_status):
+		layout = self.ids.show_teacher
+		layout.cols = 1
+
+		##
+		var = 'teacher_middle_name, teacher_last_name, teacher_name, teacher_email, teacher_faculty, teacher_career, save_teacher'.split(', ')
+		for v in var:
+			self.ids[v].disabled = True
+		##
+
+		########################################################################################
+		self.ids.show_teacher1 = f"""
+Label:
+	text: '[b]DATOS DEL PROFESOR[/b]'
+	markup: True
+	font_size: 24
+	color: 1, 1, 1, 1"""
+		self.ids.show_teacher2 = f"""
+
+Label:
+	text: '[b]FACULTAD: [/b] {faculty}'
+	markup: True
+	font_size: 9
+	color: 1, 1, 1, 1"""
+		self.ids.show_teacher3 = f"""
+
+Label:
+	text: '[b]CARRERA: [/b] {career}'
+	markup: True
+	font_size: 9
+	color: 1, 1, 1, 1"""
+		self.ids.show_teacher4 = f"""
+
+Label:
+	text: '[b]MATRICULA: [/b]{enrollment}'
+	markup: True
+	font_size: 9
+	color: 1, 1, 1, 1"""
+		self.ids.show_teacher5 = f"""
+
+Label:
+	text: '[b]PROFESOR: [/b] {name} {middle_name} {last_name}'
+	markup: True
+	font_size: 9
+	color: 1, 1, 1, 1"""
+		self.ids.show_teacher6 = f"""
+
+Label:
+	text: '[b]ESTADO: [/b] {teacher_status}'
+	markup: True
+	font_size: 9
+	color: 1, 1, 1, 1
+		"""
+
+		self.ids.show_teacher7 = f"""
+Label:
+	text: '[b]CORREO UNIVERSITARIO: [/b] {email}'
+	markup: True
+	font_size: 9
+	color: 1, 1, 1, 1"""
+
+		self.ids.show_teacher8 = f"""
+Label:
+	text: '[b]CONTRASEÑA: [/b] {password}'
+	markup: True
+	font_size: 9
+	color: 1, 1, 1, 1"""
+		self.ids.clean_teacher_info = f"""
+
+MDRaisedButton:
+	id: clean_teacher_info
+	name: 'clean_teacher_info'
+	
+	text: 'Limpiar'
+	size_hint_x: 1
+	md_bg_color: 0, 0, 0, 1#.24, .74, .53, 1
+	on_press: 
+		del clean_teacher_info
+		app.root.get_screen('add').clearShowTeacherInfo()
+		"""
+		self.ids.show_teacher1 = Builder.load_string(self.ids.show_teacher1)
+		self.ids.show_teacher2 = Builder.load_string(self.ids.show_teacher2)
+		self.ids.show_teacher3 = Builder.load_string(self.ids.show_teacher3)
+		self.ids.show_teacher4 = Builder.load_string(self.ids.show_teacher4)
+		self.ids.show_teacher5 = Builder.load_string(self.ids.show_teacher5)
+		self.ids.show_teacher6 = Builder.load_string(self.ids.show_teacher6)
+		self.ids.show_teacher7 = Builder.load_string(self.ids.show_teacher7)
+		self.ids.show_teacher8 = Builder.load_string(self.ids.show_teacher8)
+		self.ids.clean_teacher_info = Builder.load_string(self.ids.clean_teacher_info)
+		layout.add_widget(self.ids.show_teacher1)
+		layout.add_widget(self.ids.show_teacher2)
+		layout.add_widget(self.ids.show_teacher3)
+		layout.add_widget(self.ids.show_teacher4)
+		layout.add_widget(self.ids.show_teacher5)
+		layout.add_widget(self.ids.show_teacher6)
+		layout.add_widget(self.ids.show_teacher7)
+		layout.add_widget(self.ids.show_teacher8)
+		layout.add_widget(self.ids.clean_teacher_info)
+
+
+	def clearAddTeacherInfo(self):
+		middle_name = self.ids.teacher_middle_name
+		last_name = self.ids.teacher_last_name
+		name = self.ids.teacher_name
+		email = self.ids.teacher_email
+		faculty = self.ids.teacher_faculty
+		career = self.ids.teacher_career
+		save = self.ids.save_teacher
+
+		middle_name.text = ''
+		self.teacher_middle_name = False
+		last_name.text = ''
+		self.teacher_last_name
+		name.text = ''
+		self.teacher_name_ = False
+		email.text = ''
+		self.teacher_email = False
+		faculty.text = 'Seleccionar Facultad'
+		faculty.disabled = True
+		self.teacher_faculty = False
+		career.text = 'Seleccionar Carrera'
+		career.disabled = True
+		self.teacher_career = False
+		save.disabled = True
+		##
+		self.id_subject = []
+
+		self.enableWidgets()
+
+
+	def onPressSaveTeacher(self):
+		self.onTextTeacherEmail()
+		existing_teacher = f"EXECUTE verifyExistingTeacher '{self.ids.teacher_middle_name.text}',"
+		existing_teacher += f"'{self.ids.teacher_last_name.text}', '{self.ids.teacher_name.text}'"
+		existing_teacher = self.sql.execute(existing_teacher)
+		for n in existing_teacher:
+			teacher = n[0]
+
+		if teacher != '':
+			self.teacherExist()
+		else:
+			ids = self.sql.execute(f'EXECUTE getTeacherIds \'{self.ids.teacher_faculty.text}\', \'{self.ids.teacher_career.text}\'')
+			n_id: int = 0
+
+			for id_ in ids:
+				id_faculty = id_[0]
+				id_career = id_[1]
+			
+			middle_name = self.ids.teacher_middle_name.text
+			last_name = self.ids.teacher_last_name.text
+			name = self.ids.teacher_name.text
+			##
+			email = self.ids.teacher_email.text
+			num_email = 1
+			while True:
+				got = ''
+				existing_email = self.sql.execute(f"EXECUTE verifYExistingTeacherEmail '{email}'")
+				for e_m in existing_email:
+					got = str(e_m[0])
+					break
+				
+				if got == email:
+					if num_email > 1:
+						email = got.replace(f'{num_email-1}@', f'{num_email}@')
+					else:
+						email = got.replace('@', f'{num_email}@')
+				else:
+					break
+				
+				num_email += 1
+			##
+			password = self.getPassword()
+			teacher_status = 'ALTA'
+			
+			save_teacher = f"EXECUTE saveTeacher {id_faculty},{id_career},'{middle_name}','{last_name}',"
+			save_teacher += f"'{name}','{email}','{password}','{teacher_status}'"
+			save_teacher = self.sql.execute(save_teacher)
+			self.sql.commit()
+			
+			get_teacher = self.sql.execute(f"EXECUTE getTeacher '{middle_name}','{last_name}','{name}'")
+			for get in get_teacher:
+				enrollment = get[2] # ID_teacher
+				#password = get[8]
+
+			self.showTeacherInfo(
+				faculty=self.ids.teacher_faculty.text,
+				career=self.ids.teacher_career.text,
+				enrollment=enrollment,
+				middle_name=middle_name,
+				last_name=last_name,
+				name=name,
+				email=email,
+				password=password,
+				teacher_status=teacher_status
+				)
+			self.clearAddTeacherInfo()
+	##################################### S C H E D U L E ###########################################
