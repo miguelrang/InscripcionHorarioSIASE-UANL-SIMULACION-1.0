@@ -49,9 +49,9 @@ class main(MDApp):
 			
 	def on_start(self):
 		Window.size = 500, 700
-		Window.left = (1400 - 1100)*1.3
-		Window.top = 30
-		self.root.current = "mod"
+		Window.left = (1400 - 1100)*2#1.3
+		Window.top = 200#30
+		self.root.current = "add"
 
 def sqlCONNECTION():
 	try:

@@ -696,7 +696,7 @@ WindowManager:
 						name: 'middle_name'
 
 						text: 'guerra'
-						hint_text: 'Apellido Paterno'
+						hint_text: 'Apellido Paterno del Estudiante'
 						on_text: root.onTextMiddleName()
 						on_focus: root.onTextMiddleName()
 
@@ -712,7 +712,7 @@ WindowManager:
 						name: 'last_name'
 
 						text: 'rangel'
-						hint_text: 'Apellido Materno'
+						hint_text: 'Apellido Materno del Estudiante'
 						on_text: root.onTextLastName()
 						on_focus: root.onTextLastName()
 
@@ -884,7 +884,7 @@ WindowManager:
 						id: teacher_middle_name
 						name: 'teacher_middle_name'
 
-						hint_text: 'Apellido Paterno'
+						hint_text: 'Apellido Paterno del Profesor'
 						on_text: root.onTextTeacherMiddleName()
 						on_focus: root.onTextTeacherMiddleName()
 						multiline: False
@@ -897,7 +897,7 @@ WindowManager:
 						id: teacher_last_name
 						name: 'teacher_last_name'
 
-						hint_text: 'Apellido Materno'
+						hint_text: 'Apellido Materno del Profesor'
 						on_text: root.onTextTeacherLastName()
 						on_focus: root.onTextTeacherLastName()
 						multiline: False
@@ -1204,6 +1204,7 @@ WindowManager:
 							name: 'finalize'
 
 							text: 'Finalizar'
+							disabled: True
 							theme_text_color: 'Custom'
 							text_color: 1, 1, 1, 1
 							size_hint_x: 1
@@ -1295,6 +1296,106 @@ WindowManager:
 			text: 'Estudiante'
 			icon: 'school'
 
+			GridLayout:
+				id: student_data
+				name: 'student_data'
+
+				spacing: 15
+				padding: 20
+				opacity: .85
+				cols: 1
+
+				canvas.before:
+					Color:
+						rgb: .9, .5, 0, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+				GridLayout:
+					spacing: 5
+					size_hint_y: .05
+					cols: 2
+
+					TextInput:
+						id: enrollment
+						name: 'enrollment'
+
+						hint_text: 'Matricula del Alumno'
+						multiline: False
+
+					MDRaisedButton:
+						id: search_student
+						name: 'search_student'
+
+						text: 'Buscar'
+				
+				GridLayout:
+					spacing: 5
+					cols: 1
+
+					MDTextField:
+						id: middle_name
+						name: 'middle_name'
+
+						hint_text: 'Apellido Paterno del Estudiante'
+						disabled: True
+
+					MDTextField:
+						id: last_name
+						name: 'last_name'
+
+						hint_text: 'Apellido Materno del Estudiante'
+						disabled: True
+
+					MDTextField:
+						id: name
+						name: 'name'
+
+						hint_text: 'Nombre del Estudiante'
+						disabled: True
+
+					MDTextField:
+						id: date_birth
+						name: 'date_birth'
+
+						hint_text: 'Fecha de Nacimiento'
+						disabled: True
+
+					MDTextField:
+						id: email
+						name: 'email'
+
+						hint_text: 'Correo Universitario'
+						disabled: True
+
+					MDTextField:
+						id: password
+						name: 'password'
+
+						hint_text: 'Contraseña'
+						disabled: True
+
+				BoxLayout:
+					orientation: 'horizontal'
+					padding: 15
+					spacing: 5
+
+					MDRaisedButton:
+						id: update_student
+						name: 'update_student'
+
+						text: 'Actualizar Información'
+						disabled: True
+
+					MDRaisedButton:
+						id: cancel
+						name: 'cancel'
+
+						text: 'Cancelar'
+						disabled: True
+
+
 		MDBottomNavigationItem:
 			id: teacher
 			name: 'teacher'
@@ -1302,12 +1403,309 @@ WindowManager:
 			text: 'Profesor'
 			icon: 'teach'
 
+			GridLayout:
+				id: teacher_data
+				name: 'teacher_data'
+
+				spacing: 15
+				padding: 20
+				opacity: .85
+				cols: 1
+
+				canvas.before:
+					Color:
+						rgb: .9, .5, 0, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+				GridLayout:
+					spacing: 5
+					size_hint_y: .05
+					cols: 2
+
+					TextInput:
+						id: teacher_enrollment
+						name: 'teacher_enrollment'
+
+						hint_text: 'Matricula del Profesor'
+						multiline: False
+
+					MDRaisedButton:
+						id: search_teacher
+						name: 'search_teacher'
+
+						text: 'Buscar'
+				
+				GridLayout:
+					spacing: 5
+					cols: 1
+
+					MDTextField:
+						id: teacher_middle_name
+						name: 'teacher_middle_name'
+
+						hint_text: 'Apellido Paterno del Profesor'
+						disabled: True
+
+					MDTextField:
+						id: teacher_last_name
+						name: 'teacher_last_name'
+
+						hint_text: 'Apellido Materno del Profesor'
+						disabled: True
+
+					MDTextField:
+						id: teacher_name
+						name: 'teacher_name'
+
+						hint_text: 'Nombre del Profesor'
+						disabled: True
+
+					MDTextField:
+						id: teacher_email
+						name: 'teacher_email'
+
+						hint_text: 'Correo Universitario'
+						disabled: True
+
+					MDTextField:
+						id: teacher_password
+						name: 'teacher_password'
+
+						hint_text: 'Contraseña'
+						disabled: True
+
+				BoxLayout:
+					orientation: 'horizontal'
+					padding: 15
+					spacing: 5
+
+					MDRaisedButton:
+						id: update_teacher
+						name: 'update_teacher'
+
+						text: 'Actualizar Información'
+						disabled: True
+
+					MDRaisedButton:
+						id: cancel
+						name: 'cancel'
+
+						text: 'Cancelar'
+						disabled: True
+
 		MDBottomNavigationItem:
 			id: schedule
 			name: 'schedule'
 
 			icon: 'timetable'
 			text: 'Horario'
+
+			GridLayout:
+				cols: 1
+				padding: 4
+				
+				canvas.before:
+					Color:
+						rgb: 100/255, 63/255, 65/255, 1
+
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+				ScrollView:
+					do_scroll_y: True
+
+					GridLayout:
+						#size_hint_x: 1
+						#size_hint_y: 1
+						spacing: 12
+						cols: 1
+						size_hint_y: None
+						#row_default_height: 50
+						height: self.minimum_height
+						
+						MDRaisedButton:
+							id: schedule_faculty
+							name: 'schedule_faculty'
+
+							text: 'Seleccionar Facultad'
+							theme_text_color: 'Custom'
+							text_color: .1, .1, .1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press:
+
+
+						MDTextField:
+							id: classroom
+							name: 'classroom'
+
+							hint_text: 'Nombre del Aula'
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: 1, 1, 1, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: banches
+							name: 'banches'
+
+							hint_text: 'Capacidad de Alumnos'
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: save_classroom
+							name: 'save_classroom'
+
+							text: 'Guardar Aula'
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: #root.saveClassroom()
+
+						MDTextField:
+							id: enabled_schedule
+							name: 'enabled_schedule'
+
+							hint_text: 'Horarios Disponibles'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: disabled_schedule
+							name: 'disabled_schedule'
+
+							hint_text: 'Horarios Ocupados'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: specific_career
+							name: 'specific_career'
+
+							text: 'Seleccionar Carrera'
+							disbled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: #root.saveClassroom()
+
+						MDTextField:
+							id: fullname_teacher
+							name: 'fullname_teacher'
+
+							hint_text: 'Nombre Completo del Profesor'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: name_subject
+							name: 'name_subject'
+
+							hint_text: 'Capacidad de Alumnos'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: schedules
+							name: 'schedules'
+
+							hint_text: 'Horarios en que se llevara a cabo la materia'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: save_schedule
+							name: 'save_schedule'
+
+							text: 'Actualizar Horario'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: #root.saveClassroom()
+
+						MDRaisedButton:
+							id: finalize
+							name: 'finalize'
+
+							text: 'Finalizar'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: #root.saveClassroom()
 
 		MDBottomNavigationItem:
 			id: logout
@@ -1390,6 +1788,105 @@ WindowManager:
 			text: 'Estudiante'
 			icon: 'school'
 
+			GridLayout:
+				id: student_data
+				name: 'student_data'
+
+				spacing: 15
+				padding: 20
+				opacity: .85
+				cols: 1
+
+				canvas.before:
+					Color:
+						rgb: .9, .5, 0, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+				GridLayout:
+					spacing: 5
+					size_hint_y: .05
+					cols: 2
+
+					TextInput:
+						id: enrollment
+						name: 'enrollment'
+
+						hint_text: 'Matricula del Alumno'
+						multiline: False
+
+					MDRaisedButton:
+						id: search_student
+						name: 'search_student'
+
+						text: 'Buscar'
+				
+				GridLayout:
+					spacing: 5
+					cols: 1
+
+					MDTextField:
+						id: middle_name
+						name: 'middle_name'
+
+						hint_text: 'Apellido Paterno del Estudiante'
+						disabled: True
+
+					MDTextField:
+						id: last_name
+						name: 'last_name'
+
+						hint_text: 'Apellido Materno del Estudiante'
+						disabled: True
+
+					MDTextField:
+						id: name
+						name: 'name'
+
+						hint_text: 'Nombre del Estudiante'
+						disabled: True
+
+					MDTextField:
+						id: date_birth
+						name: 'date_birth'
+
+						hint_text: 'Fecha de Nacimiento'
+						disabled: True
+
+					MDTextField:
+						id: email
+						name: 'email'
+
+						hint_text: 'Correo Universitario'
+						disabled: True
+
+					MDTextField:
+						id: password
+						name: 'password'
+
+						hint_text: 'Contraseña'
+						disabled: True
+
+				BoxLayout:
+					orientation: 'horizontal'
+					padding: 15
+					spacing: 5
+
+					MDRaisedButton:
+						id: del_student
+						name: 'del_student'
+
+						text: 'Eliminar Información'
+						disabled: True
+
+					MDRaisedButton:
+						id: cancel
+						name: 'cancel'
+
+						text: 'Cancelar'
+						disabled: True
+
 		MDBottomNavigationItem:
 			id: teacher
 			name: 'teacher'
@@ -1397,12 +1894,309 @@ WindowManager:
 			text: 'Profesor'
 			icon: 'teach'
 
+			GridLayout:
+				id: teacher_data
+				name: 'teacher_data'
+
+				spacing: 15
+				padding: 20
+				opacity: .85
+				cols: 1
+
+				canvas.before:
+					Color:
+						rgb: .9, .5, 0, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+				GridLayout:
+					spacing: 5
+					size_hint_y: .05
+					cols: 2
+
+					TextInput:
+						id: teacher_enrollment
+						name: 'teacher_enrollment'
+
+						hint_text: 'Matricula del Profesor'
+						multiline: False
+
+					MDRaisedButton:
+						id: search_teacher
+						name: 'search_teacher'
+
+						text: 'Buscar'
+				
+				GridLayout:
+					spacing: 5
+					cols: 1
+
+					MDTextField:
+						id: teacher_middle_name
+						name: 'teacher_middle_name'
+
+						hint_text: 'Apellido Paterno del Profesor'
+						disabled: True
+
+					MDTextField:
+						id: teacher_last_name
+						name: 'teacher_last_name'
+
+						hint_text: 'Apellido Materno del Profesor'
+						disabled: True
+
+					MDTextField:
+						id: teacher_name
+						name: 'teacher_name'
+
+						hint_text: 'Nombre del Profesor'
+						disabled: True
+
+					MDTextField:
+						id: teacher_email
+						name: 'teacher_email'
+
+						hint_text: 'Correo Universitario'
+						disabled: True
+
+					MDTextField:
+						id: teacher_password
+						name: 'teacher_password'
+
+						hint_text: 'Contraseña'
+						disabled: True
+
+				BoxLayout:
+					orientation: 'horizontal'
+					padding: 15
+					spacing: 5
+
+					MDRaisedButton:
+						id: del_teacher
+						name: 'del_teacher'
+
+						text: 'Eliminar Información'
+						disabled: True
+
+					MDRaisedButton:
+						id: cancel
+						name: 'cancel'
+
+						text: 'Cancelar'
+						disabled: True
+
 		MDBottomNavigationItem:
 			id: schedule
 			name: 'schedule'
 
 			icon: 'timetable'
 			text: 'Horario'
+
+			GridLayout:
+				cols: 1
+				padding: 4
+				
+				canvas.before:
+					Color:
+						rgb: 100/255, 63/255, 65/255, 1
+
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+				ScrollView:
+					do_scroll_y: True
+
+					GridLayout:
+						#size_hint_x: 1
+						#size_hint_y: 1
+						spacing: 12
+						cols: 1
+						size_hint_y: None
+						#row_default_height: 50
+						height: self.minimum_height
+						
+						MDRaisedButton:
+							id: schedule_faculty
+							name: 'schedule_faculty'
+
+							text: 'Seleccionar Facultad'
+							theme_text_color: 'Custom'
+							text_color: .1, .1, .1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press:
+
+
+						MDTextField:
+							id: classroom
+							name: 'classroom'
+
+							hint_text: 'Nombre del Aula'
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: 1, 1, 1, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: banches
+							name: 'banches'
+
+							hint_text: 'Capacidad de Alumnos'
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: save_classroom
+							name: 'save_classroom'
+
+							text: 'Guardar Aula'
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: #root.saveClassroom()
+
+						MDTextField:
+							id: enabled_schedule
+							name: 'enabled_schedule'
+
+							hint_text: 'Horarios Disponibles'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: disabled_schedule
+							name: 'disabled_schedule'
+
+							hint_text: 'Horarios Ocupados'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: specific_career
+							name: 'specific_career'
+
+							text: 'Seleccionar Carrera'
+							disbled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: #root.saveClassroom()
+
+						MDTextField:
+							id: fullname_teacher
+							name: 'fullname_teacher'
+
+							hint_text: 'Nombre Completo del Profesor'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: name_subject
+							name: 'name_subject'
+
+							hint_text: 'Capacidad de Alumnos'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDTextField:
+							id: schedules
+							name: 'schedules'
+
+							hint_text: 'Horarios en que se llevara a cabo la materia'
+							disabled: True
+							#max_text_length: 10
+							on_text: 
+							on_focus: 
+
+							color_mode: 'custom'
+							line_color_focus: .9, .5, 0, 1
+							multiline: False
+							mode: 'fill'
+							fill_color: .9, .5, 0, .1
+							size_hint_x: .9
+
+						MDRaisedButton:
+							id: save_schedule
+							name: 'save_schedule'
+
+							text: 'Eliminar Horario'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: #root.saveClassroom()
+
+						MDRaisedButton:
+							id: finalize
+							name: 'finalize'
+
+							text: 'Finalizar'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: #root.saveClassroom()
 
 		MDBottomNavigationItem:
 			id: logout
