@@ -47,6 +47,18 @@ class Add(Screen):
 		self.teacher_faculty = False
 		self.teacher_career = False
 		###### S C H E D U L E #######
+		self.id_classroom = 0
+		self.classroom = False
+		self.banches = False
+		self.schedule_id_faculty = ''
+		self.schedule_classroom = ''
+		self.schedule_banches = ''
+
+		self.schedule_career = False
+		self.schedule_teacher = False
+		self.schedule_subject = False
+		self.group = False
+		self.schedule = False
 
 
 	def sqlCONNECTION(self):
@@ -161,6 +173,35 @@ class Add(Screen):
 			self.ids['student'].disabled = False
 			self.ids['schedule'].disabled = False
 		########################## S C H E D U L E ########################
+		"""
+		self.schedule_career = False
+		self.schedule_teacher = False
+		self.schedule_subject = False
+		self.group = False
+		self.schedule = False"""
+
+		verifier = False
+		if self.schedule_career == True:
+			verifier = True
+			if self.schedule_teacher == True:
+				if self.schedule_subject == True:
+					if self.group == True:
+						if self.schedule == True:
+							verifier = False
+						else:
+							verifier = True
+							self.ids.schedules.disabled = True
+
+		self.ids.finalize.disabled = verifier
+
+		if verifier == True:
+			self.ids['student'].disabled = True
+			self.ids['schedule'].disabled = True
+			self.ids['logout'].disabled = True
+		else:
+			self.ids['logout'].disabled = False
+			self.ids['student'].disabled = False
+			self.ids['schedule'].disabled = False
 
 
 	def delNumber(self, var):
@@ -1144,8 +1185,8 @@ MDRaisedButton:
 		#self.ids.enable_schedule
 		#self.ids.disabled_schedule
 		#self.ids.specific_career
-		#self.ids.fullname_teacher
-		#self.ids.name_subject
+		#self.ids.schedule_teacher
+		#self.ids.schedule_subject
 		#self.ids.schedules
 		#self.ids.schedule
 
@@ -1707,7 +1748,7 @@ MDRaisedButton:
 	def onPressScheduleFaculty(self):
 		##
 		var:str = 'schedule_faculty, classroom, banches, save_classroom, available_schedule, '
-		var += 'unavailable_schedule, schedule_career, fullname_teacher, name_subject, schedules, save_schedule, finalize'
+		var += 'unavailable_schedule, schedule_career, schedule_teacher, schedule_subject, schedules, save_schedule, finalize'
 		var:list = var.split(', ')
 		for n in var:
 			self.ids[n].disabled = True
@@ -1747,7 +1788,7 @@ MDRaisedButton:
 		self.schedule_faculty = False
 
 
-	def validClassroom(self):
+	def validClassroomBanches(self):
 		if self.classroom == True and self.banches == True:
 			self.ids.save_classroom.disabled = False
 
@@ -1770,25 +1811,23 @@ MDRaisedButton:
 		else:
 			self.classroom = False
 
-		self.validClassroom()
+		self.validClassroomBanches()
 
 
 	def onTextBanches(self):
 		banches = self.ids.banches
 
-		if int(banches.text) < 10:
-			banches.text = 10
+		if banches.text != '':
+			if int(banches.text) < 10 and banches.focus == False:
+				banches.text = '10'
 
-		if int(banches.text) > 50:
-			banches.text = 50
+			if int(banches.text) > 65 and banches.focus == False:
+				banches.text = '65'
 
-		if len(banches.text) > 0:
 			self.banches = True
-
 		else:
 			self.banches = False
-
-		self.validClassroom()
+		self.validClassroomBanches()
 
 
 	def closeDialogNameClassroom(self):
@@ -1796,73 +1835,64 @@ MDRaisedButton:
 
 
 	def saveClassroom(self):
-		data = self.sql.execute(f'EXECUTE getIDFaculty \'{self.ids.schedule_faculty.text}\'')
-		for f in data:
-			id_faculty = f[0]
+		id_faculty = self.schedule_id_faculty
+		classroom = self.schedule_classroom
+		banches = self.schedule_banches
 
-		data = self.sql.execute(f'EXECUTE getClassroom \'{self.ids.classroom.text}\'')
-		for c in data:
-			classroom = c[0]
-		if classroom == '':
-			classroom = self.ids.classroom.text
-			banches = self.ids.banches.text
+		self.sql.execute(f'EXECUTE saveClassroom {id_faculty},\'{classroom}\',{banches}')
+		self.sql.commit()
+		data = self.sql.execute(f'EXECUTE getClassroomData \'{self.ids.schedule_faculty.text}\',\'{self.ids.classroom.text}\'')
+		for found in data:
+			id_faculty = found[0]
+			id_classroom = found[1]
+			banches = found[2]
+		
+		self.ids.banches.text = str(banches)
+		self.schedule_id_faculty = id_faculty
+		self.id_classroom = id_classroom
 
-			self.sql.execute(f'EXECUTE saveClassroom \'{id_faculty}\', \'{classroom}\', \'{banches}\'')
+		self.ids.schedule_faculty.disabled = True
+		self.ids.classroom.disabled = True
+		self.ids.banches.disabled = True
 
-			self.ids.schedule_faculty.disabled = True
-			self.ids.classroom.disabled = True
-			self.ids.banches = True
+		widgets = 'schedule_career, schedule_teacher, schedule_subject, schedules, finalize'
+		widgets = widgets.split(', ')
 
-			widgets = 'schedule_career, fullname_teacher, name_subject, schedules, finalize'
-			widgets = widgets.split(', ')
+		for widget in widgets:
+			self.ids[widget].disabled = False
 
-			for widget in widgets:
-				widget.disabled = False
-
-			self.onTextAvailableSchedule()
-			self.onTextUnavailableSchedule()
-		else:
-			self.dialog_name_classroom = MDDialog(
-				title='A ocurrido un error.',
-				text=f'Ya existe la aula \'{self.ids.classroom.text}\'',
-				buttons=[
-					MDRectangleFlatButton(
-						text='Aceptar',
-						on_press=self.closeDialogNameClassroom
-					)
-				]
-			)
-
-
-	def closeDialogAddClassroom(self):
-		self.dialog_add_classroom.dismiss()
+		self.onTextAvailableSchedule()
+		self.onTextUnavailableSchedule()
 
 
 	def saveClassroomDisabled(self):
 		self.ids.save_classroom.disabled = True
 
 
-	def dialogAddClassroom(self, id_faculty, classroom, banches):
-		button = MDRectangleFlatButton(
-					text='Cancelar',
-					on_press=[self.saveClassroomDisabled]
-				)
-		button.bind(on_press=self.closeDialogAddClassroom)
+	def closeDialogAddClassroom(self, *args):
+		for i in args:
+			if i.text == 'Aceptar':
+				self.saveClassroom()
+
+		self.dialog_add_classroom.dismiss()
+
+
+	def dialogAddClassroom(self):
 		self.dialog_add_classroom = MDDialog(
-				title='Este salon de clases no existe.',
-				text='¿Desea agregar el aula?',
-				buttons=[
-					MDRectangleFlatButton(
-						text='Aceptar',
-						on_press=self.saveClassroom
-					),
-					button
-				]
+			title='Este salon de clases no existe.',
+			text='¿Desea agregar el aula?',
+			buttons=[
+				MDRectangleFlatButton(
+					text='Aceptar',
+					on_press=self.closeDialogAddClassroom
+				),
+				MDRectangleFlatButton(
+					text='Cancelar',
+					on_press=self.closeDialogAddClassroom
+				)
+			]
 		)
-
-
-	def saveClassroom(self):
-		pass
+		self.dialog_add_classroom.open()
 
 
 	def onPressSaveClassroom(self):
@@ -1873,26 +1903,27 @@ MDRaisedButton:
 				id_classroom = found[1]
 				banches = found[2]
 
-			if id_found == '0' and id_career == '0' and banches == '0':
-				self.dialogAddClassroom(
-					id_faculty=self.ids.schedule_faculty.text,
-					classroom=self.ids.classroom.text,
-					banches=self.ids.banches.text
-				)
+			if id_faculty == 0 and id_classroom == 0 and banches == 0:
+				data = self.sql.execute(f"EXECUTE getIDFaculty [{self.ids.schedule_faculty.text}]")
+				for d in data:
+					self.schedule_id_faculty=d[0]
+				self.schedule_classroom=self.ids.classroom.text
+				self.schedule_banches=self.ids.banches.text
+				self.dialogAddClassroom()
 			else:
-				self.ids.banches.text = banches
+				self.ids.banches.text = str(banches)
 				self.schedule_id_faculty = id_faculty
 				self.id_classroom = id_classroom
 
 				self.ids.schedule_faculty.disabled = True
 				self.ids.classroom.disabled = True
-				self.ids.banches = True
+				self.ids.banches.disabled = True
 
-				widgets = 'schedule_career, fullname_teacher, name_subject, schedules, finalize'
+				widgets = 'schedule_career, schedule_teacher, schedule_subject, schedules, finalize'
 				widgets = widgets.split(', ')
 
 				for widget in widgets:
-					widget.disabled = False
+					self.ids[widget].disabled = False
 
 				self.onTextAvailableSchedule()
 				self.onTextUnavailableSchedule()
@@ -1902,7 +1933,7 @@ MDRaisedButton:
 
 	def onTextAvailableSchedule(self):
 		available_schedule = self.ids.available_schedule
-
+		
 		data = self.sql.execute(f'EXECUTE getAvailableSchedule \'{self.schedule_id_faculty}\', \'{self.id_classroom}\'')
 		for x in data:
 			got = x[0]
@@ -1910,32 +1941,48 @@ MDRaisedButton:
 		if got != '':
 			got = got.replace('\n', '')
 			got = got.replace(' ', '')
+
+			print('AVAILABLE')
+			print(got)
+			print(got)
+			print(got)
+			print(got)
+			print(got)
+			print(got)
+			print(got)
+			print(got)
+			print(got)
+			print(got)
 			available_schedule.text = got
+
 
 	def onTextUnavailableSchedule(self):
 		unavailable_schedule = self.ids.unavailable_schedule
-
+		
 		available_schedule = self.ids.available_schedule.text
+		available_schedule = available_schedule.split(';')
 
-		text = '''7:00-7:30;7:30-8:00;
-					8:00-8:30;8:30-9:00;
-					9:00-9:30;9:30-10:00;
-					10:00-10:30;10:30-11:00;
-					11:00-11:30;11:30-12:00;
-					12:00-12:30;12:30-13:00;
-					13:00-13:30;13:30-14:00;
-					14:00-14:30;14:30-15:00;
-					15:00-15:30;15:30-16:00;
-					16:00-16:30;16:30-17:00;
-					17:00-17:30;17:30-18:00;
-					18:00-18:30;18:30-19:00;
-					19:00-19:30;19:30-20:00;
-					20:00-20:30;20:30-21:00;
-					21:00-21:30;21:30-22:00;'''
+		text = '''07:00-07:30;07:30-08:00;
+				  08:00-08:30;08:30-09:00;
+				  09:00-09:30;09:30-10:00;
+				  10:00-10:30;10:30-11:00;
+				  11:00-11:30;11:30-12:00;
+				  12:00-12:30;12:30-13:00;
+				  13:00-13:30;13:30-14:00;
+				  14:00-14:30;14:30-15:00;
+				  15:00-15:30;15:30-16:00;
+				  16:00-16:30;16:30-17:00;
+				  17:00-17:30;17:30-18:00;
+				  18:00-18:30;18:30-19:00;
+				  19:00-19:30;19:30-20:00;
+				  20:00-20:30;20:30-21:00;
+				  21:00-21:30;21:30-22:00;'''
 		text = text.replace('\n', '')
 		text = text.replace(' ', '')
-		unavailable_schedule.text = text.replace(available_schedule, '')
-
+		print('UNAVAILABLE')
+		for available in available_schedule:
+			unavailable_schedule.text = text.replace(available, '')
+			print(unavailable_schedule.text)
 
 	def delScheduleCareers(self):
 		layout = self.ids.schedule_data
@@ -2000,6 +2047,89 @@ MDRaisedButton:
 			"""
 			self.ids[f'A{n}'] = Builder.load_string(c)
 			layout.add_widget(self.ids[f'A{n}'])
+
+
+	def delScheduleTeachers(self):
+		layout = self.ids.schedule_data
+
+		layout.clear_widgets()
+		
+		n = 0
+		for t in teacher:
+			n += 1
+			del self.ids[f'A{n}']
+
+		var:str = ''
+		var:list = var.split(', ')
+		valid = True
+		for n in var:
+			self.ids[n].disabled = False
+			
+			if valid:
+				self.ids[n].color_mode = 'custom'
+				self.ids[n].line_color_focus = .9, .5, 0, 1
+				self.ids[n].multiline = False
+				self.ids[n].mode = 'fill'
+				self.ids[n].fill_color = .9, .5, 0, .1
+				self.ids[n].size_hint_x = .9
+		
+		self.schedule_teacher = True
+
+
+	def closeTeachersDialog(self, *args):
+		self.teachers_dialog.dismiss()
+
+
+	def onPressScheduleTeacher(self):
+		##
+		var:str = ''
+		var:list = var.split(', ')
+		for n in var:
+			self.ids[n].disabled = True
+		##
+		layout = self.ids.schedule_data
+		layout.cols = 1
+		
+		teachers = self.sql.execute(f'EXECUTE dbo.getTeachers \'{self.ids.schedule_faculty.text}\',\'{self.ids.schedule_career.text}\'')
+		teacher = []
+		for t in teachers:
+			teacher.append(t[0])
+
+		n = 0
+		for t in teacher:
+			n += 1
+			t = f"""
+MDRaisedButton:
+	id: A{n}
+	name: 'A{n}'
+
+	text: '{t}'
+	size_hint_x: .9
+	text_color: .9, .5, 0, 1
+	md_bg_color: 1, 1, 1, 1
+	line_color: 0, 0, 1, 1
+	on_press: 
+		screen = app.root.get_screen('add')
+		screen.ids.schedule_teacher.text = A{n}.text
+		screen.delScheduleTeachers({teacher})
+			"""
+			self.ids[f'A{n}'] = Builder.load_string(t)
+			layout.add_widget(self.ids[f'A{n}'])
+
+		if teachers == []:
+			self.teachers_dialog = MDDialog(
+				title='Atención.',
+				text='No hay profesores disponibles en esta carrera.',
+				buttons=[
+					MDRectangleFlatButton(
+						text='Aceptar',
+						on_press=self.closeTeachersDialog
+					)
+				]
+			)
+			self.teachers_dialog.open()
+
+		self.schedule_teacher = False
 
 
 	def delScheduleSubjects(self):
@@ -2069,4 +2199,80 @@ MDRaisedButton:
 		self.schedule_subject = False
 
 
-	
+	def closeGroupDialog(self, *args):
+		self.group_dialog.dismiss()
+
+
+	def onTextGroup(self):
+		try:
+			group = int(self.ids.group.text)
+			self.group = True
+		except:
+			self.group_dialog = MDDialog(
+				title='Error',
+				text='El grupo no acepta ni letras ni caracteres.',
+				buttons=[
+					MDRectangleFlatButton(
+						text='Aceptar',
+						on_press=self.closeGroupDialog
+					)
+				]
+			)
+			self.group_dialog.open()
+			self.group = False
+
+
+	def onTextSchedules(self):
+		schedules = self.ids.schedules
+
+		self.schedule = True
+		exp = re.compile(r"([0-2][0-9]:00|[0-2][0-9]:30)")
+		for schedule in schedules.text.split(';'):
+			if exp.fullmatch(schedule):
+				try:
+					if schedule[0] == '0' and int(schedule[1]) > 7:
+						#self.schedule = True
+						pass
+
+					elif schedule[0] == '1' and int(schedule[1]) >= 0:
+						#self.schedule = True
+						pass
+
+					elif schedule[0] == '2' and int(schedule[1]) > 0 and int(schedule[1]) < 3:
+						#self.schedule = True
+						pass
+
+					else:
+						self.out_time_dialog = MDDialog(
+							title='Error.',
+							text='La UANL solo imparte clases de 07:00 a 22:00',
+							buttons=[
+								self.closeOutTimeDialog
+							]
+						)
+						self.schedules = False
+						break
+
+				except:
+					self.out_time_dialog = MDDialog(
+						title='Error.',
+						text='Caracter Invalido.',
+						buttons=[
+							self.closeOutTimeDialog
+						]
+					)
+					self.schedules = False
+					break
+			else:
+				self.out_time_dialog = MDDialog(
+					title='Error.',
+					text='Caracter Invalido.',
+					buttons=[
+						self.closeOutTimeDialog
+					]
+				)
+				self.schedules = False
+				break
+		if self.schedule == False:
+			self.out_time_dialog.open()
+

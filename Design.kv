@@ -1142,6 +1142,19 @@ WindowManager:
 							on_press: root.onPressScheduleCareer()
 
 						MDRaisedButton:
+							id: schedule_teacher
+							name: 'schedule_teacher'
+
+							text: 'Seleccionar Profesor'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressScheduleTeacher()
+
+						MDRaisedButton:
 							id: schedule_subject
 							name: 'schedule_subject'
 
@@ -1155,14 +1168,13 @@ WindowManager:
 							on_press: root.onPressScheduleSubject()
 
 						MDTextField:
-							id: fullname_teacher
-							name: 'fullname_teacher'
+							id: group
+							name: 'group'
 
-							hint_text: 'Nombre Completo del Profesor'
 							disabled: True
 							#max_text_length: 10
-							on_text: 
-							on_focus: 
+							on_text: root.onTextGroup()
+							on_focus: root.onTextGroup()
 
 							color_mode: 'custom'
 							line_color_focus: .9, .5, 0, 1
@@ -1178,8 +1190,8 @@ WindowManager:
 							hint_text: 'Horarios en que se llevara a cabo la materia'
 							disabled: True
 							#max_text_length: 10
-							on_text: root.validSchedules()
-							on_focus: root.validSchedules()
+							on_text: root.onTextSchedules()
+							on_focus: root.onTextSchedules()
 
 							color_mode: 'custom'
 							line_color_focus: .9, .5, 0, 1
