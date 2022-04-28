@@ -884,6 +884,7 @@ WindowManager:
 						id: teacher_middle_name
 						name: 'teacher_middle_name'
 
+						text: 'GONZALEZ'
 						hint_text: 'Apellido Paterno del Profesor'
 						on_text: root.onTextTeacherMiddleName()
 						on_focus: root.onTextTeacherMiddleName()
@@ -897,6 +898,7 @@ WindowManager:
 						id: teacher_last_name
 						name: 'teacher_last_name'
 
+						text: 'GONZALEZ'
 						hint_text: 'Apellido Materno del Profesor'
 						on_text: root.onTextTeacherLastName()
 						on_focus: root.onTextTeacherLastName()
@@ -910,6 +912,7 @@ WindowManager:
 						id: teacher_name
 						name: 'teacher_name'
 
+						text: 'OSVALDO HABIB'
 						hint_text: 'Nombre del Profesor'
 						on_text: root.onTextTeacherName()
 						on_focus: root.onTextTeacherName()
@@ -969,7 +972,7 @@ WindowManager:
 						disabled: True
 						md_bg_color: .24, .74, .53, 1
 						line_color: 1, 1, 1, 1
-						on_press:root.onPressSaveTeacher()
+						on_press: root.onPressSaveTeacher()
 
 				GridLayout:
 					id: show_teacher
@@ -987,6 +990,8 @@ WindowManager:
 							pos: self.pos
 					
 					ScrollView:
+						id: teacher_scrolling
+						name: 'teacher_scrolling'
 						do_scroll_y: True
 
 						GridLayout:
@@ -1023,8 +1028,9 @@ WindowManager:
 					do_scroll_y: True
 
 					GridLayout:
-						#size_hint_x: 1
-						#size_hint_y: 1
+						id: schedule_info
+						name: 'schedule_info'
+
 						spacing: 12
 						cols: 1
 						size_hint_y: None
@@ -1041,7 +1047,7 @@ WindowManager:
 							size_hint_x: 1
 							md_bg_color: .85, .85, .85, 1
 							line_color: 0, 0, 0, 1
-							on_press:
+							on_press: root.onPressScheduleFaculty()
 
 
 						MDTextField:
@@ -1049,9 +1055,10 @@ WindowManager:
 							name: 'classroom'
 
 							hint_text: 'Nombre del Aula'
+							disabled: True
 							#max_text_length: 10
-							on_text: 
-							on_focus: 
+							on_text: root.onTextClassroom()
+							on_focus: root.onTextClassroom()
 
 							color_mode: 'custom'
 							line_color_focus: 1, 1, 1, 1
@@ -1065,9 +1072,11 @@ WindowManager:
 							name: 'banches'
 
 							hint_text: 'Capacidad de Alumnos'
+							input_filter: 'int'
+							disabled: True
 							#max_text_length: 10
-							on_text: 
-							on_focus: 
+							on_text: root.onTextBanches()
+							on_focus: root.onTextBanches()
 
 							color_mode: 'custom'
 							line_color_focus: .9, .5, 0, 1
@@ -1080,24 +1089,23 @@ WindowManager:
 							id: save_classroom
 							name: 'save_classroom'
 
-							text: 'Guardar Aula'
+							text: 'Siguiente'
+							disabled: True
 							theme_text_color: 'Custom'
 							text_color: 1, 1, 1, 1
 							size_hint_x: 1
 							md_bg_color: .24, .74, .53, 1
 							line_color: 0, 0, 0, 1
-							on_press: root.saveClassroom()
+							on_press: root.onPressSaveClassroom()
 
 						MDTextField:
-							id: enabled_schedule
-							name: 'enabled_schedule'
+							id: available_schedule
+							name: 'available_schedule'
 
 							hint_text: 'Horarios Disponibles'
 							disabled: True
 							#max_text_length: 10
-							on_text: 
-							on_focus: 
-
+							
 							color_mode: 'custom'
 							line_color_focus: .9, .5, 0, 1
 							multiline: False
@@ -1106,15 +1114,13 @@ WindowManager:
 							size_hint_x: .9
 
 						MDTextField:
-							id: disabled_schedule
-							name: 'disabled_schedule'
+							id: unavailable_schedule
+							name: 'unavailable_schedule'
 
 							hint_text: 'Horarios Ocupados'
 							disabled: True
 							#max_text_length: 10
-							on_text: 
-							on_focus: 
-
+							
 							color_mode: 'custom'
 							line_color_focus: .9, .5, 0, 1
 							multiline: False
@@ -1123,17 +1129,30 @@ WindowManager:
 							size_hint_x: .9
 
 						MDRaisedButton:
-							id: specific_career
-							name: 'specific_career'
+							id: schedule_career
+							name: 'schedule_career'
 
 							text: 'Seleccionar Carrera'
-							disbled: True
+							disabled: True
 							theme_text_color: 'Custom'
 							text_color: 1, 1, 1, 1
 							size_hint_x: 1
 							md_bg_color: .85, .85, .85, 1
 							line_color: 0, 0, 0, 1
-							on_press: root.saveClassroom()
+							on_press: root.onPressScheduleCareer()
+
+						MDRaisedButton:
+							id: schedule_subject
+							name: 'schedule_subject'
+
+							text: 'Seleccionar Materia'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressScheduleSubject()
 
 						MDTextField:
 							id: fullname_teacher
@@ -1153,31 +1172,14 @@ WindowManager:
 							size_hint_x: .9
 
 						MDTextField:
-							id: name_subject
-							name: 'name_subject'
-
-							hint_text: 'Capacidad de Alumnos'
-							disabled: True
-							#max_text_length: 10
-							on_text: 
-							on_focus: 
-
-							color_mode: 'custom'
-							line_color_focus: .9, .5, 0, 1
-							multiline: False
-							mode: 'fill'
-							fill_color: .9, .5, 0, .1
-							size_hint_x: .9
-
-						MDTextField:
 							id: schedules
 							name: 'schedules'
 
 							hint_text: 'Horarios en que se llevara a cabo la materia'
 							disabled: True
 							#max_text_length: 10
-							on_text: 
-							on_focus: 
+							on_text: root.validSchedules()
+							on_focus: root.validSchedules()
 
 							color_mode: 'custom'
 							line_color_focus: .9, .5, 0, 1
@@ -1197,7 +1199,7 @@ WindowManager:
 							size_hint_x: 1
 							md_bg_color: .85, .85, .85, 1
 							line_color: 0, 0, 0, 1
-							on_press: root.saveClassroom()
+							on_press: root.saveSchedule()
 
 						MDRaisedButton:
 							id: finalize
@@ -1210,7 +1212,30 @@ WindowManager:
 							size_hint_x: 1
 							md_bg_color: .24, .74, .53, 1
 							line_color: 0, 0, 0, 1
-							on_press: root.saveClassroom()
+							on_press: #root.saveClassroom()
+
+				GridLayout:
+					size_hint_y: .25
+					cols: 1
+
+					canvas.before:
+						Color:
+							rgb: .85, .85, .85
+
+						Rectangle:
+							size: self.size
+							pos: self.pos
+
+					ScrollView:
+						do_scroll_y: True
+
+						GridLayout:
+							id: schedule_data
+							name: 'schedule_data'
+
+							size_hint_y: None
+							height: self.minimum_height
+							cols: 1
 
 
 		MDBottomNavigationItem:
@@ -1576,6 +1601,7 @@ WindowManager:
 							name: 'save_classroom'
 
 							text: 'Guardar Aula'
+							disabled: True
 							theme_text_color: 'Custom'
 							text_color: 1, 1, 1, 1
 							size_hint_x: 1
@@ -1584,7 +1610,7 @@ WindowManager:
 							on_press: #root.saveClassroom()
 
 						MDTextField:
-							id: enabled_schedule
+							id: available_schedule
 							name: 'enabled_schedule'
 
 							hint_text: 'Horarios Disponibles'
@@ -1601,8 +1627,8 @@ WindowManager:
 							size_hint_x: .9
 
 						MDTextField:
-							id: disabled_schedule
-							name: 'disabled_schedule'
+							id: unavailable_schedule
+							name: 'unavailable_schedule'
 
 							hint_text: 'Horarios Ocupados'
 							disabled: True
@@ -1618,11 +1644,11 @@ WindowManager:
 							size_hint_x: .9
 
 						MDRaisedButton:
-							id: specific_career
-							name: 'specific_career'
+							id: schedule_career
+							name: 'schedule_career'
 
 							text: 'Seleccionar Carrera'
-							disbled: True
+							disabled: True
 							theme_text_color: 'Custom'
 							text_color: 1, 1, 1, 1
 							size_hint_x: 1
@@ -1651,7 +1677,7 @@ WindowManager:
 							id: name_subject
 							name: 'name_subject'
 
-							hint_text: 'Capacidad de Alumnos'
+							hint_text: 'Nombre de la Materia'
 							disabled: True
 							#max_text_length: 10
 							on_text: 
@@ -2113,7 +2139,7 @@ WindowManager:
 							name: 'specific_career'
 
 							text: 'Seleccionar Carrera'
-							disbled: True
+							disabled: True
 							theme_text_color: 'Custom'
 							text_color: 1, 1, 1, 1
 							size_hint_x: 1
