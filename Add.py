@@ -1918,6 +1918,7 @@ MDRaisedButton:
 				self.ids.schedule_faculty.disabled = True
 				self.ids.classroom.disabled = True
 				self.ids.banches.disabled = True
+				self.ids.save_classroom.disabled = True
 
 				widgets = 'schedule_career, schedule_teacher, schedule_subject, schedules, finalize'
 				widgets = widgets.split(', ')
@@ -1934,55 +1935,81 @@ MDRaisedButton:
 	def onTextAvailableSchedule(self):
 		available_schedule = self.ids.available_schedule
 		
-		data = self.sql.execute(f'EXECUTE getAvailableSchedule \'{self.schedule_id_faculty}\', \'{self.id_classroom}\'')
-		for x in data:
-			got = x[0]
-		
-		if got != '':
-			got = got.replace('\n', '')
-			got = got.replace(' ', '')
-
-			print('AVAILABLE')
-			print(got)
-			print(got)
-			print(got)
-			print(got)
-			print(got)
-			print(got)
-			print(got)
-			print(got)
-			print(got)
-			print(got)
-			available_schedule.text = got
+		got = '''07:00-07:30;07:30-08:00;
+			  08:00-08:30;08:30-09:00;
+			  09:00-09:30;09:30-10:00;
+			  10:00-10:30;10:30-11:00;
+			  11:00-11:30;11:30-12:00;
+			  12:00-12:30;12:30-13:00;
+			  13:00-13:30;13:30-14:00;
+			  14:00-14:30;14:30-15:00;
+			  15:00-15:30;15:30-16:00;
+			  16:00-16:30;16:30-17:00;
+			  17:00-17:30;17:30-18:00;
+			  18:00-18:30;18:30-19:00;
+			  19:00-19:30;19:30-20:00;
+			  20:00-20:30;20:30-21:00;
+			  21:00-21:30;21:30-22:00;'''
+		got = got.replace('\n', '')
+		got = got.replace(' ', '')
+		got = got.replace('\t', '')
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		print(got)
+		available_schedule.text = got
 
 
 	def onTextUnavailableSchedule(self):
 		unavailable_schedule = self.ids.unavailable_schedule
 		
-		available_schedule = self.ids.available_schedule.text
-		available_schedule = available_schedule.split(';')
+		available_schedule = self.ids.available_schedule
+		listed = available_schedule.text
+		listed = listed.split(';')
 
-		text = '''07:00-07:30;07:30-08:00;
-				  08:00-08:30;08:30-09:00;
-				  09:00-09:30;09:30-10:00;
-				  10:00-10:30;10:30-11:00;
-				  11:00-11:30;11:30-12:00;
-				  12:00-12:30;12:30-13:00;
-				  13:00-13:30;13:30-14:00;
-				  14:00-14:30;14:30-15:00;
-				  15:00-15:30;15:30-16:00;
-				  16:00-16:30;16:30-17:00;
-				  17:00-17:30;17:30-18:00;
-				  18:00-18:30;18:30-19:00;
-				  19:00-19:30;19:30-20:00;
-				  20:00-20:30;20:30-21:00;
-				  21:00-21:30;21:30-22:00;'''
-		text = text.replace('\n', '')
-		text = text.replace(' ', '')
-		print('UNAVAILABLE')
-		for available in available_schedule:
-			unavailable_schedule.text = text.replace(available, '')
-			print(unavailable_schedule.text)
+		getting = self.sql.execute(f"EXECUTE getUnavailableSchedule '{self.schedule_id_faculty}','{self.id_classroom}'")
+		ids_career = []
+		ids_teacher = []
+		ids_subject = []
+		ids_schedule = []
+		ids_group = []
+		unavailables = []
+		for g in getting:
+			ids_career.append(g[0])
+			ids_teacher.append(g[1])
+			ids_subject.append(g[2])
+			ids_schedule.append(g[3])
+			ids_group.append(g[4])
+			unavailables.append(g[5])
+
+		full_separate = []
+		for unavailable in unavailables:
+			separate = unavailable.split(';')
+			for i in separate:
+				full_separate.append(i)
+		full_separate.sort()
+		for unavailable in full_separate:
+			listed.remove(unavailable)
+
+		available_schedule = ''
+		for i in listed:
+			available_schedule += f'{i};'
+		self.ids.available_schedule.text = available_schedule
+		unavailable_schedule = ''
+		for j in full_separate:
+			unavailable_schedule += f'{j};'
+		self.ids.unavailable_schedule.text = unavailable_schedule
+
+		return [ids_career, ids_teacher, ids_subject, ids_schedule, ids_group, full_separate] 
+
 
 	def delScheduleCareers(self):
 		layout = self.ids.schedule_data
@@ -2222,6 +2249,10 @@ MDRaisedButton:
 			self.group = False
 
 
+	def closeOutTimeDialog(self, *args):
+		self.out_time_dialog.dismiss()
+
+
 	def onTextSchedules(self):
 		schedules = self.ids.schedules
 
@@ -2275,4 +2306,115 @@ MDRaisedButton:
 				break
 		if self.schedule == False:
 			self.out_time_dialog.open()
+
+
+	def closeScheduleExist(self, *args):
+		self.schedule_exist.dismiss()
+
+
+	def closeDialogGroupExist(self, *args):
+		self.dialog_group_exist.dismiss()
+
+
+	def closeBusySchedule(self, *args)
+		self.busy_schedule.dismiss()
+
+
+	def onPressSaveSchedule(self):
+		#self.schedule_id_faculty
+		to_add = self.ids.schedules.text
+		
+		full_data = self.onTextUnavailableSchedule()
+		ids_career = full_data[0]
+		ids_teacher = full_data[1]
+		ids_subject = full_data[2]
+		ids_schedule = full_data[3]
+		ids_group = full_data[4]
+		unavailables = full_data[5]
+
+		schedules_app = to_add.split(';')
+		valid = False
+		for schedule in schedules_app:
+			if schedule in unavailables:
+				self.schedule_exist = MDDialog(
+					title='Aviso.',
+					text=f'\'{schedule}\' ya esta ocupado.',
+					buttons=[
+						MDRectangleFlatButton(
+							text='Aceptar',
+							on_press=self.closeScheduleExist
+						)
+					]
+				)
+				self.schedule_exist.open()
+				valid = True
+				break
+
+		id_faculty = self.schedule_id_faculty # ID
+		id_classroom = self.id_classroom # ID
+		getting = self.sql.execute(f"EXECUTE getIds [{self.ids.schedule_faculty.text}],[{self.ids.schedule_career.text}],[{self.ids.schedule_subject.text}]")
+		for g in getting:
+			id_career = g[1] # ID
+			id_subject = g[2] # ID
+
+		full_name = self.ids.schedule_teacher.text.split(' ')
+		middle_name = full_name[0]
+		last_name = full_name[1]
+		name_list = full_name[2:]
+		name = ''
+		for i in name_list:
+			name += f'{i} '
+		name = name[:len(name)-1]
+		getting = self.sql.execute(f"EXECUTE getIdTeacher [{id_faculty}],[{id_career}],[{middle_name}],[{last_name}],[{name}]")
+		for g in getting:
+			id_teacher = g[0] # ID
+		id_group = self.ids.group.text # ID
+		schedule = self.ids.schedules.text
+		
+		if id_career in ids_career:
+			if id_teacher in ids_teacher:
+				if id_subject in ids_subject:
+					if id_group in ids_group:
+						self.dialog_group_exist = MDDialog(
+							title='Atención.',
+							text=''''Esta clase ya fue agregada.
+Si desea modificar el horario, acceda a la opción 'Modificar'.''',
+							buttons=[
+								MDRectangleFlatButton(
+									text='Aceptar',
+									on_press=self.closeDialogGroupExist
+								)
+							]
+						)
+						valid = True
+		getting = self.sql.execute(f"EXECUTE getAllClassrooms [{self.schedule_id_faculty}],[{id_group}]")
+		existing_schedules = []
+		for g in getting:
+			existing_schedules.append(g[0])
+
+		if existing_schedules != []:
+			existing_schedule = []
+			for complete_schedule in existing_schedules:
+				existing_sch = complete_schedule.split(';')
+				for x in existing_sch:
+					existing_schedule.append(f'{x};')
+
+			for i in existing_schedule:
+				if i in schedule:
+					self.busy_schedule = MDDialog(
+						title='Error.',
+						text=f'Este grupo({id_group}) ya tiene clases en este horario({i})',
+						buttons=[
+							MDRectangleFlatButton(
+								text='Aceptar',
+								on_press=self.closeBusySchedule
+							)
+						]
+					)
+					valid = True
+					self.busy_schedule.open()
+					break
+
+		if valid == False:
+			self.sql.execute(f"EXECUTE saveSchedule [{id_faculty}],[{id_classroom}],[{id_career}],[{id_teacher}],[{id_subject}],[{id_group}],[{schedule}]")
 
