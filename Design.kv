@@ -1135,7 +1135,7 @@ WindowManager:
 							text: 'Seleccionar Carrera'
 							disabled: True
 							theme_text_color: 'Custom'
-							text_color: 1, 1, 1, 1
+							text_color: .1, .1, .1, 1
 							size_hint_x: 1
 							md_bg_color: .85, .85, .85, 1
 							line_color: 0, 0, 0, 1
@@ -1148,7 +1148,7 @@ WindowManager:
 							text: 'Seleccionar Profesor'
 							disabled: True
 							theme_text_color: 'Custom'
-							text_color: 1, 1, 1, 1
+							text_color: .1, .1, .1, 1
 							size_hint_x: 1
 							md_bg_color: .85, .85, .85, 1
 							line_color: 0, 0, 0, 1
@@ -1161,7 +1161,7 @@ WindowManager:
 							text: 'Seleccionar Materia'
 							disabled: True
 							theme_text_color: 'Custom'
-							text_color: 1, 1, 1, 1
+							text_color: .1, .1, .1, 1
 							size_hint_x: 1
 							md_bg_color: .85, .85, .85, 1
 							line_color: 0, 0, 0, 1
@@ -1171,6 +1171,7 @@ WindowManager:
 							id: group
 							name: 'group'
 
+							hint_text: 'Grupo'
 							disabled: True
 							#max_text_length: 10
 							on_text: root.onTextGroup()
@@ -1184,21 +1185,49 @@ WindowManager:
 							size_hint_x: .9
 
 						MDTextField:
-							id: schedules
-							name: 'schedules'
+							id: to_add
+							name: 'to_add'
 
-							hint_text: 'Horarios en que se llevara a cabo la materia'
 							disabled: True
 							#max_text_length: 10
-							on_text: root.onTextSchedules()
-							on_focus: root.onTextSchedules()
-
 							color_mode: 'custom'
 							line_color_focus: .9, .5, 0, 1
 							multiline: False
 							mode: 'fill'
 							fill_color: .9, .5, 0, .1
 							size_hint_x: .9
+
+						MDRaisedButton:
+							id: schedules
+							name: 'schedules'
+
+							text: 'Seleccionar Horario'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: .1, .1, .1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressSchedules()
+
+						MDRaisedButton:
+							id: add_schedule
+							name: 'add_schedule'
+
+							text: 'Agregar'
+							disabled: True
+							size_hint_x: 1
+							theme_text_color: 'Custom'
+							text_color: .1, .1, .1, 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press:
+								add_schedule.disabled = True
+								to_add.text += f'{schedules.text};'
+								schedules.text = 'Seleccionar Horario'
+								if to_add.text != '':\
+								save_schedule.disabled = False
+								root.sortSchedules()
 
 						MDRaisedButton:
 							id: save_schedule
@@ -1211,7 +1240,7 @@ WindowManager:
 							size_hint_x: 1
 							md_bg_color: .85, .85, .85, 1
 							line_color: 0, 0, 0, 1
-							on_press: root.saveSchedule()
+							on_press: root.onPressSaveSchedule()
 
 						MDRaisedButton:
 							id: finalize

@@ -5286,7 +5286,7 @@ CREATE TABLE Schedule(
 	ID_teacher INT REFERENCES Teacher(ID_teacher),
 	ID_subject INT REFERENCES SemesterSubject(ID_subject),
 	ID_schedule INT PRIMARY KEY IDENTITY(1,1),
-	ID_group INT,
+	ID_group VARCHAR(MAX),
 	schedule VARCHAR(MAX)-- UNAVAILABLE SCHEDULE
 )
 GO
@@ -5528,6 +5528,9 @@ CREATE PROCEDURE getAllClassroomsTeacher(@id_faculty INT, @id_teacher INT) AS
 	SELECT schedule FROM Schedule s
 	WHERE s.ID_faculty=@id_faculty and s.ID_teacher=@id_teacher
 GO
+--SELECT * FROM Schedule
+
+--EXECUTE getTeachers 'CIENCIAS FISICO-MATEMATICAS','LICENCIADO EN MATEMATICAS'
 
 CREATE PROCEDURE saveSchedule(@id_faculty INT, @id_classroom INT, @id_career INT, @id_teacher INT, @id_subject INT, @ID_group VARCHAR(MAX), @schedule VARCHAR(MAX)) AS
 	INSERT INTO Schedule(ID_faculty, ID_classroom, ID_career, ID_teacher, ID_subject, ID_group, schedule)
