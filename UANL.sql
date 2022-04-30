@@ -5519,9 +5519,14 @@ CREATE PROCEDURE getIdTeacher(@id_faculty INT, @id_career INT, @middle_name VARC
 	WHERE t.ID_faculty = @id_faculty and t.ID_career = @id_career and t.middle_name = @middle_name and t.last_name = @last_name and name_ = @name
 GO
 
-CREATE PROCEDURE getAllClassrooms(@id_faculty INT, @id_group VARCHAR(MAX)) AS
+CREATE PROCEDURE getAllClassroomsGroup(@id_faculty INT, @id_group VARCHAR(MAX)) AS
 	SELECT schedule FROM Schedule
 	WHERE @id_faculty=ID_faculty and @id_group=ID_group
+GO
+
+CREATE PROCEDURE getAllClassroomsTeacher(@id_faculty INT, @id_teacher INT) AS
+	SELECT schedule FROM Schedule s
+	WHERE s.ID_faculty=@id_faculty and s.ID_teacher=@id_teacher
 GO
 
 CREATE PROCEDURE saveSchedule(@id_faculty INT, @id_classroom INT, @id_career INT, @id_teacher INT, @id_subject INT, @ID_group VARCHAR(MAX), @schedule VARCHAR(MAX)) AS
