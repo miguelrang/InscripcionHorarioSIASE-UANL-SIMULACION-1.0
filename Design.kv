@@ -1047,7 +1047,9 @@ WindowManager:
 							size_hint_x: 1
 							md_bg_color: .85, .85, .85, 1
 							line_color: 0, 0, 0, 1
-							on_press: root.onPressScheduleFaculty()
+							on_press: 
+								root.onPressScheduleFaculty()
+								root.verifier = True
 
 
 						MDTextField:
@@ -1057,7 +1059,7 @@ WindowManager:
 							hint_text: 'Nombre del Aula'
 							disabled: True
 							#max_text_length: 10
-							on_text: root.onTextClassroom()
+							#on_text: root.onTextClassroom()
 							on_focus: root.onTextClassroom()
 
 							color_mode: 'custom'
@@ -1075,7 +1077,7 @@ WindowManager:
 							input_filter: 'int'
 							disabled: True
 							#max_text_length: 10
-							on_text: root.onTextBanches()
+							#on_text: root.onTextBanches()
 							on_focus: root.onTextBanches()
 
 							color_mode: 'custom'
@@ -1174,7 +1176,7 @@ WindowManager:
 							hint_text: 'Grupo'
 							disabled: True
 							#max_text_length: 10
-							on_text: root.onTextGroup()
+							#on_text: root.onTextGroup()
 							on_focus: root.onTextGroup()
 
 							color_mode: 'custom'
@@ -1253,7 +1255,7 @@ WindowManager:
 							size_hint_x: 1
 							md_bg_color: .24, .74, .53, 1
 							line_color: 0, 0, 0, 1
-							on_press: #root.saveClassroom()
+							on_press: root.clearAllFields()
 
 				GridLayout:
 					size_hint_y: .25

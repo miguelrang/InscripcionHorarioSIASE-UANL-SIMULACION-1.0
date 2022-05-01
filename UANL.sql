@@ -5519,6 +5519,11 @@ CREATE PROCEDURE getIdTeacher(@id_faculty INT, @id_career INT, @middle_name VARC
 	WHERE t.ID_faculty = @id_faculty and t.ID_career = @id_career and t.middle_name = @middle_name and t.last_name = @last_name and name_ = @name
 GO
 
+CREATE PROCEDURE getSchedulesFromFaculty(@id_faculty INT) AS
+	SELECT s.ID_career, s.ID_teacher, s.ID_subject, s.ID_schedule, s.ID_group, s.schedule FROM Schedule s
+	WHERE s.ID_faculty=@id_faculty
+GO
+
 CREATE PROCEDURE getAllClassroomsGroup(@id_faculty INT, @id_group VARCHAR(MAX)) AS
 	SELECT schedule FROM Schedule
 	WHERE @id_faculty=ID_faculty and @id_group=ID_group
@@ -5528,9 +5533,11 @@ CREATE PROCEDURE getAllClassroomsTeacher(@id_faculty INT, @id_teacher INT) AS
 	SELECT schedule FROM Schedule s
 	WHERE s.ID_faculty=@id_faculty and s.ID_teacher=@id_teacher
 GO
---SELECT * FROM Schedule
 
---EXECUTE getTeachers 'CIENCIAS FISICO-MATEMATICAS','LICENCIADO EN MATEMATICAS'
+SELECT * FROM Schedule
+GO
+EXECUTE getSchedulesFromFaculty '8'
+GO
 
 CREATE PROCEDURE saveSchedule(@id_faculty INT, @id_classroom INT, @id_career INT, @id_teacher INT, @id_subject INT, @ID_group VARCHAR(MAX), @schedule VARCHAR(MAX)) AS
 	INSERT INTO Schedule(ID_faculty, ID_classroom, ID_career, ID_teacher, ID_subject, ID_group, schedule)
