@@ -52,6 +52,7 @@ class main(MDApp):
 		#Window.left = (1400 - 1100)*2#1.3
 		#Window.top = 200#301
 		#self.root.current = "add"
+		pass
 
 def sqlCONNECTION():
 	try:

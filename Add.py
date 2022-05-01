@@ -1750,7 +1750,7 @@ MDRaisedButton:
 		layout.clear_widgets()
 		
 		n = 0
-		for facu in ['CIENCIAS FISICO-MATEMATICAS']:#faculty:
+		for facu in faculty:
 			n += 1
 			del self.ids[f'A{n}']
 
@@ -1791,7 +1791,7 @@ MDRaisedButton:
 			faculty.append(facu[0])
 
 		n = 0
-		for facu in ['CIENCIAS FISICO-MATEMATICAS']:#faculty:
+		for facu in faculty:
 			n += 1
 			facu = f"""
 MDRaisedButton:
@@ -2052,7 +2052,7 @@ MDRaisedButton:
 		layout.clear_widgets()
 		
 		n = 0
-		for c in ['LICENCIADO EN SEGURIDAD EN TECNOLOGIAS DE INFORMACION']:#career:
+		for c in career:
 			n += 1
 			del self.ids[f'A{n}']
 
@@ -2094,7 +2094,7 @@ MDRaisedButton:
 			career.append(c[0])
 
 		n = 0
-		for c in ['LICENCIADO EN SEGURIDAD EN TECNOLOGIAS DE INFORMACION']:#career:
+		for c in career:
 			n += 1
 			c = f"""
 MDRaisedButton:
@@ -2121,7 +2121,7 @@ MDRaisedButton:
 		layout.clear_widgets()
 		
 		n = 0
-		for t in ['GONZALEZ GONZALEZ OSVALDO HABIB']:#teacher:
+		for t in teacher:
 			n += 1
 			del self.ids[f'A{n}']
 
@@ -2165,7 +2165,7 @@ MDRaisedButton:
 			teacher.append(f'{t[0]} {t[1]} {t[2]}')
 
 		n = 0
-		for t in ['GONZALEZ GONZALEZ OSVALDO HABIB']:#teacher:
+		for t in teacher:
 			n += 1
 			t = f"""
 MDRaisedButton:
@@ -2205,7 +2205,7 @@ MDRaisedButton:
 		layout.clear_widgets()
 		
 		n = 0
-		for s in ['PROGRAMA DE SEGURIDAD']:#subject:
+		for s in subject:
 			n += 1
 			del self.ids[f'A{n}']
 
@@ -2244,7 +2244,7 @@ MDRaisedButton:
 			subject.append(s[0])
 
 		n = 0
-		for s in ['PROGRAMA DE SEGURIDAD']:#subject:
+		for s in subject:
 			n += 1
 			s = f"""
 MDRaisedButton:
