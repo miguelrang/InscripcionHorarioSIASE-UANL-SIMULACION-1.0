@@ -5258,7 +5258,6 @@ INSERT INTO SemesterSubject(ID_faculty,ID_career,ID_semester,name_subject) VALUE
 GO
 --
 --
-
 CREATE TABLE Schedule(
 	ID_faculty INT REFERENCES Faculty(ID_faculty),
 	ID_classroom INT REFERENCES Classroom(ID_classroom),
@@ -5266,7 +5265,7 @@ CREATE TABLE Schedule(
 	ID_teacher INT REFERENCES Teacher(ID_teacher),
 	ID_subject INT REFERENCES SemesterSubject(ID_subject),
 	ID_schedule INT PRIMARY KEY IDENTITY(1,1),
-	ID_group INT,
+	ID_group VARCHAR(MAX),
 	schedule VARCHAR(MAX)-- UNAVAILABLE SCHEDULE
 )
 GO
@@ -5288,7 +5287,7 @@ CREATE TABLE Kardex(
 )
 GO
 
-CREATE TABLE studentSchedule(
+CREATE TABLE StudentSchedule(
 	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
 	ID_classroom INT NOT NULL REFERENCES Classroom(ID_classroom),
 	ID_career INT NOT NULL REFERENCES Career(ID_career),

@@ -36,8 +36,18 @@ DROP PROCEDURE getIdTeacher
 DROP PROCEDURE getAllClassrooms
 DROP PROCEDURE saveSchedule
 ----------- D E L E T E --------------
+------------- Student ----------------
 DROP PROCEDURE getStudentInfo
 DROP PROCEDURE deleteStudent
+------------- Teacher ----------------
+DROP PROCEDURE getTeacherInfo
+DROP PROCEDURE deleteTeacher
+------------ Classroom ---------------
+DROP PROCEDURE getClassroomInfo
+DROP PROCEDURE deleteClassroom
+------------- Schedule ---------------
+DROP PROCEDURE getScheduleInfo
+DROP PROCEDURE deleteSchedule
 GO
 
 -------------------------------------- L O G I N ---------------------------------------------
@@ -265,6 +275,7 @@ GO
 --
 ----------------------------------------- M O D ----------------------------------------------
 -------------------------------------- D E L E T E -------------------------------------------
+---------------------------------------- Student ---------------------------------------------
 CREATE PROCEDURE getStudentInfo(@ID_student INT) AS
 	SELECT f.name_faculty, c.name_career, s.middle_name, s.last_name, s.name_, s.date_birth, s.email, s.password_, s.student_status
 	FROM Student s
@@ -284,3 +295,83 @@ CREATE PROCEDURE deleteStudent(@ID_student INT) AS
 	DELETE FROM Kardex
 	WHERE ID_student = @ID_student
 GO
+---------------------------------------- Teacher ------------------------------------------------
+CREATE PROCEDURE getTeacherInfo(@enrollment INT) AS
+	SELECT f.name_faculty, c.name_career, t.middle_name, t.last_name, t.name_, t.email, t.password_, t.teacher_status 
+	FROM Teacher t
+		INNER JOIN(
+			SELECT ID_faculty, name_faculty FROM Faculty
+		)f
+		ON f.ID_faculty = t.ID_faculty
+
+		INNER JOIN(
+			SELECT ID_career, name_career FROM Career
+		)c
+		ON c.ID_career = t.ID_career
+
+	WHERE t.enrollment = @enrollment
+GO
+
+CREATE PROCEDURE deleteTeacher(@enrollment INT) AS
+	DELETE FROM Teacher
+	WHERE enrollment=@enrollment
+GO
+---------------------------------------- Classroom ------------------------------------------------
+CREATE PROCEDURE getClassroomInfo(@faculty VARCHAR(MAX), @classroom VARCHAR(MAX)) AS
+	SELECT f.name_faculty, c.classroom, c.banches FROM Classroom c
+		INNER JOIN(
+			SELECT ID_faculty, name_faculty FROM Faculty
+		)f
+		ON f.ID_faculty = c.ID_faculty and f.name_faculty = @faculty
+	WHERE c.classroom = @classroom
+GO
+
+CREATE PROCEDURE deleteClassroom(@id_faculty INT, @id_classroom VARCHAR(MAX)) AS
+	DELETE FROM StudentSchedule
+	WHERE ID_faculty = @id_faculty and ID_classroom = @id_classroom
+GO
+----------------------------------------- Schedule ------------------------------------------------
+CREATE PROCEDURE getScheduleInfo(@subject VARCHAR(MAX), @id_group VARCHAR(MAX)) AS
+	SELECT f.name_faculty, c.classroom, c2.name_career, t.middle_name, t.last_name, t.name_, s_s.name_subject, s.ID_group, s.schedule
+	FROM Schedule s
+		INNER JOIN(
+			SELECT ID_faculty, name_faculty FROM Faculty
+		)f
+		ON f.ID_faculty = s.ID_faculty
+
+		INNER JOIN(
+			SELECT ID_classroom, classroom FROM Classroom
+		)c
+		ON c.ID_classroom=s.ID_classroom
+
+		INNER JOIN(
+			SELECT ID_career, name_career FROM Career
+		)c2
+		ON c2.ID_career = s.ID_career
+
+		INNER JOIN(
+			SELECT ID_teacher, middle_name, last_name, name_ FROM Teacher
+		)t
+		ON t.ID_teacher = s.ID_teacher
+
+		INNER JOIN(
+			SELECT ID_subject, name_subject FROM SemesterSubject 
+		)s_s
+		ON s_s.ID_subject = s.ID_subject and s_s.name_subject = @subject
+
+	WHERE s.ID_group=@id_group
+GO
+
+CREATE PROCEDURE deleteSchedule(@ID_schedule INT) AS
+	DELETE FROM StudentSchedule
+	WHERE ID_schedule = @ID_schedule
+GO
+
+
+
+
+
+
+
+
+
