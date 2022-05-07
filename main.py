@@ -51,7 +51,11 @@ class main(MDApp):
 		#Window.size = 500, 700
 		#Window.left = (1400 - 1100)*2#1.3
 		#Window.top = 200#301
-		#self.root.current = "add"
+
+		Window.size = 500, 650
+		Window.left = 400
+		Window.top = (750 - 650)/2
+		self.root.current = "del"
 		pass
 
 def sqlCONNECTION():
@@ -66,5 +70,5 @@ def sqlCONNECTION():
 		print("Error connection")
 
 if __name__ == "__main__":
-	sql = sqlCONNECTION()
+	#sql = sqlCONNECTION()
 	main().run()
