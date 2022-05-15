@@ -11,11 +11,11 @@ DROP TABLE Career
 DROP TABLE Classroom
 DROP TABLE Faculty
 DROP TABLE Rector
+GO
 */
 
-
 CREATE TABLE Rector(
-	ID_rector INT NOT NULL PRIMARY KEY IDENTITY(1000,1),
+	ID_rector INT PRIMARY KEY IDENTITY(1000,1),
 	password_ varchar(16)
 )
 
@@ -23,16 +23,16 @@ INSERT INTO Rector(password_) VALUES('password')
 GO
 
 CREATE TABLE Faculty(
-	ID_faculty INT PRIMARY KEY NOT NULL IDENTITY(1,1),
+	ID_faculty INT PRIMARY KEY IDENTITY(1,1),
 
 	name_faculty VARCHAR(50)
 );
 GO
 
 CREATE TABLE Classroom(
-	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
+	ID_faculty INT CONSTRAINT FACULTY_FK_CLASSROOM REFERENCES Faculty(ID_faculty),
 
-	ID_classroom INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+	ID_classroom INT PRIMARY KEY IDENTITY(1,1),
 	classroom VARCHAR(3) NOT NULL,
 	banches INT NOT NULL
 )
@@ -67,7 +67,7 @@ INSERT INTO Faculty(name_faculty) VALUES('TRABAJO SOCIAL Y DESARROLLO HUMANO');
 GO
 
 CREATE TABLE Career(
-	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
+	ID_faculty INT CONSTRAINT FACULTY_FK_CAREER REFERENCES Faculty(ID_faculty),
 	ID_career INT PRIMARY KEY NOT NULL,
 
 	name_career VARCHAR(80),
@@ -165,10 +165,10 @@ INSERT INTO Career(ID_faculty, ID_career, name_career, n_semester) VALUES(26,87,
 GO
 
 CREATE TABLE Teacher(
-	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
-	ID_career INT NOT NULL REFERENCES Career(ID_career),
+	ID_faculty INT CONSTRAINT FACULTY_FK_TEACHER REFERENCES Faculty(ID_faculty),
+	ID_career INT CONSTRAINT CAREER_FK_TEACHER REFERENCES Career(ID_career),
 	
-	ID_teacher INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+	ID_teacher INT PRIMARY KEY IDENTITY(1,1),
 	
 	enrollment INT,
 	middle_name VARCHAR(20),
@@ -181,8 +181,8 @@ CREATE TABLE Teacher(
 GO
 
 CREATE TABLE Student(
-	ID_faculty INT REFERENCES Faculty(ID_faculty),
-	ID_career INT REFERENCES Career(ID_career),
+	ID_faculty INT CONSTRAINT FACULTY_FK_STUDENT REFERENCES Faculty(ID_faculty),
+	ID_career INT CONSTRAINT CAREER_FK_STUDENT REFERENCES Career(ID_career),
 
 	ID_student INT PRIMARY KEY IDENTITY(1000,1), -- Matricula
 
@@ -197,11 +197,11 @@ CREATE TABLE Student(
 GO
 
 CREATE TABLE SemesterSubject(
-	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
-	ID_career INT NOT NULL REFERENCES Career(ID_career),
+	ID_faculty INT CONSTRAINT FACULTY_FK_SUBJECT REFERENCES Faculty(ID_faculty),
+	ID_career INT CONSTRAINT CAREER_FK_SUBJECT REFERENCES Career(ID_career),
 
 	ID_semester INT NOT NULL,
-	ID_subject INT PRIMARY KEY NOT NULL IDENTITY(1,1),
+	ID_subject INT PRIMARY KEY IDENTITY(1,1),
 
 	name_subject VARCHAR(100) NOT NULL
 );
@@ -5259,11 +5259,11 @@ GO
 --
 --
 CREATE TABLE Schedule(
-	ID_faculty INT REFERENCES Faculty(ID_faculty),
-	ID_classroom INT REFERENCES Classroom(ID_classroom),
-	ID_career INT REFERENCES Career(ID_career),
-	ID_teacher INT REFERENCES Teacher(ID_teacher),
-	ID_subject INT REFERENCES SemesterSubject(ID_subject),
+	ID_faculty INT CONSTRAINT FACULTY_FK_SCHEDULE REFERENCES Faculty(ID_faculty),
+	ID_classroom INT CONSTRAINT CLASSROOM_FK_SCHEDULE REFERENCES Classroom(ID_classroom),
+	ID_career INT CONSTRAINT CAREER_FK_SCHEDULE REFERENCES Career(ID_career),
+	ID_teacher INT CONSTRAINT TEACHER_FK_SCHEDULE REFERENCES Teacher(ID_teacher),
+	ID_subject INT CONSTRAINT SUBJECT_FK_SCHEDULE REFERENCES SemesterSubject(ID_subject),
 	ID_schedule INT PRIMARY KEY IDENTITY(1,1),
 	ID_group VARCHAR(MAX),
 	schedule VARCHAR(MAX)-- UNAVAILABLE SCHEDULE
@@ -5271,12 +5271,12 @@ CREATE TABLE Schedule(
 GO
 
 CREATE TABLE Kardex(
-	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
-	ID_career INT NOT NULL REFERENCES Career(ID_career),
-	ID_student INT NOT NULL REFERENCES Student(ID_student),
-	ID_subject INT NOT NULL REFERENCES SemesterSubject(ID_subject),
+	ID_faculty INT CONSTRAINT FACULTY_FK_KARDEX REFERENCES Faculty(ID_faculty),
+	ID_career INT CONSTRAINT CAREER_FK_KARDEX REFERENCES Career(ID_career),
+	ID_student INT CONSTRAINT STUDENT_FK_KARDEX REFERENCES Student(ID_student),
+	ID_subject INT CONSTRAINT SUBJECT_FK_KARDEX REFERENCES SemesterSubject(ID_subject),
 
-	ID_kardex INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+	ID_kardex INT PRIMARY KEY IDENTITY(1,1),
 	
 	op1 VARCHAR(3),
 	op2 VARCHAR(3),
@@ -5288,14 +5288,14 @@ CREATE TABLE Kardex(
 GO
 
 CREATE TABLE StudentSchedule(
-	ID_faculty INT NOT NULL REFERENCES Faculty(ID_faculty),
-	ID_classroom INT NOT NULL REFERENCES Classroom(ID_classroom),
-	ID_career INT NOT NULL REFERENCES Career(ID_career),
-	ID_teacher INT NOT NULL REFERENCES Teacher(ID_teacher),
-	ID_student INT NOT NULL REFERENCES Student(ID_student),
-	ID_subject INT NOT NULL REFERENCES SemesterSubject(ID_subject),
-	ID_schedule INT NOT NULL REFERENCES Schedule(ID_schedule),
-	ID_student_schedule INT NOT NULL PRIMARY KEY IDENTITY(1,1)
+	ID_faculty INT CONSTRAINT FACULTY_FK_STUDENTSCHEDULE REFERENCES Faculty(ID_faculty),
+	ID_classroom INT CONSTRAINT CLASSROOM_FK_STUDENTSCHEDULE REFERENCES Classroom(ID_classroom),
+	ID_career INT CONSTRAINT CAREER_FK_STUDENTSCHEDULE REFERENCES Career(ID_career),
+	ID_teacher INT CONSTRAINT TEACHER_FK_STUDENTSCHEDULE REFERENCES Teacher(ID_teacher),
+	ID_student INT CONSTRAINT STUDENT_FK_STUDENTSCHEDULE REFERENCES Student(ID_student),
+	ID_subject INT CONSTRAINT SUBJECT_FK_STUDENTSCHEDULE REFERENCES SemesterSubject(ID_subject),
+	ID_schedule INT CONSTRAINT SCHEDULE_FK_STUDENTSCHEDULE REFERENCES Schedule(ID_schedule),
+	ID_student_schedule INT PRIMARY KEY IDENTITY(1,1)
 )
 GO
 

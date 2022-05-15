@@ -1959,9 +1959,7 @@ WindowManager:
 						hint_text: 'Status'
 						disabled: True
 
-				GridLayout:#BoxLayout:
-					#orientation: 'horizontal'
-					#size_hint_y: .01
+				GridLayout
 					cols: 2
 					size_hint_y: .1
 					spacing: 5
@@ -1993,7 +1991,7 @@ WindowManager:
 				id: teacher_data
 				name: 'teacher_data'
 
-				spacing: 15
+				spacing: 30
 				padding: 20
 				opacity: .85
 				cols: 1
@@ -2008,24 +2006,47 @@ WindowManager:
 				GridLayout:
 					spacing: 5
 					size_hint_y: .05
-					cols: 2
+					cols: 3
 
 					TextInput:
 						id: teacher_enrollment
 						name: 'teacher_enrollment'
 
 						hint_text: 'Matricula del Profesor'
+						input_filter: 'int'
 						multiline: False
+
+					MDRaisedButton:
+						id: teacher_careers
+						name: 'teacher_careers'
+
+						text: 'Carrera'
+						on_press: root.onPressTeacherCareer()
 
 					MDRaisedButton:
 						id: search_teacher
 						name: 'search_teacher'
 
 						text: 'Buscar'
+						on_press: root.getTeacher()
 				
 				GridLayout:
 					spacing: 5
 					cols: 1
+
+					MDTextField:
+						id: teacher_faculty
+						name: 'teacher_faculty'
+
+						hint_text: 'Facultad'
+						disabled: True
+
+					MDTextField:
+						id: teacher_career
+						name: 'teacher_career'
+
+						hint_text: 'Carrera'
+						disabled: True
 
 					MDTextField:
 						id: teacher_middle_name
@@ -2062,6 +2083,13 @@ WindowManager:
 						hint_text: 'Contraseña'
 						disabled: True
 
+					MDTextField:
+						id: teacher_status
+						name: 'teacher_status'
+
+						hint_text: 'Status'
+						disabled: True
+
 				BoxLayout:
 					orientation: 'horizontal'
 					padding: 15
@@ -2072,14 +2100,46 @@ WindowManager:
 						name: 'del_teacher'
 
 						text: 'Eliminar Información'
+						on_press: root.onPressDelTeacher()
 						disabled: True
 
 					MDRaisedButton:
-						id: cancel
-						name: 'cancel'
+						id: cancel_teacher
+						name: 'cancel_teacher'
 
 						text: 'Cancelar'
+						on_press: root.onPressCancelTeacher()
 						disabled: True
+
+			GridLayout:
+				id: teacher_no_scroll
+				name: 'teacher_no_scroll'
+
+				cols: 1
+
+				pos_hint: {'center_x': -1}
+				padding: 10
+
+				canvas.before:
+					Color:
+						rgb: 255/255, 255/255, 255/255, 1
+
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+				ScrollView:
+					do_scroll_y: True
+
+					GridLayout:
+						id: show_teacher_careers
+						name: 'show_teacher_careers'
+
+						cols: 1
+						size_hint_y: None
+						#row_default_height: 50
+						height: self.minimum_height
+
 
 		MDBottomNavigationItem:
 			id: schedule

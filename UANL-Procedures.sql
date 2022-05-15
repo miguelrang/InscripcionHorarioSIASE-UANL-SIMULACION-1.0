@@ -40,6 +40,7 @@ DROP PROCEDURE saveSchedule
 DROP PROCEDURE getStudentInfo
 DROP PROCEDURE deleteStudent
 ------------- Teacher ----------------
+DROP PROCEDURE getTeacherCareers
 DROP PROCEDURE getTeacherInfo
 DROP PROCEDURE deleteTeacher
 ------------ Classroom ---------------
@@ -292,11 +293,34 @@ CREATE PROCEDURE getStudentInfo(@ID_student INT) AS
 GO
 
 CREATE PROCEDURE deleteStudent(@ID_student INT) AS
-	DELETE FROM Kardex
-	WHERE ID_student = @ID_student
+	ALTER TABLE Kardex 
+		DROP CONSTRAINT STUDENT_FK_KARDEX
+
+	ALTER TABLE StudentSchedule
+		DROP CONSTRAINT STUDENT_FK_STUDENTSCHEDULE
+
+	DELETE FROM Student
+	WHERE ID_student = @ID_student;
+
+	ALTER TABLE Kardex
+		ADD CONSTRAINT STUDENT_FK_KARDEX FOREIGN KEY(ID_student)
+		REFERENCES Student(ID_student)
+
+	ALTER TABLE StudentSchedule
+		ADD CONSTRAINT STUDENT_FK_STUDENTSCHEDULE FOREIGN KEY(ID_student)
+		REFERENCES Student(ID_student)
 GO
 ---------------------------------------- Teacher ------------------------------------------------
-CREATE PROCEDURE getTeacherInfo(@enrollment INT) AS
+CREATE PROCEDURE getTeacherCareers(@enrollment INT) AS
+	SELECT c.name_career FROM Career c
+		INNER JOIN(
+			SELECT ID_career, enrollment FROM Teacher t
+		) t
+		ON t.enrollment = @enrollment
+	WHERE c.ID_career = t.ID_career
+GO
+
+CREATE PROCEDURE getTeacherInfo(@enrollment INT, @career VARCHAR(MAX)) AS
 	SELECT f.name_faculty, c.name_career, t.middle_name, t.last_name, t.name_, t.email, t.password_, t.teacher_status 
 	FROM Teacher t
 		INNER JOIN(
@@ -307,14 +331,28 @@ CREATE PROCEDURE getTeacherInfo(@enrollment INT) AS
 		INNER JOIN(
 			SELECT ID_career, name_career FROM Career
 		)c
-		ON c.ID_career = t.ID_career
+		ON c.name_career = @career
 
 	WHERE t.enrollment = @enrollment
 GO
 
-CREATE PROCEDURE deleteTeacher(@enrollment INT) AS
+CREATE PROCEDURE deleteTeacher(@enrollment INT, @career VARCHAR(MAX)) AS
+	ALTER TABLE Schedule
+		DROP CONSTRAINT TEACHER_FK_SCHEDULE
+
+	ALTER TABLE StudentSchedule
+		DROP CONSTRAINT TEACHER_FK_STUDENTSCHEDULE
+
 	DELETE FROM Teacher
-	WHERE enrollment=@enrollment
+	WHERE enrollment=@enrollment and ID_career=(SELECT ID_career FROM Career WHERE name_career=@career)
+
+	ALTER TABLE Schedule
+		ADD CONSTRAINT TEACHER_FK_SCHEDULE FOREIGN KEY(ID_student)
+		REFERENCES Student(ID_student)
+
+	ALTER TABLE StudentSchedule
+		ADD CONSTRAINT TEACHER_FK_STUDENTSCHEDULE FOREIGN KEY(ID_student)
+		REFERENCES Student(ID_student)
 GO
 ---------------------------------------- Classroom ------------------------------------------------
 CREATE PROCEDURE getClassroomInfo(@faculty VARCHAR(MAX), @classroom VARCHAR(MAX)) AS

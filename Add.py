@@ -126,7 +126,7 @@ class Add(Screen):
 
 		########################### T E A C H E R #########################
 		if verifier == False:
-			verifier:bool = False
+			verifier:bool = True
 			verifier2:bool = False
 			if self.teacher_middle_name == True:
 				verifier = True
@@ -144,7 +144,7 @@ class Add(Screen):
 									if self.ids.teacher_career.disabled == False:							
 										verifier = False
 
-			self.ids.save_teacher.disabled = not verifier
+			self.ids.save_teacher.disabled = verifier
 			self.ids.teacher_faculty.disabled = not verifier2
 
 			widget = [self.teacher_middle_name, self.teacher_last_name, self.teacher_name_, 

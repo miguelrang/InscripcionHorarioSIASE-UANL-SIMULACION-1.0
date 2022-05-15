@@ -8,20 +8,20 @@ GO
 
 
 CREATE TRIGGER deleteAllFromStudent
-	ON Kardex
+	ON Student
 	AFTER DELETE AS
 		DECLARE @id INT
 		SET @id = (SELECT ID_student FROM deleted)
 
-		DELETE FROM StudentSchedule
+		DELETE FROM Kardex
 		WHERE ID_student = @id
 
-		DELETE FROM Student
+		DELETE FROM StudentSchedule
 		WHERE ID_student = @id
 GO
 
 CREATE TRIGGER deleteALLFromTeacher
-	ON StudentSchedule
+	ON Teacher
 	AFTER DELETE AS
 		DECLARE @id INT
 		SET @id = (SELECT ID_teacher FROM deleted)
@@ -29,7 +29,7 @@ CREATE TRIGGER deleteALLFromTeacher
 		DELETE FROM Schedule
 		WHERE ID_schedule = @id
 
-		DELETE FROM Teacher
+		DELETE FROM StudentSchedule
 		WHERE ID_teacher = @id
 GO
 
