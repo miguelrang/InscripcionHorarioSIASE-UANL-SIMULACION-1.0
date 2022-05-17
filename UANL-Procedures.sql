@@ -50,7 +50,9 @@ DROP PROCEDURE getClassrooms
 DROP PROCEDURE getBanches
 ------------- Schedule ---------------
 DROP PROCEDURE getSchedules
+DROP PROCEDURE getC_T
 DROP PROCEDURE getScheduleInfo
+DROP PROCEDURE restartClassroom
 DROP PROCEDURE deleteSchedule
 GO
 
@@ -409,6 +411,30 @@ CREATE PROCEDURE getSchedules(@faculty VARCHAR(MAX), @classroom VARCHAR(MAX)) AS
 		  ID_classroom=(SELECT ID_classroom FROM Classroom WHERE classroom=@classroom)
 GO
 
+CREATE PROCEDURE getC_T(@faculty VARCHAR(MAX), @classroom VARCHAR(MAX), @schedule VARCHAR(MAX)) AS-- C = CAREER & T = TEACHER
+	DECLARE @id_career INT
+	SET @id_career=(
+			SELECT ID_career FROM Schedule
+			WHERE ID_faculty=(
+					SELECT ID_faculty FROM Faculty
+					WHERE name_faculty=@faculty
+				  ) 
+					AND
+				  ID_classroom=(
+					SELECT ID_classroom FROM Classroom
+					WHERE classroom=@classroom
+				  )
+					AND
+				  schedule=@schedule	
+		)
+	
+	SELECT c.name_career, t.middle_name, t.last_name, t.name_ FROM Teacher t
+		INNER JOIN(
+			SELECT ID_career, name_career FROM Career
+		)c
+		ON c.ID_career=@id_career 
+GO
+
 CREATE PROCEDURE getScheduleInfo(@subject VARCHAR(MAX), @id_group VARCHAR(MAX)) AS
 	SELECT f.name_faculty, c.classroom, c2.name_career, t.middle_name, t.last_name, t.name_, s_s.name_subject, s.ID_group, s.schedule
 	FROM Schedule s
@@ -440,8 +466,45 @@ CREATE PROCEDURE getScheduleInfo(@subject VARCHAR(MAX), @id_group VARCHAR(MAX)) 
 	WHERE s.ID_group=@id_group
 GO
 
-CREATE PROCEDURE deleteSchedule(@ID_schedule INT) AS
-	DELETE FROM StudentSchedule
-	WHERE ID_schedule = @ID_schedule
+CREATE PROCEDURE restartClassroom(@faculty VARCHAR(MAX), @classroom VARCHAR(MAX)) AS
+	ALTER TABLE StudentSchedule
+		DROP CONSTRAINT SCHEDULE_FK_STUDENTSCHEDULE
+
+	DELETE FROM Schedule
+	WHERE ID_faculty=(
+			SELECT ID_faculty FROM Faculty
+			WHERE name_faculty=@faculty
+		  )
+			AND
+		  ID_classroom=(
+			SELECT ID_classroom FROM Classroom
+			WHERE classroom=@classroom
+		  )
+
+	ALTER TABLE StudentSchedule
+		ADD CONSTRAINT SCHEDULE_FK_STUDENTSCHEDULE FOREIGN KEY(ID_schedule)
+		REFERENCES Schedule(ID_schedule)
+GO
+
+CREATE PROCEDURE deleteSchedule(@faculty VARCHAR(MAX), @classroom VARCHAR(MAX), @schedule VARCHAR(MAX)) AS
+	ALTER TABLE StudentSchedule
+		DROP CONSTRAINT SCHEDULE_FK_STUDENTSCHEDULE
+
+	DELETE FROM Schedule
+	WHERE ID_faculty=(
+			SELECT ID_faculty FROM Faculty
+			WHERE name_faculty=@faculty
+		  )
+			AND
+		  ID_classroom=(
+			SELECT ID_classroom FROM Classroom
+			WHERE classroom=@classroom
+		  )
+			AND
+		  schedule=@schedule
+
+	ALTER TABLE StudentSchedule
+		ADD CONSTRAINT SCHEDULE_FK_STUDENTSCHEDULE FOREIGN KEY(ID_schedule)
+		REFERENCES Schedule(ID_schedule)
 GO
 

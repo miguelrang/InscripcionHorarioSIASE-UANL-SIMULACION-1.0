@@ -47,12 +47,12 @@ CREATE TRIGGER deleteAllFromClassroom
 GO
 
 CREATE TRIGGER deleteAllFromSchedule
-	ON StudentSchedule
+	ON Schedule
 		AFTER DELETE AS
 			DECLARE @id INT
 			SET @id = (SELECT d.ID_schedule FROM deleted d)
 
-			DELETE FROM Schedule
+			DELETE FROM StudentSchedule
 			WHERE ID_schedule = @id
 GO
 

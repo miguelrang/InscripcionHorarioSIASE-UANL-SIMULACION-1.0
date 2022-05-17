@@ -339,7 +339,6 @@ MDRaisedButton:
 	def onPressScheduleClassroom(self):
 		layout = self.ids.show_schedule
 		layout.clear_widgets()
-		self.ids.classroom_and_schedule.disabled = True
 		#layout.cols = 1
 		#layout.row_default_height = 10
 		
@@ -356,6 +355,7 @@ MDRaisedButton:
 				self.dialogSchedule('Esta facultad no cuenta con aulas.')
 			
 			else:
+				self.ids.classroom_and_schedule.disabled = True
 				self.ids.schedule_no_scroll.pos_hint = {'center_x': .5}
 				n = 0
 				for c in classroom:
@@ -386,6 +386,7 @@ MDRaisedButton:
 
 	def setAvailableSchedules(self, got:list):
 		got.sort()
+		self.ids.unavailable_schedule.text = ''
 		for g in got:
 			self.ids.unavailable_schedule.text += g
 
@@ -492,8 +493,8 @@ MDRaisedButton:
 			count += 1
 
 		second_part = [
-			'enabled_schedule',
-			'disabled_schedule',
+			'available_schedule',
+			'unavailable_schedule',
 			'choose_schedule',
 			'schedule_career',
 			'schedule_teacher',
@@ -524,6 +525,9 @@ MDRaisedButton:
 		self.sql.execute(f'EXECUTE deleteClassroom [{self.schedule_faculty}], [{self.schedule_classroom}]')
 		self.sql.commit()
 		self.restartClassroom_Schedule()
+		self.schedule_faculty = ''
+		self.schedule_classroom = ''
+		self.choose_schedule = ''
 
 
 	def onPressContinueClassroom(self):
@@ -535,6 +539,9 @@ MDRaisedButton:
 		if schedule == []:
 			self.dialogSchedule('No hay mas horarios por eliminar.')
 			self.restartClassroom_Schedule()
+			self.schedule_faculty = ''
+			self.schedule_classroom = ''
+			self.choose_schedule = ''
 		
 		else:
 			classroom = [
@@ -570,16 +577,18 @@ MDRaisedButton:
 		get = self.sql.execute(f'EXECUTE getC_T [{self.schedule_faculty}], [{self.schedule_classroom}], [{self.choose_schedule}]')
 		for g in get:
 			self.ids.schedule_career.text = g[0]
-			self.ids.schedule_teacher.text = g[1]
-			self.ids.del_schedule.disabled = False
+			self.ids.schedule_teacher.text = f'{g[1]} {g[2]} {g[3]}'
+		self.ids.del_schedule.disabled = False
+
 
 	def onPressChooseSchedule(self):
 		layout = self.ids.show_schedule
 		layout.clear_widgets()
-		self.ids.classroom_and_schedule.disabled = True
 		#layout.cols = 1
 		#layout.row_default_height = 10
 
+		self.ids.schedule_career.text = ''
+		self.ids.schedule_teacher.text = ''
 		self.ids.del_schedule.disabled = True
 		schedules = self.sql.execute(f'EXECUTE dbo.getSchedules [{self.schedule_faculty}], [{self.schedule_classroom}]')
 		schedule = []
@@ -589,11 +598,23 @@ MDRaisedButton:
 		if schedule == []:
 			self.dialogSchedule('No hay mas horarios por eliminar.')
 			self.restartClassroom_Schedule()
+			self.schedule_faculty = ''
+			self.schedule_classroom = ''
+			self.choose_schedule = ''
 		
 		else:
+			self.ids.classroom_and_schedule.disabled = True
 			self.ids.schedule_no_scroll.pos_hint = {'center_x': .5}
 			n = 0
 			for s in schedule:
+				print(s)
+				print(s)
+				print(s)
+				print(s)
+				print(s)
+				print(s)
+				print(s)
+				
 				n += 1
 				s = f"""
 MDRaisedButton:
@@ -613,16 +634,39 @@ MDRaisedButton:
 			c_s = A{n}.text
 		screen.ids.choose_schedule.text = c_s
 		screen.choose_schedule = A{n}.text
-		screen.delScheduleClassrooms({schedule})
+		screen.delChooseSchedule({schedule})
 					"""
-			self.ids[f'A{n}'] = Builder.load_string(s)
-			layout.add_widget(self.ids[f'A{n}'])
+				self.ids[f'A{n}'] = Builder.load_string(s)
+				layout.add_widget(self.ids[f'A{n}'])
 
 
 	def onPressDelAllSchedule(self):
-		pass
+		self.sql.execute(f'EXECUTE restartClassroom [{self.schedule_faculty}], [{self.schedule_classroom}]')
+		self.sql.commit()
+		self.restartClassroom_Schedule()
+		self.schedule_faculty = ''
+		self.schedule_classroom = ''
+		self.choose_schedule = ''
+		self.dialogSchedule('Se han eliminado todos los horarios satisfactoriamente.')
 
 
 	def onPressDelSchedule(self):
-		pass
+		self.sql.execute(f'EXECUTE deleteSchedule [{self.schedule_faculty}], [{self.schedule_classroom}], [{self.choose_schedule}]')
+		self.sql.commit()
+		self.ids.choose_schedule.text = 'Seleccionar Horario'
+		self.ids.schedule_career.text = ''
+		self.ids.schedule_teacher.text = ''
+		
+		get = self.sql.execute(f'EXECUTE getSchedules [{self.schedule_faculty}], [{self.schedule_classroom}]')
+		got = []
+		for g in get:
+			got.append(g[0])	
+		self.setAvailableSchedules(got)
+		
+		if got == []:
+			self.dialogSchedule('No hay mas horarios por eliminar de esta Aula')
+			self.restartClassroom_Schedule()
+			self.schedule_faculty = ''
+			self.schedule_classroom = ''
+			self.choose_schedule = ''
 
