@@ -1,6 +1,6 @@
 ﻿USE [UANL]
 
-/*
+
 DROP TABLE StudentSchedule
 DROP TABLE Kardex
 DROP TABLE Schedule
@@ -12,7 +12,7 @@ DROP TABLE Classroom
 DROP TABLE Faculty
 DROP TABLE Rector
 GO
-*/
+
 
 CREATE TABLE Rector(
 	ID_rector INT PRIMARY KEY IDENTITY(1000,1),
