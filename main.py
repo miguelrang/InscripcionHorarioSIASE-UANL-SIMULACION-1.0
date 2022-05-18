@@ -55,7 +55,7 @@ class main(MDApp):
 		Window.size = 500, 650
 		Window.left = 400
 		Window.top = (750 - 650)/2
-		self.root.current = "del"
+		self.root.current = "mod"
 		pass
 
 def sqlCONNECTION():
