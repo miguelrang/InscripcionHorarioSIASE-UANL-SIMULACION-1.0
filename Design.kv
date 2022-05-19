@@ -127,7 +127,7 @@ WindowManager:
 		id: account
 		name: "account"
 
-		text: ""
+		text: "1000"
 		focus: True
 		on_text: root.onTextAccount()
 		on_focus: root.onTextAccount()
@@ -150,7 +150,7 @@ WindowManager:
 		id: password
 		name: "password"
 
-		text: ""
+		text: "rRxQtkwf"
 		password: True
 		on_text: root.onTextPassword()
 		on_text_validate: 
@@ -322,46 +322,70 @@ WindowManager:
 			size_hint_x: .7
 			font_size: 11
 			background_color: 0, 0, 0, 0
+			on_press: 
+				layout.clear_widgets()
+				root.Dialog('Error', 'Servicio no Disponible')
 
 		Button:
 			text: 'Tesoreria'
 			size_hint_x: .63
 			font_size: 11
 			background_color: 0, 0, 0, 0
+			on_press: 
+				layout.clear_widgets()
+				root.Dialog('Error', 'Servicio no Disponible')
 
 		Button:
 			text: 'DGPPE'
 			size_hint_x: .7
 			font_size: 11
 			background_color: 0, 0, 0, 0
+			on_press: 
+				layout.clear_widgets()
+				root.Dialog('Error', 'Servicio no Disponible')
 
 		Button:
 			text: 'AFI'
 			font_size: 11
 			size_hint_x: .4
 			background_color: 0, 0, 0, 0
+			on_press: 
+				layout.clear_widgets()
+				root.Dialog('Error', 'Servicio no Disponible')
 
 		Button:
 			text: 'EXCI'
 			size_hint_x: .4
 			font_size: 11
 			background_color: 0, 0, 0, 0
+			on_press:
+				layout.clear_widgets()
+				root.Dialog('Error', 'Servicio no Disponible')
 
 		Button:
 			text: 'Contraseña'
 			size_hint_x: .8
 			font_size: 11
 			background_color: 0, 0, 0, 0
+			on_press:
+				layout.clear_widgets() 
+				root.Dialog('Error', 'Servicio no Disponible')
 
 		Button:
 			text: 'Clave de Seguridad'
 			font_size: 11
 			background_color: 0, 0, 0, 0
+			on_press: 
+				layout.clear_widgets()
+				root.Dialog('Error', 'Servicio no Disponible')
 
 		Button:
 			text: 'Aviso de Privacidad'
 			font_size: 11
 			background_color: 0, 0, 0, 0
+			on_press: 
+				layout.clear_widgets()
+				root.Dialog('Error', 'Servicio no Disponible')
 
 		Button:
 			text: 'Salir'
@@ -404,7 +428,10 @@ WindowManager:
 		pos_hint: {'center_x': .91, 'center_y': .797}
 		theme_text_color: 'Custom'
 		text_color: 255/255, 204/255, 20/255, 1
-	
+		on_press:
+			layout.clear_widgets()
+			root.Dialog('Error', 'Servicio no Disponible')
+
 	BoxLayout:# COLOR 'BUTTON'
 		size_hint_x: .012
 		size_hint_y: .018
@@ -421,6 +448,9 @@ WindowManager:
 		pos_hint: {'center_x': .94, 'center_y': .796}
 		theme_text_color: 'Custom'
 		text_color: .1, .29, .54, 1
+		on_press:
+			layout.clear_widgets()
+			root.Dialog('Error', 'Servicio no Disponible')
 	
 	BoxLayout:
 		orientation: 'vertical'
@@ -448,174 +478,288 @@ WindowManager:
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'carga documentos pendientes'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Situacion estudiante UANL'
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Inscripción'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.onPressInscription()
 
 				MDRaisedButton:
 					text: 'Becas'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Kardex'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.onPressKardex()
 
 				MDRaisedButton:
 					text: 'Horario'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: root.onPressSchedule()
 
 				MDRaisedButton:
 					text: 'Calificaciones'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'datos personales'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Aviso de Pago'
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'subir foto del alumno'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Consulta Fecha Inscripción'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Consulta de Evaluación'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Cuotas escolares rectoria'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'aviso de inscripcion'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Otros adeudos'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Encuestas'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Encuestas tutoria'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Registro servicio social'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'formato inscripcion rectoria'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Trámites DEyA'
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'boleta pago '.title() + 'EXENS'
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Inscripción PROVERICYT'
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Programa Futbol Americano'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Cuestionario Huella CO2'
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press:
+						layout.clear_widgets() 
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Registro IMSS'
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Encuestas - CEV'
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'Prácticas Profesionales'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
 
 				MDRaisedButton:
 					text: 'voluntariado'.title()
 					size_hint_x: 2
 					md_bg_color: .1, .29, .54, 1
 					line_color: 1, 1, 1, 1
+					on_press: 
+						layout.clear_widgets()
+						root.Dialog('Error', 'Servicio no Disponible')
+
+	GridLayout:
+		cols: 1
+		size_hint_x: .8
+		size_hint_y: .778
+		pos_hint: {'center_x': .6, 'center_y': .389}
+
+		#canvas.before:
+		#	Color:
+		#		rgb: 1, 0, 0, 1
+
+		#	Rectangle:
+		#		size: self.size
+		#		pos: self.pos
+
+		ScrollView:
+			id: scroll
+			name: 'scroll'
+
+			do_scroll_y: True
+
+			GridLayout:
+				id: layout
+				name: 'layout'
+
+				size_hint_y: None
+				#row_default_height: 50
+				height: self.minimum_height
+
 			
 <Rectoria>:
 	id: rectoria

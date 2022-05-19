@@ -48,14 +48,14 @@ class main(MDApp):
 		return Builder.load_file("Design.kv")
 			
 	def on_start(self):
-		Window.size = 500, 700
-		Window.left = (1400 - 1100)*2#1.3
-		Window.top = 200#301
+		#Window.size = 500, 700
+		#Window.left = (1400 - 1100)*2#1.3
+		#Window.top = 200#301
 
-		Window.size = 500, 650
-		Window.left = 400
-		Window.top = (750 - 650)/2
-		self.root.current = "mod"
+		#Window.size = 500, 650
+		#Window.left = 400
+		#Window.top = (750 - 650)/2
+		#self.root.current = "mod"
 		pass
 
 def sqlCONNECTION():

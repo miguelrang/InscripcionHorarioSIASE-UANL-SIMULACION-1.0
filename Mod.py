@@ -30,6 +30,7 @@ class Mod(Screen):
 		self.id_faculty = ''
 		self.id_career = ''
 		self.id_subject = []
+		self.old_kardex = {}
 		self.actual_kardex = {}
 		self.kardex = {}
 
@@ -157,7 +158,18 @@ class Mod(Screen):
 					equal = False
 					to_continue = False
 
-			if self.kardex == {} and to_continue == True:
+			if self.kardex != {}:
+				old_kardex = self.old_kardex.copy()
+				try:
+					for subject in old_kardex:
+						del old_kardex[subject]['sem']
+				except:
+					pass
+
+				if old_kardex != self.actual_kardex:
+					equal = False
+
+			elif self.kardex == {} and to_continue == True:
 				if self.student_faculty in info['student_faculty'] and self.student_career in info['student_career']:
 					print(3)
 					print(3)
@@ -208,7 +220,7 @@ class Mod(Screen):
 		self.ids[layout_no_scroll].pos_hint = {'center_x': -1}
 
 		self.ids[layout].clear_widgets()
-		
+
 		n = 0
 		for d in data:
 			n += 1
@@ -401,10 +413,8 @@ MDRaisedButton:
 			del self.ids[f'textfield{i}{5}']
 			del self.ids[f'textfield{i}{6}']
 
-		
+		self.ids.editable_student.disabled = False
 
-		#self.ids.student_show.remove_widget(self.ids.save_kardex)#remove_widget(self.ids.save_kardex)
-	
 
 	def saveKardex(self):
 		#self.ids[self.last_kardex_field].focus = False
@@ -498,8 +508,10 @@ MDRaisedButton:
 
 
 	def onPressKardex(self):
+		self.ids.editable_student.disabled = True
 		layout = self.ids.show_student
 		layout.cols = 7
+		layout.padding = 2
 		layout.row_default_height = 50
 
 		self.actual_kardex = {}
@@ -510,6 +522,11 @@ MDRaisedButton:
 		subject = []
 		for s in subjects:
 			subject.append(s[0])
+
+		get = self.sql.execute(f'EXECUTE getKardex {self.ids.student_enrollment.text}')
+		self.old_kardex = {}
+		for g in get:
+			self.old_kardex[g[1]] = {'sem':f'{g[0]}', 'op1':f'{g[2]}', 'op2':f'{g[3]}', 'op3':f'{g[4]}', 'op4':f'{g[5]}', 'op5':f'{g[6]}', 'op6':f'{g[7]}'}
 
 		if subject != []:
 			self.ids.student_no_scroll.pos_hint = {'center_x': .5}
@@ -534,11 +551,16 @@ MDLabel:
 
 				i = 1
 				for i in range(1, 7, 1):
+					try:
+						text = self.old_kardex[s][f'op{i}']
+					except:
+						text = ''
 					y = f"""
 TextInput:
 	id: textfield{n}{i}
 	name: f'textfield{n}{i}'
 
+	text: '{text}'
 	size_hint_x: .15
 	multiline: False
 	#input_filter: 'int'
@@ -886,14 +908,10 @@ MDRaisedButton:
 			self.ids.student_status.text
 		]
 		valid = False
-		valid2 = False
 		for f in field:
 			if self.ids[f].text != self.actual_student_info[f]:
 				valid = True
-				if f == 'student_faculty' or f == 'student_career':
-					if self.kardex != {}:
-						valid2 = True
-				
+					
 		equals = self.studentEquals()
 		if equals == True:
 			self.studentDialog('No se ha hecho ninguna modificación o faltan datos por agregar.')
@@ -911,29 +929,32 @@ MDRaisedButton:
 			self.sql.execute(
 				f'EXECUTE updateStudent [{self.ids.student_enrollment.text}], [{to[0]}], [{to[1]}], [{to[2]}], [{to[3]}], [{to[4]}], [{to[5]}], [{to[6]}], [{to[7]}], [{to[8]}]'
 			)
-			if valid2 == True:
-				self.sql.execute(
-					f'EXECUTE deleteKardex [{self.ids.student_enrollment.text}]'
-				)
-				id_faculty = self.id_faculty
-				id_career = self.id_career
-				id_subject = self.id_subject
+			self.studentDialog('Se ha actualizado la información correctamente.')
+		
+		if self.kardex != {}:
+			self.sql.execute(
+				f'EXECUTE deleteKardex [{self.ids.student_enrollment.text}]'
+			)
+			id_faculty = self.id_faculty
+			id_career = self.id_career
+			id_subject = self.id_subject
 
-				kard = self.kardex
-				for i in range(len(self.kardex)):
-					op1 = kard[str(i)][0]
-					op2 = kard[str(i)][1]
-					op3 = kard[str(i)][2]
-					op4 = kard[str(i)][3]
-					op5 = kard[str(i)][4]
-					op6 = kard[str(i)][5]
-					
-					save_kardex = f"EXECUTE saveKardex '{id_faculty}', '{id_career}', '{self.ids.student_enrollment.text}',"
-					save_kardex += f" '{id_subject[i]}', '{op1}', '{op2}', '{op3}', '{op4}', '{op5}', '{op6}'"
-					self.sql.execute(save_kardex)
-					self.sql.commit()
+			kard = self.kardex
+			for i in range(len(self.kardex)):
+				op1 = kard[str(i)][0]
+				op2 = kard[str(i)][1]
+				op3 = kard[str(i)][2]
+				op4 = kard[str(i)][3]
+				op5 = kard[str(i)][4]
+				op6 = kard[str(i)][5]
+				
+				save_kardex = f"EXECUTE saveKardex '{id_faculty}', '{id_career}', '{self.ids.student_enrollment.text}',"
+				save_kardex += f" '{id_subject[i]}', '{op1}', '{op2}', '{op3}', '{op4}', '{op5}', '{op6}'"
+				self.sql.execute(save_kardex)
+				self.sql.commit()
 			self.sql.commit()
-			self.studentDialog('Actualización Exitosa.')
+			if (valid == True and equals == False) == False:
+				self.studentDialog('Se ha actualizado la información correctamente.')
 		self.ids.update_student.disabled = True
 
 
