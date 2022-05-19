@@ -13,6 +13,5 @@ GO
 
 
 SELECT * FROM Student
-
-
+EXECUTE getKardex 1000
 

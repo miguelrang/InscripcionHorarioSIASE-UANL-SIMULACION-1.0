@@ -6,6 +6,8 @@ DROP PROCEDURE verifyLoginStudent
 DROP PROCEDURE verifyLoginRector
 ----------- SIASE ---------------
 DROP PROCEDURE getInfo
+DROP PROCEDURE getKardex
+DROP PROCEDURE getStudentSchedule
 ------------ ADD ----------------
 ---------- Student --------------
 DROP PROCEDURE getFaculties
@@ -83,6 +85,30 @@ CREATE PROCEDURE getInfo(@enrollment INT) AS
 		ON s.ID_student = @enrollment and c.ID_career = s.ID_career
 GO
 
+CREATE PROCEDURE getKardex(@ID_student INT) AS
+	SELECT s.ID_semester, s.name_subject, k.op1, k.op2, k.op3, k.op4, k.op5, k.op5, k.op6 FROM Kardex k
+		INNER JOIN(
+			SELECT ID_semester, ID_subject, name_subject FROM SemesterSubject
+		)s
+		ON s.ID_subject=k.ID_subject 
+	WHERE k.ID_student=1000
+GO
+
+CREATE PROCEDURE getStudentSchedule(@ID_student INT) AS
+	SELECT ss.name_subject, s2.ID_group, s2.schedule FROM StudentSchedule s
+		INNER JOIN(
+			SELECT ID_subject, name_subject FROM SemesterSubject
+		)ss
+		ON ss.ID_subject = s.ID_subject
+
+		INNER JOIN(
+			SELECT ID_schedule, ID_group, schedule FROM Schedule s
+		)s2
+		ON s2.ID_schedule = s.ID_schedule
+
+	WHERE ID_student=@ID_student
+
+GO
 ------------------------------------- R E C T O R --------------------------------------------
 --------------------------------------   A D D   ---------------------------------------------
 ------------------------------------ S t u d e n t -------------------------------------------
