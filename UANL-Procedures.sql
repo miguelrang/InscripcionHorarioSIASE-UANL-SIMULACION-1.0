@@ -34,6 +34,13 @@ DROP PROCEDURE getTeachers
 DROP PROCEDURE getIdTeacher
 DROP PROCEDURE getAllClassrooms
 DROP PROCEDURE saveSchedule
+----------- U P D A T E --------------
+------------- Student ----------------
+DROP PROCEDURE updateStudent
+DROP PROCEDURE deleteKardex
+------------- Teacher ----------------
+------------ Classroom ---------------
+------------- Schedule ---------------
 ----------- D E L E T E --------------
 ------------- Student ----------------
 DROP PROCEDURE getStudentInfo
@@ -279,7 +286,29 @@ GO
 
 --
 --
------------------------------------------ M O D ----------------------------------------------
+-------------------------------------- U P D A T E -------------------------------------------
+---------------------------------------- Student ---------------------------------------------
+CREATE PROCEDURE updateStudent(@ID_student INT, @faculty VARCHAR(MAX), @career VARCHAR(MAX), @middle_name VARCHAR(MAX), @last_name VARCHAR(MAX), @name VARCHAR(MAX), @date_birth VARCHAR(MAX), @email VARCHAR(MAX), @password VARCHAR(MAX), @status VARCHAR(MAX)) AS
+	UPDATE Student
+		SET ID_faculty=(SELECT ID_faculty FROM Faculty WHERE name_faculty=@faculty),
+			ID_career=(SELECT ID_career FROM Career WHERE name_career=@career),
+			middle_name=@middle_name,
+			last_name=@last_name,
+			name_=@name,
+			date_birth=@date_birth,
+			email=@email,
+			password_=@password,
+			student_status=@status
+		WHERE ID_student=@ID_student
+GO
+
+CREATE PROCEDURE deleteKardex(@ID_student VARCHAR(MAX)) AS
+	DELETE FROM Kardex
+	WHERE ID_student=@ID_student
+GO
+
+---------------------------------------- Teacher ---------------------------------------------
+--------------------------------------- Classroom --------------------------------------------
 -------------------------------------- D E L E T E -------------------------------------------
 ---------------------------------------- Student ---------------------------------------------
 CREATE PROCEDURE getStudentInfo(@ID_student INT) AS

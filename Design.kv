@@ -1400,6 +1400,9 @@ WindowManager:
 						on_press: root.getStudent()
 				
 				GridLayout:
+					id: editable_student
+					name: 'editable_student'
+					disabled: True
 					spacing: 2
 					cols: 1
 
@@ -1427,11 +1430,25 @@ WindowManager:
 						#line_color: 0, 0, 0, 1
 						on_press: root.onPressStudentCareer()
 
+					MDRaisedButton:
+						id: kardex
+						name: 'kardex'
+
+						text: 'Kardex'
+						theme_text_color: 'Custom'
+						text_color: 1, 1, 1, 1
+						size_hint_x: 1
+						md_bg_color: 33/255, 96/255, 144/255, 1
+						#line_color: 0, 0, 0, 1
+						on_press: root.onPressKardex()
+
 					MDTextField:
 						id: middle_name
 						name: 'middle_name'
 
 						hint_text: 'Apellido Paterno del Estudiante'
+						#on_text: root.onTextMiddleName()
+						on_focus: root.onTextMiddleName()
 						#disabled: True
 
 					MDTextField:
@@ -1439,6 +1456,8 @@ WindowManager:
 						name: 'last_name'
 
 						hint_text: 'Apellido Materno del Estudiante'
+						#on_text: root.onTextLastName()
+						on_focus: root.onTextLastName()
 						#disabled: True
 
 					MDTextField:
@@ -1446,6 +1465,8 @@ WindowManager:
 						name: 'name'
 
 						hint_text: 'Nombre del Estudiante'
+						#on_text: root.onTextName()
+						on_focus: root.onTextName()
 						#disabled: True
 
 					MDTextField:
@@ -1453,6 +1474,7 @@ WindowManager:
 						name: 'date_birth'
 
 						hint_text: 'Fecha de Nacimiento'
+						on_focus: root.onTextDateBirth()
 						#disabled: True
 
 					MDTextField:
@@ -1467,27 +1489,26 @@ WindowManager:
 						name: 'password'
 
 						hint_text: 'Contraseña'
+						#on_text: root.onTextPassword('password')
+						on_focus: root.onTextPassword('password')
 						#disabled: True
 
-					MDTextField:
+					MDRaisedButton:
 						id: student_status
 						name: 'student_status'
 
-						hint_text: 'Status'
-						#disabled: True
+						text: 'Status'
+						theme_text_color: 'Custom'
+						text_color: 1, 1, 1, 1
+						size_hint_x: 1
+						md_bg_color: 33/255, 96/255, 144/255, 1
+						#line_color: 0, 0, 0, 1
+						on_press: root.onPressStatus('student_status')
 
 				GridLayout
 					cols: 2
-					size_hint_y: .1
+					size_hint_y: .05
 					spacing: 5
-
-					MDRaisedButton:
-						id: update_student
-						name: 'update_student'
-
-						text: 'Actualizar Información'
-						disabled: True
-						on_press:
 
 					MDRaisedButton:
 						id: cancel_student
@@ -1495,7 +1516,15 @@ WindowManager:
 
 						text: 'Cancelar'
 						disabled: True
-						on_press:
+						on_press: root.onPressCancelStudent()
+
+					MDRaisedButton:
+						id: update_student
+						name: 'update_student'
+
+						text: 'Actualizar Información'
+						disabled: True
+						on_press: root.onPressUpdateStudent()
 
 			GridLayout:
 				id: student_no_scroll
