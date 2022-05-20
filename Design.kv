@@ -733,18 +733,21 @@ WindowManager:
 						root.Dialog('Error', 'Servicio no Disponible')
 
 	GridLayout:
+		id: background
+		name: 'background'
+
 		cols: 1
 		size_hint_x: .8
 		size_hint_y: .778
 		pos_hint: {'center_x': .6, 'center_y': .389}
 
-		#canvas.before:
-		#	Color:
-		#		rgb: 1, 0, 0, 1
+		canvas.before:
+			Color:
+				rgb: 1, 1, 1, 1
 
-		#	Rectangle:
-		#		size: self.size
-		#		pos: self.pos
+			Rectangle:
+				size: self.size
+				pos: self.pos
 
 		ScrollView:
 			id: scroll
@@ -760,7 +763,15 @@ WindowManager:
 				#row_default_height: 50
 				height: self.minimum_height
 
-			
+				canvas.before:
+					Color:
+						rgb: 1, 1, 1
+
+					Rectangle:
+						size: self.size
+						pos: self.pos
+
+
 <Rectoria>:
 	id: rectoria
 	name: "rectoria"
@@ -1028,7 +1039,7 @@ WindowManager:
 						id: teacher_middle_name
 						name: 'teacher_middle_name'
 
-						text: 'GONZALEZ'
+						text:
 						hint_text: 'Apellido Paterno del Profesor'
 						on_text: root.onTextTeacherMiddleName()
 						on_focus: root.onTextTeacherMiddleName()
@@ -1042,7 +1053,7 @@ WindowManager:
 						id: teacher_last_name
 						name: 'teacher_last_name'
 
-						text: 'GONZALEZ'
+						text:
 						hint_text: 'Apellido Materno del Profesor'
 						on_text: root.onTextTeacherLastName()
 						on_focus: root.onTextTeacherLastName()
@@ -1056,7 +1067,7 @@ WindowManager:
 						id: teacher_name
 						name: 'teacher_name'
 
-						text: 'OSVALDO HABIB'
+						text:
 						hint_text: 'Nombre del Profesor'
 						on_text: root.onTextTeacherName()
 						on_focus: root.onTextTeacherName()

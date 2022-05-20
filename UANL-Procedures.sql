@@ -7,6 +7,9 @@ DROP PROCEDURE verifyLoginRector
 ----------- SIASE ---------------
 DROP PROCEDURE getInfo
 DROP PROCEDURE getKardex
+DROP PROCEDURE updateStudentStatus
+DROP PROCEDURE getStudentStatus
+DROP PROCEDURE getAvailableSchedules
 DROP PROCEDURE getStudentSchedule
 ------------ ADD ----------------
 ---------- Student --------------
@@ -92,6 +95,64 @@ CREATE PROCEDURE getKardex(@ID_student INT) AS
 		)s
 		ON s.ID_subject=k.ID_subject 
 	WHERE k.ID_student=1000
+GO
+
+CREATE PROCEDURE updateStudentStatus(@enrollment INT, @status VARCHAR(MAX)) AS
+	UPDATE Student
+		SET student_status=@status
+		WHERE ID_student=@enrollment
+GO
+
+CREATE PROCEDURE getStudentStatus(@enrollment INT) AS
+	SELECT student_status FROM Student
+	WHERE ID_student=@enrollment
+GO
+
+CREATE PROCEDURE getAvailableSchedules(@career VARCHAR(MAX), @subject VARCHAR(MAX)) AS
+	DECLARE @id_career INT
+	SET @id_career=(SELECT ID_career FROM Career WHERE name_career=@career)
+	
+	DECLARE @op1 VARCHAR(3)
+	SET @op1 = (SELECT op1 FROM Kardex 
+				WHERE ID_subject=(
+						SELECT ID_subject FROM SemesterSubject
+						WHERE name_subject=@subject AND ID_career=@id_career
+					  )
+				)
+	DECLARE @op3 VARCHAR(3)
+	SET @op3 = (SELECT op3 FROM Kardex 
+				WHERE ID_subject=(
+						SELECT ID_subject FROM SemesterSubject
+						WHERE name_subject=@subject AND ID_career=@id_career
+					  )
+				)
+	DECLARE @op5 VARCHAR(3)
+	SET @op5 = (SELECT op5 FROM Kardex 
+				WHERE ID_subject=(
+						SELECT ID_subject FROM SemesterSubject
+						WHERE name_subject=@subject AND ID_career=@id_career
+					  )
+				)
+	
+	SELECT  t.middle_name,
+			t.last_name,
+			t.name_, 
+			s.ID_group,
+			CASE
+				WHEN @op1 = '' THEN 'op1'
+					
+				WHEN @op3 = '' THEN 'op3'
+
+				WHEN @op5 = '' THEN 'op5'
+				END AS op,
+				s.schedule FROM Schedule s
+					INNER JOIN(
+						SELECT ID_teacher, middle_name, last_name, name_ FROM Teacher
+					)t
+					ON t.ID_teacher=s.ID_teacher
+	WHERE s.ID_career=@id_career
+			AND
+		  ID_subject=(SELECT ID_subject FROM SemesterSubject WHERE ID_career=@id_career and name_subject=@subject)
 GO
 
 CREATE PROCEDURE getStudentSchedule(@ID_student INT) AS

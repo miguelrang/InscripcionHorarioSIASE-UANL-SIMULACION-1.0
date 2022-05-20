@@ -8,8 +8,7 @@ SELECT * FROM Schedule
 SELECT * FROM StudentSchedule
 GO
 
-
-
+SELECT * FROM Teacher
 
 
 SELECT * FROM Student

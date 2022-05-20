@@ -147,6 +147,8 @@ class Add(Screen):
 
 			self.ids.save_teacher.disabled = verifier
 			self.ids.teacher_faculty.disabled = not verifier2
+			if self.ids.teacher_faculty.disabled == True:
+				self.ids.teacher_career.disabled = True
 
 			widget = [self.teacher_middle_name, self.teacher_last_name, self.teacher_name_, 
 					  self.teacher_email, self.teacher_faculty]
