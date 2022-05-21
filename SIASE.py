@@ -9,6 +9,8 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.config import Config
 Config.set('graphics', 'position', 'custom')
+from kivy.uix.button import Button
+from kivy.uix.checkbox import CheckBox
 
 from kivymd.uix.gridlayout import GridLayout
 from kivymd.uix.dialog import MDDialog
@@ -19,6 +21,7 @@ from kivymd.uix.button import MDRaisedButton
 
 from kivy.lang import Builder
 
+from functools import partial
 
 class SIASE(Screen):
 	def __init__(self, **kwargs):
@@ -27,6 +30,10 @@ class SIASE(Screen):
 		self.sql = self.sqlCONNECTION()
 
 		self.kardex = {}
+
+		self.set_schedule = []
+
+		self.career = ''
 
 
 	def sqlCONNECTION(self):
@@ -174,7 +181,9 @@ class SIASE(Screen):
 					pass
 				else:
 					subjects.remove(subject)
-
+		get = self.sql.execute(f'EXECUTE getInsertedSubjects {self.ids.enrollment.text}')
+		for g in get:
+			subjects.remove(g[0])
 		return subjects
 
 
@@ -230,24 +239,221 @@ class SIASE(Screen):
 				)
 
 
-	def addSchedule(self, *args):
-		subject = self.subject
-		get = self.sql.execute(f'EXECUTE getAvailableSchedules [{self.ids.career.text}], [{subject}]')
-		options = []
+	def setSchedule(self, schedule, subject, active):
+		print(schedule, subject)		
+		if active == True:
+			self.set_schedule = [schedule, subject, active]
+
+		else:
+			self.set_schedule = []
+
+
+	def insertSchedule(self, *args):
+		middle_name = ''
+		last_name = ''
+		name = ''
+		count = 0
+		
+		if self.set_schedule != []:
+			if self.set_schedule[2] == True:
+				for letter in self.set_schedule[0]['name']:
+					if letter == ' ':
+						count += 1
+						if count == 1:
+							middle_name = name
+							name = ''
+						elif count ==2:
+							last_name = name[1:]
+							name = ''
+
+					name += letter
+
+				name = name[1:]
+				
+				print(
+					f"'{self.career}', '{middle_name}', '{last_name}', '{name}', '{self.set_schedule[1]}', '{self.set_schedule[0]['schedule']}'"
+				)
+				get = self.sql.execute(f"EXECUTE getClassroomFromSchedule '{self.career}', '{middle_name}', '{last_name}', '{name}', '{self.set_schedule[1]}', '{self.set_schedule[0]['schedule']}'")
+				for i in get:
+					id_classroom = i[0]
+				
+				self.sql.execute(f"EXECUTE insertStudentSchedule {self.ids.enrollment.text}, [{self.career}], {id_classroom}, [{middle_name}], [{last_name}], [{name}], [{self.set_schedule[1]}], [{self.set_schedule[0]['schedule']}]")
+				self.sql.execute(f"EXECUTE updateClassroomMinus {id_classroom}")
+				self.sql.commit()
+				self.addSubjects()
+				self.set_schedule = []
+			else:
+				pass
+
+		else:
+			self.Dialog('Error', 'No ha seleccionado ningun horario.')
+
+
+	def addSchedule(self, subject, value):
+		#self.settings(
+		#	scroll=True,
+		#	scroll_y=False
+		#)
+		layout = self.ids.layout
+		layout.clear_widgets()
+		self.settings(
+			layout=True,
+			rgb=(1,1,1),
+			row_default_height=0,
+			cols=1,
+			rows=4,
+			size_hint_x=1,
+			size_hint_y=None,
+			pos_hint={'center_x': .6, 'center_y': .389},
+			padding=(50, 10),
+			spacing=(0, 25)
+		)
+		period = MDLabel(
+			text=f'Periodo AGOSTO - DICIEMBRE 2021'
+		)
+		#subject = self.subject
+		label_subject = MDLabel(
+			text=f'Selecciona grupo para la materia: {subject}'
+		)
+		layout.add_widget(period)
+		layout.add_widget(label_subject)
+
+		gridlayout = GridLayout(
+			cols=5,
+			padding=(0, 20),
+			spacing=(1, 1)
+		)
+		layout.add_widget(gridlayout)
+
+		labels = ['Seleccionar', 'Profesor', 'Grupo', 'OP', 'Horario']
+		for label in labels:
+			label2=label
+			if label == 'Profesor':
+				label2 = ' '*50 + label + ' '*50
+
+			elif label == 'Horario':
+				label2 = ' '*10 + label + ' '*10
+
+			gridlayout.add_widget(
+				MDRaisedButton(
+					text=label2,
+					theme_text_color='Custom',
+					text_color=(19/255, 39/255, 77/255, 1),
+					md_bg_color=(226/255, 212/255, 171/255, 1)
+				)
+			)
+		
+		
+		career = self.ids.career.text
+		career = career.replace('ING.', 'INGENIERO')
+		career = career.replace('LIC.', 'LICENCIADO')
+		
+		options = {}
 		option = {}
+		get = self.sql.execute(f'EXECUTE getAvailableSchedules [{career}], [{subject}]')
+		# Valid correct LIC./ING.
+		aux = ''
+		count = 0
 		for g in get:
+			count += 1
+			aux = g[0]
 			name = f'{g[0]} {g[1]} {g[2]}'
 			option['name'] = name
 			option['group'] = g[3]
 			option['op'] = g[4]
 			option['schedule'] = g[5]
 
+			options[f'{count}'] = option
+			option = {}
+
+		if aux == '':
+			career = career.replace('INGENIERO', 'INGENIERIA')
+			career = career.replace('LICENCIADO', 'LICENCIATURA')
+			get = self.sql.execute(f'EXECUTE getAvailableSchedules [{career}], [{subject}]')
+			
+			for g in get:
+				count += 1
+				name = f'{g[0]} {g[1]} {g[2]}'
+				option['name'] = name
+				option['group'] = g[3]
+				option['op'] = g[4]
+				option['schedule'] = g[5]
+
+				options[f'{count}'] = option
+		
+		self.career = career
+
+		count = 1
+		for opt in options.values():
+					
+			if count % 2 == 0:
+				color=(1, 1, 1, 1)
+			else:
+				color=(240/255, 240/255, 240/255, 1)
+
+			#partial(self.setSchedule, options[f'{count}'])
+			check_box = f"""
+CheckBox:
+	id: button
+	group: 'schedule'
+	color: (19/255, 39/255, 77/255, 1)
+	on_active: app.root.get_screen('siase').setSchedule({opt}, '{subject}', button.active)
+			"""
+			check_box = Builder.load_string(check_box)
+			gridlayout.add_widget(check_box)
+			line_break = opt['schedule'].count(';')-1
+			for text in opt.values():
+				if ';' in text:
+					copy = text.split(';')
+					text = ''
+					for c in copy[:len(copy)-1]:
+						if c == copy[0]:
+							text += c + '            '
+
+						else:
+							text += '\n' + c
+				else:
+					text = text + '\n'*line_break
+
+				gridlayout.add_widget(
+					MDRaisedButton(
+						text=text,
+						size_hint_x=.05,
+						theme_text_color='Custom',
+						text_color=(19/255, 39/255, 77/255, 1),
+						md_bg_color=color
+					)
+				)
+
+			count += 1
+
+		layout_buttons = GridLayout(
+			rows=1,
+			cols=2,
+			padding=(150, 300),
+			spacing=(25)
+		)
+		layout_buttons.add_widget(
+			MDRectangleFlatButton(
+				text=' '*30+'Agregar'+' '*30,
+				on_press=self.insertSchedule
+			)
+		)
+		layout_buttons.add_widget(
+			MDRectangleFlatButton(
+				text=' '*30+'Cancelar'+' '*30,
+				on_press=self.addSubjects
+			)
+		)
+
+		layout.add_widget(layout_buttons)
+			
 
 	def addSubjects(self, *args):
 		self.settings(
 			background=True,
 			padding=(0,0),
-			rgb=(100/255, 100/255, 100/255)
+			rgb=(1, 1, 1)
 		)
 		self.settings(
 			scroll=True,
@@ -275,7 +481,7 @@ class SIASE(Screen):
 			size_hint_x=None
 		)
 		subj = MDRaisedButton(
-			text='  Materia' + ' '*225,
+			text='  Materia' + ' '*235,
 			theme_text_color='Custom',
 			text_color=(19/255, 39/255, 77/255, 1),
 			md_bg_color=(226/255, 212/255, 171/255, 1),
@@ -283,6 +489,7 @@ class SIASE(Screen):
 		)
 		layout.add_widget(sem)
 		layout.add_widget(subj)
+		self.subjects = self.getSubjects()
 
 		count = 1
 		for subject in self.subjects:
@@ -290,7 +497,7 @@ class SIASE(Screen):
 				color = (1, 1, 1, 1)
 			else:
 				color = (240/255, 240/255, 240/255, 1)
-			self.subject = subject
+			
 			sem = MDRaisedButton(
 				text=self.kardex[subject]['sem'],
 				theme_text_color='Custom',
@@ -304,14 +511,14 @@ class SIASE(Screen):
 				text_color=(19/255, 39/255, 77/255, 1),
 				md_bg_color=color,
 				size_hint_x=5,
-				on_press=self.addSchedule
+				on_press=partial(self.addSchedule, subject)
 			)
 			layout.add_widget(sem)
 			layout.add_widget(subj)
 			count += 1
 			
 
-	def updateSubjects(self, *args):
+	def selectSubjects(self, *args):
 		pass
 
 
@@ -327,7 +534,7 @@ class SIASE(Screen):
 		if status == 'ALTA':
 			self.subjects = self.getSubjects()
 			layout = self.ids.layout
-			#print(subjects)
+			layout.clear_widgets()
 			
 			if type(self.subjects) == bool:
 				if self.subjects == True:
@@ -398,13 +605,13 @@ class SIASE(Screen):
 					text='Agregar Materia',
 					on_press=self.addSubjects
 				)
-				button_upd = MDRectangleFlatButton(
-					text='Modificar Horario',
-					on_press=self.updateSubjects
-				)
 				button_del = MDRectangleFlatButton(
 					text='Eliminar Materia',
 					on_press=self.deleteSubjects
+				)
+				button_upd = MDRectangleFlatButton(
+					text='Mostrar Horario',
+					on_press=self.selectSubjects
 				)
 				
 				layout_buttons.add_widget(button_add)

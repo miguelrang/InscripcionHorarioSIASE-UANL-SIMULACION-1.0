@@ -11,6 +11,11 @@ DROP PROCEDURE updateStudentStatus
 DROP PROCEDURE getStudentStatus
 DROP PROCEDURE getAvailableSchedules
 DROP PROCEDURE getStudentSchedule
+DROP PROCEDURE getClassroomFromSchedule
+DROP PROCEDURE insertStudentSchedule
+DROP PROCEDURE getInsertedSubjects
+DROP PROCEDURE updateClassroomPlus
+DROP PROCEDURE updateClassroomMinus
 ------------ ADD ----------------
 ---------- Student --------------
 DROP PROCEDURE getFaculties
@@ -150,6 +155,11 @@ CREATE PROCEDURE getAvailableSchedules(@career VARCHAR(MAX), @subject VARCHAR(MA
 						SELECT ID_teacher, middle_name, last_name, name_ FROM Teacher
 					)t
 					ON t.ID_teacher=s.ID_teacher
+
+					INNER JOIN(
+						SELECT ID_classroom, banches FROM Classroom
+					)c
+					ON c.banches > 0 AND c.ID_classroom=s.ID_classroom
 	WHERE s.ID_career=@id_career
 			AND
 		  ID_subject=(SELECT ID_subject FROM SemesterSubject WHERE ID_career=@id_career and name_subject=@subject)
@@ -169,6 +179,115 @@ CREATE PROCEDURE getStudentSchedule(@ID_student INT) AS
 
 	WHERE ID_student=@ID_student
 
+GO
+
+CREATE PROCEDURE getClassroomFromSchedule(
+					@career VARCHAR(MAX), @middle_name VARCHAR(MAX), @last_name VARCHAR(MAX),
+					@name VARCHAR(MAX), @subject VARCHAR(MAX), @schedule VARCHAR(MAX)
+				) AS
+	DECLARE @id_career INT
+	SET @id_career=(SELECT ID_career FROM Career WHERE name_career=@career)
+	
+	SELECT c.ID_classroom FROM Classroom c
+		INNER JOIN(
+			SELECT ID_classroom FROM Schedule s
+			WHERE ID_career=@id_career 
+					AND
+				  ID_teacher=(
+						SELECT ID_teacher FROM Teacher
+						WHERE middle_name=@middle_name 
+								AND 
+							  last_name=@last_name 
+								AND 
+							  name_=@name 
+								AND 
+							  ID_career=@id_career
+					)
+					AND
+				  ID_subject=(SELECT ID_subject FROM SemesterSubject WHERE ID_career=@id_career AND name_subject=@subject)
+					AND
+				  schedule=@schedule
+		) s
+		ON s.ID_classroom=c.ID_classroom
+GO
+
+CREATE PROCEDURE getInsertedSubjects(@enrollment INT) AS
+	SELECT ss2.name_subject FROM StudentSchedule ss
+		INNER JOIN(
+			SELECT ID_career, ID_subject, name_subject FROM SemesterSubject
+		)ss2
+		ON ss2.ID_career=ss.ID_career and ss2.ID_subject = ss.ID_subject
+	WHERE ID_student=@enrollment
+GO
+
+CREATE PROCEDURE insertStudentSchedule(@enrollment INT, @career VARCHAR(MAX), @id_classroom INT, @middle_name VARCHAR(MAX), @last_name VARCHAR(MAX), @name VARCHAR(MAX), @subject VARCHAR(MAX), @schedule VARCHAR(MAX)) AS
+	DECLARE @id_career INT
+	SET @id_career = (SELECT ID_career FROM Career WHERE name_career=@career)
+	DECLARE @first_part TABLE(
+		ID_faculty INT,
+		ID_career INT,
+		ID_student INT
+	)
+	INSERT INTO @first_part
+		SELECT ID_faculty, ID_career, ID_student FROM Student
+		WHERE ID_career=@id_career and ID_student=@enrollment
+	------
+	DECLARE @second_part TABLE(
+		ID_classroom INT,
+		ID_teacher INT,
+		ID_subject INT,
+		ID_schedule INT
+	)
+	INSERT INTO @second_part
+		SELECT s.ID_classroom, t.ID_teacher, ss.ID_subject, s.ID_schedule FROM Schedule s
+			INNER JOIN(
+				SELECT ID_teacher FROM Teacher
+				WHERE	ID_career=@id_career
+							AND
+						middle_name=@middle_name
+							AND
+						last_name=@last_name
+							AND
+						name_=@name
+			)t
+			ON s.ID_teacher=t.ID_teacher
+
+			INNER JOIN(
+				SELECT ID_subject FROM SemesterSubject
+				WHERE	name_subject=@subject
+							AND
+						ID_career=@id_career
+			)ss
+			ON ss.ID_subject=s.ID_subject
+
+		WHERE	s.ID_classroom=@id_classroom 
+					AND
+				s.schedule=@schedule
+	
+	
+	INSERT INTO StudentSchedule
+		SELECT ss.ID_faculty, s2.ID_classroom, ss.ID_career, s2.ID_teacher, ss.ID_student, s2.ID_subject, s2.ID_schedule FROM Schedule s
+			FULL OUTER JOIN(
+				SELECT * FROM @first_part
+			)ss
+			ON ss.ID_faculty=s.ID_faculty and ss.ID_career=s.ID_career
+
+			INNER JOIN(
+				SELECT * FROM @second_part
+			)s2
+			ON s2.ID_classroom=s.ID_classroom and s2.ID_schedule=s.ID_schedule and s2.ID_subject=s.ID_subject and s2.ID_teacher=s.ID_teacher
+GO
+
+CREATE PROCEDURE updateClassroomPlus(@id_classroom INT)AS
+	UPDATE Classroom
+		SET banches=(banches+1)
+	WHERE ID_classroom=@id_classroom
+GO
+
+CREATE PROCEDURE updateClassroomMinus(@id_classroom INT) AS
+	UPDATE Classroom
+		SET banches=(banches-1)
+	WHERE ID_classroom=@id_classroom
 GO
 ------------------------------------- R E C T O R --------------------------------------------
 --------------------------------------   A D D   ---------------------------------------------
