@@ -18,6 +18,7 @@ DROP PROCEDURE getInsertedSubjects
 DROP PROCEDURE deleteStudentSchedule
 DROP PROCEDURE updateClassroomPlus
 DROP PROCEDURE updateClassroomMinus
+------- R E C T O R I A ---------
 ------------ ADD ----------------
 ---------- Student --------------
 DROP PROCEDURE getFaculties
@@ -115,30 +116,36 @@ CREATE PROCEDURE getStudentStatus(@enrollment INT) AS
 	WHERE ID_student=@enrollment
 GO
 
-CREATE PROCEDURE getAvailableSchedules(@career VARCHAR(MAX), @subject VARCHAR(MAX)) AS
+CREATE PROCEDURE getAvailableSchedules(@enrollment INT, @career VARCHAR(MAX), @subject VARCHAR(MAX)) AS
 	DECLARE @id_career INT
 	SET @id_career=(SELECT ID_career FROM Career WHERE name_career=@career)
 	
-	DECLARE @op1 VARCHAR(3)
+	DECLARE @op1 VARCHAR(MAX)
 	SET @op1 = (SELECT op1 FROM Kardex 
 				WHERE ID_subject=(
 						SELECT ID_subject FROM SemesterSubject
 						WHERE name_subject=@subject AND ID_career=@id_career
 					  )
+						AND
+					  ID_student=@enrollment
 				)
-	DECLARE @op3 VARCHAR(3)
+	DECLARE @op3 VARCHAR(MAX)
 	SET @op3 = (SELECT op3 FROM Kardex 
 				WHERE ID_subject=(
 						SELECT ID_subject FROM SemesterSubject
 						WHERE name_subject=@subject AND ID_career=@id_career
 					  )
+						AND
+					  ID_student=@enrollment
 				)
-	DECLARE @op5 VARCHAR(3)
+	DECLARE @op5 VARCHAR(MAX)
 	SET @op5 = (SELECT op5 FROM Kardex 
 				WHERE ID_subject=(
 						SELECT ID_subject FROM SemesterSubject
 						WHERE name_subject=@subject AND ID_career=@id_career
 					  )
+						AND
+					  ID_student=@enrollment
 				)
 	
 	SELECT  t.middle_name,
@@ -151,12 +158,12 @@ CREATE PROCEDURE getAvailableSchedules(@career VARCHAR(MAX), @subject VARCHAR(MA
 				WHEN @op3 = '' THEN 'op3'
 
 				WHEN @op5 = '' THEN 'op5'
-				END AS op,
+			END AS op,
 				s.schedule FROM Schedule s
 					INNER JOIN(
-						SELECT ID_teacher, middle_name, last_name, name_ FROM Teacher
+						SELECT ID_career, ID_teacher, middle_name, last_name, name_ FROM Teacher
 					)t
-					ON t.ID_teacher=s.ID_teacher
+					ON t.ID_teacher=s.ID_teacher and t.ID_career=@id_career
 
 					INNER JOIN(
 						SELECT ID_classroom, banches FROM Classroom
@@ -164,7 +171,7 @@ CREATE PROCEDURE getAvailableSchedules(@career VARCHAR(MAX), @subject VARCHAR(MA
 					ON c.banches > 0 AND c.ID_classroom=s.ID_classroom
 	WHERE s.ID_career=@id_career
 			AND
-		  ID_subject=(SELECT ID_subject FROM SemesterSubject WHERE ID_career=@id_career and name_subject=@subject)
+		  s.ID_subject=(SELECT ID_subject FROM SemesterSubject WHERE ID_career=@id_career and name_subject=@subject)
 GO
 
 CREATE PROCEDURE getStudentSchedule(@ID_student INT) AS

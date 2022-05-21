@@ -350,7 +350,8 @@ class SIASE(Screen):
 		
 		options = {}
 		option = {}
-		get = self.sql.execute(f'EXECUTE getAvailableSchedules [{self.career}], [{subject}]')
+		
+		get = self.sql.execute(f'EXECUTE getAvailableSchedules [{self.ids.enrollment.text}], [{self.career}], [{subject}]')
 		# Valid correct LIC./ING.
 		aux = ''
 		count = 0
@@ -502,14 +503,6 @@ CheckBox:
 
 
 	def delSubjs(self):
-		print('ERHAIM CHESTER', self.to_delete)
-		print('ERHAIM CHESTER', self.to_delete)
-		print('ERHAIM CHESTER', self.to_delete)
-		print('ERHAIM CHESTER', self.to_delete)
-		print('ERHAIM CHESTER', self.to_delete)
-		print('ERHAIM CHESTER', self.to_delete)
-		print('ERHAIM CHESTER', self.to_delete)
-		
 		for subj in self.to_delete:
 			subject = subj
 			id_student = self.ids.enrollment.text
@@ -951,7 +944,7 @@ MDLabel:
 
 		n = 1
 		for subject in self.kardex.keys():
-			print('bunchausen')
+			print('AGREGANDO')
 			if (n%2 == 0):
 				color = 1, 1, 1, 1
 			else:
