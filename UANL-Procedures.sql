@@ -11,9 +11,11 @@ DROP PROCEDURE updateStudentStatus
 DROP PROCEDURE getStudentStatus
 DROP PROCEDURE getAvailableSchedules
 DROP PROCEDURE getStudentSchedule
+DROP PROCEDURE getSchedule
 DROP PROCEDURE getClassroomFromSchedule
 DROP PROCEDURE insertStudentSchedule
 DROP PROCEDURE getInsertedSubjects
+DROP PROCEDURE deleteStudentSchedule
 DROP PROCEDURE updateClassroomPlus
 DROP PROCEDURE updateClassroomMinus
 ------------ ADD ----------------
@@ -181,6 +183,19 @@ CREATE PROCEDURE getStudentSchedule(@ID_student INT) AS
 
 GO
 
+CREATE PROCEDURE getSchedule(@enrollment INT) AS
+	SELECT ss2.name_subject, s.ID_group, s.schedule FROM StudentSchedule ss
+		INNER JOIN(
+			SELECT ID_subject, name_subject FROM SemesterSubject
+		)ss2
+		ON ss.ID_subject=ss2.ID_subject
+
+		INNER JOIN(
+			SELECT ID_schedule, ID_group, schedule FROM Schedule
+		)s
+		ON s.ID_schedule=ss.ID_schedule 
+GO
+
 CREATE PROCEDURE getClassroomFromSchedule(
 					@career VARCHAR(MAX), @middle_name VARCHAR(MAX), @last_name VARCHAR(MAX),
 					@name VARCHAR(MAX), @subject VARCHAR(MAX), @schedule VARCHAR(MAX)
@@ -276,6 +291,14 @@ CREATE PROCEDURE insertStudentSchedule(@enrollment INT, @career VARCHAR(MAX), @i
 				SELECT * FROM @second_part
 			)s2
 			ON s2.ID_classroom=s.ID_classroom and s2.ID_schedule=s.ID_schedule and s2.ID_subject=s.ID_subject and s2.ID_teacher=s.ID_teacher
+GO
+
+CREATE PROCEDURE deleteStudentSchedule(@subject VARCHAR(MAX), @career VARCHAR(MAX), @enrollment INT) AS
+	DECLARE @id_subject INT
+	SET @id_subject=(SELECT ID_subject FROM SemesterSubject WHERE ID_career=(SELECT ID_career FROM Career WHERE name_career=@career) and name_subject=@subject) 
+	
+	DELETE FROM StudentSchedule
+	WHERE ID_subject=@id_subject and ID_student=@enrollment
 GO
 
 CREATE PROCEDURE updateClassroomPlus(@id_classroom INT)AS

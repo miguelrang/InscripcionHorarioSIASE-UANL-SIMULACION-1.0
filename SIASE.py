@@ -35,6 +35,8 @@ class SIASE(Screen):
 
 		self.career = ''
 
+		self.to_delete = []
+
 
 	def sqlCONNECTION(self):
 		try:
@@ -62,6 +64,7 @@ class SIASE(Screen):
 		enrollment = str(data[0])
 		name = f"{data[1]} {data[2]} {data[3]}"
 		career = f"{data[4]}"
+		self.career=career
 		career = career.replace('LICENCIADO', 'LIC.')
 		career = career.replace('LICENCIATURA', 'LIC.')
 		career = career.replace('INGENIERO', 'ING.')
@@ -137,6 +140,7 @@ class SIASE(Screen):
 		
 		else:
 			return True
+
 
 	def getSubjects(self):
 		get = self.sql.execute(f'EXECUTE getKardex {self.ids.enrollment.text}')
@@ -344,13 +348,9 @@ class SIASE(Screen):
 			)
 		
 		
-		career = self.ids.career.text
-		career = career.replace('ING.', 'INGENIERO')
-		career = career.replace('LIC.', 'LICENCIADO')
-		
 		options = {}
 		option = {}
-		get = self.sql.execute(f'EXECUTE getAvailableSchedules [{career}], [{subject}]')
+		get = self.sql.execute(f'EXECUTE getAvailableSchedules [{self.career}], [{subject}]')
 		# Valid correct LIC./ING.
 		aux = ''
 		count = 0
@@ -365,23 +365,6 @@ class SIASE(Screen):
 
 			options[f'{count}'] = option
 			option = {}
-
-		if aux == '':
-			career = career.replace('INGENIERO', 'INGENIERIA')
-			career = career.replace('LICENCIADO', 'LICENCIATURA')
-			get = self.sql.execute(f'EXECUTE getAvailableSchedules [{career}], [{subject}]')
-			
-			for g in get:
-				count += 1
-				name = f'{g[0]} {g[1]} {g[2]}'
-				option['name'] = name
-				option['group'] = g[3]
-				option['op'] = g[4]
-				option['schedule'] = g[5]
-
-				options[f'{count}'] = option
-		
-		self.career = career
 
 		count = 1
 		for opt in options.values():
@@ -516,14 +499,195 @@ CheckBox:
 			layout.add_widget(sem)
 			layout.add_widget(subj)
 			count += 1
+
+
+	def delSubjs(self):
+		print('ERHAIM CHESTER', self.to_delete)
+		print('ERHAIM CHESTER', self.to_delete)
+		print('ERHAIM CHESTER', self.to_delete)
+		print('ERHAIM CHESTER', self.to_delete)
+		print('ERHAIM CHESTER', self.to_delete)
+		print('ERHAIM CHESTER', self.to_delete)
+		print('ERHAIM CHESTER', self.to_delete)
+		
+		for subj in self.to_delete:
+			subject = subj
+			id_student = self.ids.enrollment.text
+			
+			self.sql.execute(f"EXECUTE deleteStudentSchedule '{subject}', '{self.career}', '{id_student}'")
+			self.sql.commit()
+		
+		self.to_delete = []
+		self.onPressInscription()
+
+
+
+	def togetherSubjectsToDelete(self, subject, active):
+		if active == True:
+			self.to_delete.append(subject)
+
+		else:
+			self.to_delete.remove(subject)
 			
 
-	def selectSubjects(self, *args):
-		pass
-
-
 	def deleteSubjects(self, *args):
-		pass
+		layout = self.ids.layout
+		layout.clear_widgets()
+		self.settings(
+			background=True,
+			padding=(0,0),
+			rgb=(1, 1, 1)
+		)
+		self.settings(
+			scroll=True,
+			scroll_y=True
+		)
+		self.settings(
+			layout=True,
+			rgb=(1,1,1),
+			row_default_height=38,
+			cols=4,
+			rows=None,
+			size_hint_x=1,
+			size_hint_y=None,
+			pos_hint=(None, None),
+			padding=50,
+			spacing=1
+		)
+
+		get = self.sql.execute(f'EXECUTE getStudentSchedule {self.ids.enrollment.text}')
+		count = 1
+		aux = ''
+		for g in get:
+			aux = g[0]
+			subject = g[0]
+			group = g[1]
+			schedule = g[2]
+
+			if count % 2 == 0:
+				color=(1, 1, 1, 1)
+			else:
+				color=(240/255, 240/255, 240/255, 1)
+
+			if count == 1:
+				layout.add_widget(
+					Builder.load_string(
+"""
+MDLabel:
+	text: '               Seleccionar'
+	theme_text_color: 'Custom'
+	text_color: 19/255, 39/255, 77/255, 1
+	md_bg_color: 226/255, 212/255, 171/255, 1
+"""
+					)
+				)
+				layout.add_widget(
+					Builder.load_string(
+"""
+MDLabel:
+	text: '                  Materia'
+	theme_text_color: 'Custom'
+	text_color: 19/255, 39/255, 77/255, 1
+	md_bg_color: 226/255, 212/255, 171/255, 1
+"""
+					)
+				)
+				layout.add_widget(
+					Builder.load_string(
+"""
+MDLabel:
+	text: '                     Gpo'
+	theme_text_color: 'Custom'
+	text_color: 19/255, 39/255, 77/255, 1
+	md_bg_color: 226/255, 212/255, 171/255, 1
+"""
+					)
+				)
+				layout.add_widget(
+					Builder.load_string(
+"""
+MDLabel:
+	text: '                 Horario'
+	theme_text_color: 'Custom'
+	text_color: 19/255, 39/255, 77/255, 1
+	md_bg_color: 226/255, 212/255, 171/255, 1
+"""
+					)
+				)
+
+			layout.add_widget(
+				Builder.load_string(
+					f"""
+CheckBox:
+	id: check_box
+	text: '{subject}'
+	opacity: 100
+	on_active: app.root.get_screen('siase').togetherSubjectsToDelete('{subject}', check_box.active)
+	color: (19/255, 39/255, 77/255, 1)
+	background_color:{color}
+					"""
+				)
+			)
+			layout.add_widget(
+				Builder.load_string(
+					f"""
+MDLabel:
+	text: '{subject}'
+	theme_text_color: 'Custom'
+	text_color: (19/255, 39/255, 77/255, 1)
+	md_bg_color:{color}
+					"""
+				)
+			)
+			layout.add_widget(
+				Builder.load_string(
+					f"""
+MDLabel:
+	text: ' {group}'
+	theme_text_color: 'Custom'
+	text_color: (19/255, 39/255, 77/255, 1)
+	md_bg_color:{color}
+					"""
+				)
+			)
+			layout.add_widget(
+				Builder.load_string(
+					f"""
+MDLabel:
+	text: ' {schedule}'
+	theme_text_color: 'Custom'
+	text_color: (19/255, 39/255, 77/255, 1)
+	md_bg_color:{color}
+					"""
+				)
+			)
+
+			count += 1
+		extra_layout = GridLayout(
+			cols=2,
+			rows=1,
+			padding=(300, 30),
+			spacing=(20, 0)
+		)
+		extra_layout.add_widget(
+			Builder.load_string(
+				f"""
+MDRectangleFlatButton:
+	text: 'Eliminar'
+	on_press:app.root.get_screen('siase').delSubjs()
+				"""
+			)
+		)
+		extra_layout.add_widget(
+			Builder.load_string(
+				f"""
+MDRectangleFlatButton:
+	text: 'Cancelar'
+	on_press: app.root.get_screen('siase').onPressInscription()
+				"""
+			)
+		)
+		layout.add_widget(extra_layout)
 
 
 	def onPressInscription(self):
@@ -611,7 +775,7 @@ CheckBox:
 				)
 				button_upd = MDRectangleFlatButton(
 					text='Mostrar Horario',
-					on_press=self.selectSubjects
+					on_press=self.onPressSchedule
 				)
 				
 				layout_buttons.add_widget(button_add)
@@ -625,8 +789,116 @@ CheckBox:
 		else:
 			self.Dialog(title='Error', text='Usted ha sido dado de baja.')
 
-	def onPressSchedule(self):
+
+	def onPressSchedule(self, *args):
+		layout = self.ids.layout
+		layout.clear_widgets()
+		self.settings(
+			background=True,
+			padding=(0,0),
+			rgb=(1, 1, 1)
+		)
+		self.settings(
+			scroll=True,
+			scroll_y=True
+		)
+		self.settings(
+			layout=True,
+			rgb=(1,1,1),
+			row_default_height=38,
+			cols=3,
+			rows=None,
+			size_hint_x=1,
+			size_hint_y=None,
+			pos_hint=(None, None),
+			padding=70,
+			spacing=1
+		)
+
 		get = self.sql.execute(f'EXECUTE getStudentSchedule {self.ids.enrollment.text}')
+		count = 1
+		aux = ''
+		for g in get:
+			aux = g[0]
+			subject = g[0]
+			group = g[1]
+			schedule = g[2]
+
+			if count % 2 == 0:
+				color=(1, 1, 1, 1)
+			else:
+				color=(240/255, 240/255, 240/255, 1)
+
+			if count == 1:
+				layout.add_widget(
+					Builder.load_string(
+"""
+MDLabel:
+	text: ' Materia'
+	theme_text_color: 'Custom'
+	text_color: 19/255, 39/255, 77/255, 1
+	md_bg_color: 226/255, 212/255, 171/255, 1
+"""
+					)
+				)
+				layout.add_widget(
+					Builder.load_string(
+"""
+MDLabel:
+	text: ' Gpo'
+	theme_text_color: 'Custom'
+	text_color: 19/255, 39/255, 77/255, 1
+	md_bg_color: 226/255, 212/255, 171/255, 1
+"""
+					)
+				)
+				layout.add_widget(
+					Builder.load_string(
+"""
+MDLabel:
+	text: ' Horario'
+	theme_text_color: 'Custom'
+	text_color: 19/255, 39/255, 77/255, 1
+	md_bg_color: 226/255, 212/255, 171/255, 1
+"""
+					)
+				)
+
+			layout.add_widget(
+				Builder.load_string(
+					f"""
+MDLabel:
+	text: '{subject}'
+	theme_text_color: 'Custom'
+	text_color: (19/255, 39/255, 77/255, 1)
+	md_bg_color:{color}
+					"""
+				)
+			)
+			layout.add_widget(
+				Builder.load_string(
+					f"""
+MDLabel:
+	text: ' {group}'
+	theme_text_color: 'Custom'
+	text_color: (19/255, 39/255, 77/255, 1)
+	md_bg_color:{color}
+					"""
+				)
+			)
+			layout.add_widget(
+				Builder.load_string(
+					f"""
+MDLabel:
+	text: ' {schedule}'
+	theme_text_color: 'Custom'
+	text_color: (19/255, 39/255, 77/255, 1)
+	md_bg_color:{color}
+					"""
+				)
+			)
+
+			count += 1
 
 
 	def onPressKardex(self):
@@ -635,17 +907,30 @@ CheckBox:
 			for g in get:
 				self.kardex[g[1]] = {'sem':f'{g[0]}', 'op1':f'{g[2]}', 'op2':f'{g[3]}', 'op3':f'{g[4]}', 'op4':f'{g[5]}', 'op5':f'{g[6]}', 'op6':f'{g[7]}'}
 
-		scroll = self.ids.scroll
-		scroll.do_scroll_y = True
-
+		self.settings(
+			background=True,
+			padding=(0,0),
+			rgb=(1, 1, 1)
+		)
+		self.settings(
+			scroll=True,
+			scroll_y=True
+		)
+		self.settings(
+			layout=True,
+			rgb=(1,1,1),
+			row_default_height=38,
+			cols=8,
+			rows=None,
+			size_hint_x=.9,
+			size_hint_y=None,
+			pos_hint=(None, None),
+			padding=20,
+			spacing=1
+		)
 		layout = self.ids.layout
 		layout.clear_widgets()
-		layout.size_hint_x = .9
-		layout.row_default_height = 38
-		layout.padding = 20
-		layout.spacing = 1
-		layout.cols = 8
-
+		
 		for i in range(0, 8):
 			if i == 0:
 				text = 'Sem.'
@@ -674,7 +959,7 @@ MDLabel:
 			
 			sem = f"""
 MDLabel:
-	text: '{self.kardex[subject]['sem']}'
+	text: '  {self.kardex[subject]['sem']}'
 	theme_text_color: 'Custom'
 	text_color: 19/255, 39/255, 77/255, 1
 	md_bg_color: {color}
@@ -695,7 +980,7 @@ MDLabel:
 			for i in range(1, 7, 1):
 				op = f"""
 MDLabel:
-	text: '{self.kardex[subject][f'op{i}']}'
+	text: '  {self.kardex[subject][f'op{i}']}'
 	theme_text_color: 'Custom'
 	text_color: .1, .29, .54, 1
 	md_bg_color: {color}
