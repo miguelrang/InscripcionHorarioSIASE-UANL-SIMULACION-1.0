@@ -2008,6 +2008,7 @@ MDRaisedButton:
 
 	def onTextAvailableSchedule(self):
 		available_schedule = self.ids.available_schedule
+		available_schedule.text = ''
 		
 		got = '''07:00-07:30;07:30-08:00;
 			  08:00-08:30;08:30-09:00;
@@ -2044,6 +2045,7 @@ MDRaisedButton:
 
 	def onTextUnavailableSchedule(self):
 		unavailable_schedule = self.ids.unavailable_schedule
+		unavailable_schedule.text = ''
 		
 		available_schedule = self.ids.available_schedule
 		listed = available_schedule.text
@@ -2646,7 +2648,34 @@ Si desea modificar el horario, acceda a la opción 'Modificar'.''',
 		if valid == False:
 			self.sql.execute(f"EXECUTE saveSchedule [{id_faculty}],[{id_classroom}],[{id_career}],[{id_teacher}],[{id_subject}],[{id_group}],[{schedule}]")
 			self.sql.commit()
-			self.clearScheduleFields()
+			
+			self.onTextAvailableSchedule()
+			self.onTextUnavailableSchedule()
+
+			self.ids['schedule_career'].text = 'Seleccionar Carrera'
+			self.ids['schedule_career'].disabled = False
+
+			self.ids.schedule_subject.text = 'Seleccionar Materia'
+			self.ids.schedule_subject.disabled = True
+
+			self.ids.group.text = ''
+			self.ids.group.disabled = True
+
+			self.ids.to_add.text = ''
+			self.ids.to_add.disabled = True
+
+			self.ids.schedules.disabled = True
+			self.ids.schedules.text = 'Seleccionar Horario'
+
+			self.ids.add_schedule.text = 'Agregar'
+			self.ids.add_schedule.disabled = True
+
+			self.ids.schedule_teacher.text = 'Seleccionar Profesor'
+			self.ids.schedule_teacher.disabled = True
+
+			self.ids.save_schedule.disabled = True
+
+			self.ids.finalize.disabled = False
 		else:
 			if valid2 == True:
 				self.ids.group.text = ''

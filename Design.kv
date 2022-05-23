@@ -853,7 +853,7 @@ WindowManager:
 						id: middle_name
 						name: 'middle_name'
 
-						text: 'guerra'
+						text: ''
 						hint_text: 'Apellido Paterno del Estudiante'
 						on_text: root.onTextMiddleName()
 						on_focus: root.onTextMiddleName()
@@ -869,7 +869,7 @@ WindowManager:
 						id: last_name
 						name: 'last_name'
 
-						text: 'rangel'
+						text: ''
 						hint_text: 'Apellido Materno del Estudiante'
 						on_text: root.onTextLastName()
 						on_focus: root.onTextLastName()
@@ -885,7 +885,7 @@ WindowManager:
 						id: name
 						name: 'name'
 
-						text: 'miguel angel'
+						text: ''
 						hint_text: 'Nombre del Estudiante'
 						on_text: root.onTextName()
 						on_focus: root.onTextName()
@@ -915,7 +915,7 @@ WindowManager:
 						id: date_birth
 						name: 'date_birth'
 
-						text: '2001/01/26'
+						text: ''
 						hint_text: 'Fecha de Nacimiento (YYYY/MM/DD)'
 						on_text: root.onTextDateBirth()
 						on_focus: root.onTextDateBirth()
@@ -1042,7 +1042,7 @@ WindowManager:
 						id: teacher_middle_name
 						name: 'teacher_middle_name'
 
-						text:
+						text: ''
 						hint_text: 'Apellido Paterno del Profesor'
 						on_text: root.onTextTeacherMiddleName()
 						on_focus: root.onTextTeacherMiddleName()
@@ -1056,7 +1056,7 @@ WindowManager:
 						id: teacher_last_name
 						name: 'teacher_last_name'
 
-						text:
+						text: ''
 						hint_text: 'Apellido Materno del Profesor'
 						on_text: root.onTextTeacherLastName()
 						on_focus: root.onTextTeacherLastName()
@@ -1070,7 +1070,7 @@ WindowManager:
 						id: teacher_name
 						name: 'teacher_name'
 
-						text:
+						text: ''
 						hint_text: 'Nombre del Profesor'
 						on_text: root.onTextTeacherName()
 						on_focus: root.onTextTeacherName()
@@ -1914,245 +1914,288 @@ WindowManager:
 
 			icon: 'timetable'
 			text: 'Horario'
-				
-			GridLayout:
-				id: classroom_and_schedule
-				name: 'classroom_and_schedule'
-				
-				cols: 1
-				spacing: 10
-				padding: 4
-				
-				canvas.before:
-					Color:
-						rgb: .9, .5, 0, 1
-
-					Rectangle:
-						size: self.size
-						pos: self.pos
+			
+			ScrollView:
+				do_scroll_y: True
 
 				GridLayout:
-					cols: 3
+					id: classroom_and_schedule
+					name: 'classroom_and_schedule'
+					
+					cols: 1
+					size_hint_y: None
+					spacing: 10
+					padding: 4
+					row_default_height: 30
+					height: self.minimum_height
+					
+					canvas.before:
+						Color:
+							rgb: .9, .5, 0, 1
+
+						Rectangle:
+							size: self.size
+							pos: self.pos
+
+					GridLayout:
+						cols: 3
+
+						MDRaisedButton:
+							id: schedule_faculty
+							name: 'schedule_faculty'
+
+							text: 'Seleccionar Facultad'
+							theme_text_color: 'Custom'
+							text_color: .1, .1, .1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressScheduleFaculty()
+
+						MDRaisedButton:
+							id: schedule_classroom
+							name: 'schedule_classroom'
+
+							text: 'Seleccionar Aula'
+							theme_text_color: 'Custom'
+							text_color: .1, .1, .1, 1
+							size_hint_x: 1
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressScheduleClassroom()
+
+						MDRaisedButton:
+							id: schedule_accept
+							name: 'schedule_accept'
+
+							text: 'Aceptar'
+							theme_text_color: 'Custom'
+							text_color: .1, .1, .1, 1
+							size_hint_x: .5
+							md_bg_color: .85, .85, .85, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressScheduleAccept()
+
+
+					MDTextField:
+						id: classroom
+						name: 'classroom'
+
+						hint_text: 'Capacidad de Alumnos'
+						disabled: True
+
+						color_mode: 'custom'
+						line_color_focus: 0, .2, .9, 1
+						multiline: False
+						size_hint_x: .9
+
+
+					MDTextField:
+						id: banches
+						name: 'banches'
+
+						hint_text: 'Capacidad de Alumnos'
+						disabled: True
+
+						color_mode: 'custom'
+						line_color_focus: 0, .2, .9, 1
+						multiline: False
+						size_hint_x: .9
+
+					GridLayout:
+						cols: 3
+
+						MDRaisedButton:
+							id: cancel_classroom
+							name: 'cancel_classroom'
+
+							text: 'Cancelar Aula'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.restartClassroom_Schedule()
+
+						MDRaisedButton:
+							id: update_classroom
+							name: 'update_classroom'
+
+							text: 'Actualizar Aula'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressUpdateClassroom()
+
+						MDRaisedButton:
+							id: continue_classroom
+							name: 'continue_classroom'
+
+							text: 'Continuar'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressContinueClassroom()
+
+					MDTextField:
+						id: available_schedule
+						name: 'available_schedule'
+
+						hint_text: 'Horarios Disponibles'
+						disabled: True
+						#max_text_length: 10
+						on_text: 
+						on_focus: 
+
+						color_mode: 'custom'
+						line_color_focus: 0, .2, .9, 1
+						multiline: False
+						size_hint_x: .9
+
+					MDTextField:
+						id: unavailable_schedule
+						name: 'unavailable_schedule'
+
+						hint_text: 'Horarios Ocupados'
+						disabled: True
+						#max_text_length: 10
+						on_text: 
+						on_focus: 
+
+						color_mode: 'custom'
+						line_color_focus: 0, .2, .9, 1
+						multiline: False
+						size_hint_x: .9
+
 
 					MDRaisedButton:
-						id: schedule_faculty
-						name: 'schedule_faculty'
+						id: choose_schedule
+						name: 'choose_schedule'
 
-						text: 'Seleccionar Facultad'
-						theme_text_color: 'Custom'
-						text_color: .1, .1, .1, 1
-						size_hint_x: 1
-						md_bg_color: .85, .85, .85, 1
-						line_color: 0, 0, 0, 1
-						on_press: root.onPressScheduleFaculty()
-
-					MDRaisedButton:
-						id: schedule_classroom
-						name: 'schedule_classroom'
-
-						text: 'Seleccionar Aula'
-						theme_text_color: 'Custom'
-						text_color: .1, .1, .1, 1
-						size_hint_x: 1
-						md_bg_color: .85, .85, .85, 1
-						line_color: 0, 0, 0, 1
-						on_press: root.onPressScheduleClassroom()
-
-					MDRaisedButton:
-						id: schedule_accept
-						name: 'schedule_accept'
-
-						text: 'Aceptar'
-						theme_text_color: 'Custom'
-						text_color: .1, .1, .1, 1
-						size_hint_x: .5
-						md_bg_color: .85, .85, .85, 1
-						line_color: 0, 0, 0, 1
-						on_press: root.onPressScheduleAccept()
-
-
-				MDTextField:
-					id: classroom
-					name: 'classroom'
-
-					hint_text: 'Capacidad de Alumnos'
-					disabled: True
-
-					color_mode: 'custom'
-					line_color_focus: 0, .2, .9, 1
-					multiline: False
-					size_hint_x: .9
-
-
-				MDTextField:
-					id: banches
-					name: 'banches'
-
-					hint_text: 'Capacidad de Alumnos'
-					disabled: True
-
-					color_mode: 'custom'
-					line_color_focus: 0, .2, .9, 1
-					multiline: False
-					size_hint_x: .9
-
-				GridLayout:
-					cols: 3
-
-					MDRaisedButton:
-						id: cancel_classroom
-						name: 'cancel_classroom'
-
-						text: 'Cancelar Aula'
+						text: 'Seleccionar Horario a Editar'
 						disabled: True
 						theme_text_color: 'Custom'
 						text_color: 1, 1, 1, 1
 						size_hint_x: 1
 						md_bg_color: .24, .74, .53, 1
 						line_color: 0, 0, 0, 1
-						on_press: root.restartClassroom_Schedule()
+						on_press: root.onPressChooseSchedule()
 
-					MDRaisedButton:
-						id: update_classroom
-						name: 'update_classroom'
+					MDTextField:
+						id: new_schedule
+						name: 'new_schedule'
 
-						text: 'Actualizar Aula'
+						hint_text: 'Nuevo Horario'
 						disabled: True
-						theme_text_color: 'Custom'
-						text_color: 1, 1, 1, 1
-						size_hint_x: 1
-						md_bg_color: .24, .74, .53, 1
-						line_color: 0, 0, 0, 1
-						on_press: root.onPressUpdateClassroom()
+						#max_text_length: 10
+						on_text: 
+						on_focus: 
 
-					MDRaisedButton:
-						id: continue_classroom
-						name: 'continue_classroom'
+						color_mode: 'custom'
+						line_color_focus: 0, .2, .9, 1
+						multiline: False
+						size_hint_x: .9
 
-						text: 'Continuar'
+					GridLayout:
+						spacing: 3
+						cols: 2
+
+						MDRaisedButton:
+							id: edit_schedule
+							name: 'edit_schedule'
+
+							text: 'Agregar Nuevo Horario'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressEditSchedule()
+
+						MDRaisedButton:
+							id: clear_new_schedule
+							name: 'clear_new_schedule'
+
+							text: 'Limpiar Nuevo Horario'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: 
+								new_schedule.text = ''
+
+					MDTextField:
+						id: schedule_career
+						name: 'schedule_career'
+
+						hint_text: 'Carrera'
 						disabled: True
-						theme_text_color: 'Custom'
-						text_color: 1, 1, 1, 1
-						size_hint_x: 1
-						md_bg_color: .24, .74, .53, 1
-						line_color: 0, 0, 0, 1
-						on_press: root.onPressContinueClassroom()
+						#max_text_length: 10
+						on_text: 
+						on_focus: 
 
-				MDTextField:
-					id: available_schedule
-					name: 'available_schedule'
+						color_mode: 'custom'
+						line_color_focus: 0, .2, .9, 1
+						multiline: False
+						size_hint_x: .9
 
-					hint_text: 'Horarios Disponibles'
-					disabled: True
-					#max_text_length: 10
-					on_text: 
-					on_focus: 
+					MDTextField:
+						id: schedule_teacher
+						name: 'schedule_teacher'
 
-					color_mode: 'custom'
-					line_color_focus: 0, .2, .9, 1
-					multiline: False
-					size_hint_x: .9
-
-				MDTextField:
-					id: unavailable_schedule
-					name: 'unavailable_schedule'
-
-					hint_text: 'Horarios Ocupados'
-					disabled: True
-					#max_text_length: 10
-					on_text: 
-					on_focus: 
-
-					color_mode: 'custom'
-					line_color_focus: 0, .2, .9, 1
-					multiline: False
-					size_hint_x: .9
-
-
-				MDRaisedButton:
-					id: choose_schedule
-					name: 'choose_schedule'
-
-					text: 'Seleccionar Horario a Editar'
-					disabled: True
-					theme_text_color: 'Custom'
-					text_color: 1, 1, 1, 1
-					size_hint_x: 1
-					md_bg_color: .24, .74, .53, 1
-					line_color: 0, 0, 0, 1
-					on_press: root.onPressChooseSchedule()
-
-				MDRaisedButton:
-					id: edit_schedule
-					name: 'edit_schedule'
-
-					text: 'Agregar Nuevo Horario'
-					disabled: True
-					theme_text_color: 'Custom'
-					text_color: 1, 1, 1, 1
-					size_hint_x: 1
-					md_bg_color: .24, .74, .53, 1
-					line_color: 0, 0, 0, 1
-					on_press: root.onPressEditSchedule()
-
-				MDTextField:
-					id: schedule_career
-					name: 'schedule_career'
-
-					hint_text: 'Carrera'
-					disabled: True
-					#max_text_length: 10
-					on_text: 
-					on_focus: 
-
-					color_mode: 'custom'
-					line_color_focus: 0, .2, .9, 1
-					multiline: False
-					size_hint_x: .9
-
-				MDTextField:
-					id: schedule_teacher
-					name: 'schedule_teacher'
-
-					hint_text: 'Profesor'
-					disabled: True
-					#max_text_length: 10
-					on_text: 
-					on_focus: 
-
-					color_mode: 'custom'
-					line_color_focus: 0, .2, .9, 1
-					multiline: False
-					size_hint_x: .9
-
-				GridLayout:
-					cols: 4
-
-					MDRaisedButton:
-						id: cancel_all_schedule
-						name: 'cancel_all_schedule'
-
-						text: 'Cancelar Todo'
+						hint_text: 'Profesor'
 						disabled: True
-						theme_text_color: 'Custom'
-						text_color: 1, 1, 1, 1
-						size_hint_x: 1
-						md_bg_color: .24, .74, .53, 1
-						line_color: 0, 0, 0, 1
-						on_press: root.restartClassroom_Schedule()
+						#max_text_length: 10
+						on_text: 
+						on_focus: 
 
-					MDRaisedButton:
-						id: update_schedule
-						name: 'update_schedule'
+						color_mode: 'custom'
+						line_color_focus: 0, .2, .9, 1
+						multiline: False
+						size_hint_x: .9
 
-						text: 'Actualizar Horario'
-						disabled: True
-						theme_text_color: 'Custom'
-						text_color: 1, 1, 1, 1
-						size_hint_x: 1
-						md_bg_color: .24, .74, .53, 1
-						line_color: 0, 0, 0, 1
-						on_press: root.onPressDelSchedule()
+					GridLayout:
+						cols: 2
+
+						MDRaisedButton:
+							id: cancel_all_schedule
+							name: 'cancel_all_schedule'
+
+							text: 'Cancelar Todo'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.restartClassroom_Schedule()
+
+						MDRaisedButton:
+							id: update_schedule
+							name: 'update_schedule'
+
+							text: 'Actualizar Horario'
+							disabled: True
+							theme_text_color: 'Custom'
+							text_color: 1, 1, 1, 1
+							size_hint_x: 1
+							md_bg_color: .24, .74, .53, 1
+							line_color: 0, 0, 0, 1
+							on_press: root.onPressUpdateSchedule()
+
+					GridLayout:
+						cols: 1
+						rows: 1
 
 			GridLayout:
 				id: schedule_no_scroll

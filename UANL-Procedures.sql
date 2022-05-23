@@ -57,6 +57,7 @@ DROP PROCEDURE updateTeacher
 ------------ Classroom ---------------
 DROP PROCEDURE updateClassroom
 ------------- Schedule ---------------
+DROP PROCEDURE updateSchedule
 ----------- D E L E T E --------------
 ------------- Student ----------------
 DROP PROCEDURE getStudentInfo
@@ -581,6 +582,22 @@ CREATE PROCEDURE updateClassroom(@faculty VARCHAR(MAX), @classroom VARCHAR(MAX),
 				classroom=@classroom
 					AND
 				banches=@banches
+GO
+------------------------------------ S C H E D U L E -----------------------------------------
+CREATE PROCEDURE updateSchedule(@faculty VARCHAR(MAX), @career VARCHAR(MAX), @classroom VARCHAR(MAX), @schedule VARCHAR(MAX), @new_schedule VARCHAR(MAX)) AS
+	DECLARE @id_faculty INT
+	SET @id_faculty=(SELECT ID_faculty FROM Faculty WHERE name_faculty=@faculty)
+	
+	DECLARE @id_career INT
+	SET @id_career=(SELECT ID_career FROM Career WHERE name_career=@career)
+
+	DECLARE @id_classroom INT
+	SET @id_classroom=(SELECT ID_classroom FROM Classroom WHERE classroom=@classroom AND ID_faculty=@id_faculty)
+
+	UPDATE Schedule
+		SET schedule=@new_schedule
+
+		WHERE ID_faculty=@id_faculty AND ID_career=@id_career AND ID_classroom=@ID_classroom AND schedule=@schedule
 GO
 -------------------------------------- D E L E T E -------------------------------------------
 ---------------------------------------- Student ---------------------------------------------

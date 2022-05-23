@@ -44,7 +44,9 @@ class Mod(Screen):
 		self.classroom = ''
 		self.banches = 0
 		self.choose_schedule = ''
-		self.edit_schedule = ''
+		self.new_schedule = ''
+		self.schedule_faculty = ''
+		self.schedule_classroom = ''
 
 
 	def sqlCONNECTION(self):
@@ -1614,7 +1616,10 @@ MDRaisedButton:
 
 					else:
 						self.ids[widget].disabled = not self.ids[widget].disabled
-
+				
+				#self.ids.cancel_all_schedule.disabled = True
+				#self.ids.update_schedule.disabled = True
+				
 
 	def restartClassroom_Schedule(self):
 		first_part = [
@@ -1662,14 +1667,16 @@ MDRaisedButton:
 			count += 1
 
 		second_part = [
-			'available_schedule',
-			'unavailable_schedule',
-			'choose_schedule',
-			'schedule_career',
-			'schedule_teacher',
-			'cancel_all_schedule',
-			'del_all_schedule',
-			'del_schedule',
+			'available_schedule', ############## 0
+			'unavailable_schedule', ############# 1
+			'choose_schedule', # 2
+			'new_schedule', #################### 2
+			'edit_schedule', # 4
+			'clear_new_schedule', # 5
+			'schedule_career', ################### 6
+			'schedule_teacher', ################## 7
+			'cancel_all_schedule', # 8
+			'update_schedule' # 9
 		]
 		count = 0
 		for widget in second_part:
@@ -1678,14 +1685,17 @@ MDRaisedButton:
 			if count == 2:
 				self.ids[widget].text = 'Seleccionar Horario'
 
+			if count == 4:
+				self.ids[widget].text = 'Agregar Nuevo Horario'
+
 			if count == 5:
+				self.ids[widget].text = 'Limpiar Nuevo Horario'
+
+			if count == 8:
 				self.ids[widget].text = 'Cancelar Todo'
 
-			if count == 6:
-				self.ids[widget].text = 'Eliminar Horarios'
-
-			if count == 7:
-				self.ids[widget].text = 'Eliminar Horario'
+			if count == 9:
+				self.ids[widget].text = 'Actualizar Horario'
 
 			count += 1
 
@@ -1695,11 +1705,18 @@ MDRaisedButton:
 			self.dialogSchedule('No se ha hecho ninguna modificación.')
 		
 		else:
-			self.sql.execute(f'EXECUTE updateClassroom [{self.ids.schedule_faculty.text}],[{self.classroom}],[{self.ids.classroom.text}],[{self.banches}], [{self.ids.banches.text}]')
-			self.sql.commit()
-			self.dialogSchedule('Se han guardado las modificaciones satisfactoriamente.')
-			self.classroom = self.ids.schedule_classroom.text
-			self.banches = self.ids.banches.text
+			get = self.sql.execute(f'EXECUTE getClassrooms [{self.schedule_faculty}]')
+			classroom = []
+			for g in get:
+				classroom.append(f'{g[0]}')
+			if self.ids.classroom.text not in classroom:
+				self.sql.execute(f'EXECUTE updateClassroom [{self.schedule_faculty}],[{self.classroom}],[{self.ids.classroom.text}],[{self.banches}], [{self.ids.banches.text}]')
+				self.sql.commit()
+				self.dialogSchedule('Se han guardado las modificaciones satisfactoriamente.')
+				self.classroom = self.ids.schedule_classroom.text
+				self.banches = self.ids.banches.text
+			else:
+				self.dialogSchedule('Esta Aula  ya existe.')
 
 
 	def onPressContinueClassroom(self):
@@ -1722,14 +1739,13 @@ MDRaisedButton:
 				'continue_classroom',
 				'banches',
 				'cancel_classroom',
-				'del_classroom',
+				'update_classroom',
 				'continue_classroom'
 			]
 			for widget in classroom:
 				self.ids[widget].disabled = True
 
 			self.ids.choose_schedule.disabled = False
-			self.ids.del_all_schedule.disabled = False
 			self.ids.cancel_all_schedule.disabled = False
 
 
@@ -1760,8 +1776,16 @@ MDRaisedButton:
 		for m in self.ids.unavailable_schedule.text.split(';'):
 			text = text.replace(f'{m};', '')
 
-		self.ids.available_schedule.text = text
-
+		self.ids.available_schedule.text = ''
+		aux = ''
+		for i in range(len(text)):
+			#self.ids.available_schedule.text += text[i]
+			aux = aux + text[i]
+			exp = re.compile(r"[0-9][0-9]:[0-9][0-9]-[0-9][0-9]:[0-9][0-9]")
+			if exp.fullmatch(aux):
+				self.ids.available_schedule.text += f'{aux};'
+				aux = ''
+		
 
 	def delChooseSchedule(self, schedule):
 		self.ids.schedule_no_scroll.pos_hint = {'center_x': -1}
@@ -1781,6 +1805,7 @@ MDRaisedButton:
 			self.ids.schedule_career.text = g[0]
 			self.ids.schedule_teacher.text = f'{g[1]} {g[2]} {g[3]}'
 		self.ids.edit_schedule.disabled = False
+		self.ids.clear_new_schedule.disabled = False
 
 
 	def onPressChooseSchedule(self):
@@ -1829,7 +1854,7 @@ MDRaisedButton:
 	md_bg_color: 1, 1, 1, 1
 	line_color: .9, .5, 0, 1
 	on_press: 
-		screen = app.root.get_screen('del')
+		screen = app.root.get_screen('mod')
 		if len(A{n}.text) > 50: \
 			c_s = A{n}.text[:50] + '...'
 		else: \
@@ -1852,8 +1877,9 @@ MDRaisedButton:
 		
 		n = 0
 		for s in schedule:
-			n += 1
-			del self.ids[f'A{n}']
+			if s != '' and s != ' ':
+				n += 1
+				del self.ids[f'A{n}']
 
 		#get = self.sql.execute(f'EXECUTE getC_T [{self.schedule_faculty}], [{self.schedule_classroom}], [{self.choose_schedule}]')
 		#for g in get:
@@ -1869,11 +1895,18 @@ MDRaisedButton:
 		#layout.cols = 1
 		#layout.row_default_height = 10
 
-		self.ids.schedule_career.text = ''
-		self.ids.schedule_teacher.text = ''
 		self.ids.update_schedule.disabled = True
 		schedule = (self.ids.available_schedule.text + self.ids.choose_schedule.text).split(';')
-		schedule = schedule[:len(schedule)-1]
+		schedule.sort()
+		new_schedule = self.ids.new_schedule.text.split(';')
+		for new in new_schedule:#[:len(new_schedule)-1]:
+			try:
+				schedule.remove(new)
+				schedule.remove('')
+			except:
+				pass
+		
+		#schedule = schedule[:len(schedule)-1]
 
 		self.ids.classroom_and_schedule.disabled = True
 		self.ids.schedule_no_scroll.pos_hint = {'center_x': .5}
@@ -1887,8 +1920,9 @@ MDRaisedButton:
 			print(s)
 			print(s)
 			
-			n += 1
-			s = f"""
+			if s != '' and s != ' ':
+				n += 1
+				s = f"""
 MDRaisedButton:
 	id: A{n}
 	name: 'A{n}'
@@ -1899,17 +1933,56 @@ MDRaisedButton:
 	md_bg_color: 1, 1, 1, 1
 	line_color: .9, .5, 0, 1
 	on_press: 
-		screen = app.root.get_screen('del')
+		screen = app.root.get_screen('mod')
 		if len(A{n}.text) > 50: \
 			c_s = A{n}.text[:50] + '...'
 		else: \
 			c_s = A{n}.text
-		screen.ids.edit_schedule.text = c_s
-		screen.edit_schedule = A{n}.text
+		screen.ids.new_schedule.text += c_s + ';'
+		screen.new_schedule = A{n}.text
 		screen.delEditSchedule({schedule})
 				"""
-			self.ids[f'A{n}'] = Builder.load_string(s)
-			layout.add_widget(self.ids[f'A{n}'])
+				self.ids[f'A{n}'] = Builder.load_string(s)
+				layout.add_widget(self.ids[f'A{n}'])
+
+
+	def onPressUpdateSchedule(self):
+		new_schedule = self.ids.new_schedule.text.split(';')
+		new_schedule = new_schedule[:len(new_schedule)-1]
+		if new_schedule != []:
+			self.sql.execute(f'EXECUTE updateSchedule [{self.schedule_faculty}], [{self.ids.schedule_career.text}], [{self.ids.classroom.text}], [{self.ids.choose_schedule.text}], [{self.ids.new_schedule.text}]')
+			self.sql.commit()
+
+
+			self.ids.cancel_classroom.disabled = False
+			self.ids.update_classroom.disabled = False
+			self.ids.continue_classroom.disabled = False
+			self.ids.new_schedule.text = ''
+			self.ids.choose_schedule.disabled = True
+			self.ids.edit_schedule.disabled = True
+			self.ids.clear_new_schedule.disabled = True
+			self.ids.cancel_all_schedule.disabled = True
+			self.ids.update_schedule.disabled = True
+			self.ids.schedule_career.text = ''
+			self.ids.schedule_career.disabled = True
+			self.ids.schedule_teacher.text = ''
+			self.ids.schedule_teacher.disabled = True
+			
+			get = self.sql.execute(f'EXECUTE getSchedules [{self.schedule_faculty}], [{self.schedule_classroom}]')
+			got = []
+			for g in get:
+				got.append(g[0])
+
+			if got == []:
+				self.dialogSchedule('No hay horarios agregados para esta aula.')
+
+			else:
+				self.setAvailableSchedules(got)
+			
+			self.dialogSchedule('Se ha realizado la actualización satisfactoriamente.')
+
+		else:
+			self.dialogSchedule('No ha seleccionado el nuevo horario.')
 
 
 	###
