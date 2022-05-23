@@ -234,12 +234,11 @@ class Add(Screen):
 
 
 	def delNumber(self, var):
-		numbs = list('0123456789')
-		chars = list('|°¬!"#$%&/()=\'?\\¿¡´¨+*~{[^}]`,;.:-_<>')
-		for char in range(len(list(var.text).copy())):
-			if var.text[char] in numbs or var.text[char] in chars:
-				var.text = var.text.replace(var.text[char], "")
-				break
+		numbs = '0123456789'
+		char = '|°¬!"#$%&/()=\'?\\¿¡´¨+*~{[^}]`,;.:-_<>'
+		chars = list(numbs + char)
+		for char in chars:
+			var.text = var.text.replace(char, "")
 
 
 	def onTextMiddleName(self):
@@ -754,6 +753,40 @@ MDRaisedButton:
 							if self.ids[f'textfield{i}{5}'].text == 'NP' or self.ids[f'textfield{i}{5}'].text == 'NA':
 								accepter = True
 								break
+
+					else:
+						if self.ids[f'textfield{i}{6}'].text != '':
+							if set(self.ids[f'textfield{i}{6}'].text) & set(nums):
+								if int(self.ids[f'textfield{i}{6}'].text) > -1 and int(self.ids[f'textfield{i}{6}'].text) < 70:
+									accepter = True
+									break
+							else:
+								if self.ids[f'textfield{i}{6}'].text == 'NP' or self.ids[f'textfield{i}{6}'].text == 'NA':
+									accepter = True
+									break
+
+		# Example [83, NP, '', '', '', ''] --> [83, '', '', '', '', '']
+		i = 1
+		for subject in self.actual_kardex.keys():
+			clear = False
+			for j in range(1, 7):
+				if self.ids[f'textfield{i}{j}'].text == '':
+					clear = True
+					
+				elif set(self.ids[f'textfield{i}{j}'].text) & set(nums):
+					if int(self.ids[f'textfield{i}{j}'].text) > 69 and int(self.ids[f'textfield{i}{j}'].text) < 101:
+						clear = True
+
+				else:
+					if self.ids[f'textfield{i}{j}'].text == 'AC':
+						clear = True
+
+				if clear == True:
+					for k in range(j+1, 7):
+						print(clear, f'textfield{i}{k}')
+						self.actual_kardex[subject][f'OP{k}'] = ''
+					break
+			i += 1
 		
 		self.ids.save_kardex.disabled = accepter
 		if accepter == False:
@@ -1150,6 +1183,23 @@ MDRaisedButton:
 				student_status=student_status
 				)
 			self.clearAddStudentInfo()
+
+
+	def resizeWindow(self):
+		Window.size = 1100, 650
+		Window.left = (1400 - 1100)/2
+		Window.top = ( 750 - 650)/2
+
+
+	def resizeWindowMod(self):
+		self.resizeWindowDel()
+
+
+	def resizeWindowDel(self):
+		Window.size = 500, 650
+		Window.left = 400
+		Window.top = (750 - 650)/2
+
 
 	def resizeWindowLogin(self):
 		Window.size = 700, 450

@@ -1,5 +1,7 @@
 import pyodbc as SQLServer
 
+from kivy.core.window import Window
+
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
 
@@ -669,4 +671,32 @@ MDRaisedButton:
 			self.schedule_faculty = ''
 			self.schedule_classroom = ''
 			self.choose_schedule = ''
+
+
+	def resizeWindow(self):
+		Window.size = 1100, 650
+		Window.left = (1400 - 1100)/2
+		Window.top = ( 750 - 650)/2
+
+
+	def resizeWindowAdd(self):
+		Window.size = 1100, 650
+		Window.left = 150
+		Window.top = (750 - 650)/2
+
+
+	def resizeWindowDel(self):
+		Window.size = 500, 650
+		Window.left = 400
+		Window.top = (750 - 650)/2
+
+
+	def resizeWindowLogin(self):
+		Window.size = 700, 450
+		Window.left = 300
+		Window.top = (750 - 650)*2
+
+
+	def resizeWindowLogout(self):
+		self.resizeWindowDel()
 

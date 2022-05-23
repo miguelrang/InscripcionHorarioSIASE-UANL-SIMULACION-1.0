@@ -1,5 +1,7 @@
 import pyodbc as SQLServer
 
+from kivy.core.window import Window
+
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
 
@@ -35,6 +37,11 @@ class Mod(Screen):
 		self.kardex = {}
 
 
+		self.actual_teacher_info = {}
+		self.teacher_faculty = ''
+		self.teacher_career = ''
+
+
 	def sqlCONNECTION(self):
 		try:
 			connect = SQLServer.connect('Driver={ODBC Driver 17 for SQL Server};'
@@ -48,7 +55,8 @@ class Mod(Screen):
 
 
 	def closeStudentDialog(self, *args):
-		self.student_dialog.dismiss()
+		for i in range(2):
+			self.student_dialog.dismiss()
 
 
 	def studentDialog(self, text):
@@ -170,7 +178,7 @@ class Mod(Screen):
 					equal = False
 
 			elif self.kardex == {} and to_continue == True:
-				if self.student_faculty in info['student_faculty'] and self.student_career in info['student_career']:
+				if self.student_faculty == info['student_faculty'] and self.student_career == info['student_career']:
 					print(3)
 					print(3)
 					print(3)
@@ -442,15 +450,18 @@ MDRaisedButton:
 		nums = list('0123456789')
 		for i in range(1, len(self.actual_kardex)):
 			accepter = False # VALID
-			if self.ids[f'textfield{i}{1}'].text != '' and self.ids[f'textfield{i}{2}'].text == '':
-				if set(self.ids[f'textfield{i}{1}'].text) & set(nums):
-					if int(self.ids[f'textfield{i}{1}'].text) > -1 and int(self.ids[f'textfield{i}{1}'].text) < 70:
-						accepter = True
-						break
-				else:
-					if self.ids[f'textfield{i}{1}'].text == 'NP' or self.ids[f'textfield{i}{1}'].text == 'NA':
-						accepter = True
-						break
+			if self.ids[f'textfield{i}{1}'].text != '':
+				if self.ids[f'textfield{i}{2}'].text == '':
+					if set(self.ids[f'textfield{i}{1}'].text) & set(nums):
+						if int(self.ids[f'textfield{i}{1}'].text) > -1 and int(self.ids[f'textfield{i}{1}'].text) < 70:
+							accepter = True
+							break
+
+					else:
+						if self.ids[f'textfield{i}{1}'].text == 'NP' or self.ids[f'textfield{i}{1}'].text == 'NA':
+							accepter = True
+							break
+					
 			else:
 				if self.ids[f'textfield{i}{3}'].text != '' and self.ids[f'textfield{i}{4}'].text == '':
 					if set(self.ids[f'textfield{i}{3}'].text) & set(nums):
@@ -472,6 +483,32 @@ MDRaisedButton:
 								accepter = True
 								break
 		
+		print(self.actual_kardex)
+		print(len(self.actual_kardex))
+		# Example [83, NP, '', '', '', ''] --> [83, '', '', '', '', '']
+		i = 1
+		for subject in self.actual_kardex.keys():
+			clear = False
+			for j in range(1, 7):
+				if self.ids[f'textfield{i}{j}'].text == '':
+					clear = True
+					
+				elif set(self.ids[f'textfield{i}{j}'].text) & set(nums):
+					if int(self.ids[f'textfield{i}{j}'].text) > 69 and int(self.ids[f'textfield{i}{j}'].text) < 101:
+						clear = True
+
+				else:
+					if self.ids[f'textfield{i}{j}'].text == 'AC':
+						clear = True
+
+				if clear == True:
+					for k in range(j+1, 7):
+						print(clear, f'textfield{i}{k}')
+						self.actual_kardex[subject][f'OP{k}'] = ''
+					break
+			i += 1
+
+
 		self.ids.save_kardex.disabled = accepter
 		if accepter == False:
 			faculty = self.student_faculty
@@ -604,28 +641,33 @@ MDRaisedButton:
 			
 
 	def delNumber(self, var):
-		numbs = list('0123456789')
-		chars = list('|°¬!"#$%&/()=\'?\\¿¡´¨+*~{[^}]`,;.:-_<>')
-		for char in range(len(list(var.text).copy())):
-			if var.text[char] in numbs or var.text[char] in chars:
-				var.text = var.text.replace(var.text[char], "")
-				break
+		numbs = '0123456789'
+		char = '|°¬!"#$%&/()=\'?\\¿¡´¨+*~{[^}]`,;.:-_<>'
+		chars = list(numbs + char)
+		for char in chars:
+			var.text = var.text.replace(char, "")
 
 
-	def validName(self, name):
-		name = self.ids[name]
-		if name == 'middle_name' or name == 'last_name':
+	def validName(self, name, type_=''):
+		if 'middle_name' in name or 'last_name' in name:
+			name = self.ids[name]
 			name.text = name.text.replace(' ', '')
+		
+		if type(name) == str:
+			name = self.ids[name]
+		
 		name.text = name.text.upper()
+		
 		self.delNumber(name)
 		if len(name.text) > 2:
 			if name.focus == False:
 				pass
 		else:
 			if name.focus == False:
-				self.studentDialog('Debe contener almenos 3 letras.')
-
-		self.studentEquals()
+				if type_ == 'Teacher':
+					self.dialogTeacher('Atención', 'Debe contener al menos 3 letras')
+				else:
+					self.studentDialog('Debe contener almenos 3 letras.')
 
 
 	def onTextMiddleName(self):
@@ -636,7 +678,8 @@ MDRaisedButton:
 			middle_name='middle_name',
 			last_name='last_name'
 		)
-
+		self.studentEquals()
+		
 
 	def onTextLastName(self):
 		self.validName('last_name')
@@ -646,6 +689,7 @@ MDRaisedButton:
 			middle_name='middle_name',
 			last_name='last_name'
 		)
+		self.studentEquals()
 
 
 	def onTextName(self):
@@ -656,6 +700,7 @@ MDRaisedButton:
 			middle_name='middle_name',
 			last_name='last_name'
 		)
+		self.studentEquals()
 
 
 	def getDate(self):
@@ -813,10 +858,8 @@ MDRaisedButton:
 			email.hint_text = 'Correo Universitario'
 			self.email = False
 
-		self.studentEquals()
 
-
-	def onTextPassword(self, password):
+	def onTextPassword(self, password, type_=''):
 		password = self.ids[password]
 		lower_case = 'abcdefghijklmnñopqrstuvwxyz'
 		upper = lower_case.upper()
@@ -828,17 +871,26 @@ MDRaisedButton:
 
 			else:
 				if password.focus == False:
-					self.studentDialog('La longitud de la contraseña debe ser mayor a 7 y menor a 17.')
+					if type_=='Teacher':
+						self.dialogTeacher('Atención', 'La longitud de la contraseña debe ser mayor a 7 y menor a 17.')
+					else:
+						self.studentDialog('La longitud de la contraseña debe ser mayor a 7 y menor a 17.')
 					
 
 		else:
 			if password.focus == False:
-				self.studentDialog('La contraseña debe contener al menos una letra mayuscula, una minuscula y un número.')
+				if type_ == 'Teacher':
+					self.dialogTeacher('Atención', 'La contraseña debe contener una letra mayuscula, una minuscula y un número.')
+				else:
+					self.studentDialog('La contraseña debe contener al menos una letra mayuscula, una minuscula y un número.')
 				
-		self.studentEquals()
+		if type_ == 'Teacher':
+			self.teacherEquals()
+		else:
+			self.studentEquals()
 
 
-	def onPressStatus(self, status):
+	def onPressStatus(self, status, type_=''):
 		status = self.ids[status]
 		if status.text == 'ALTA':
 			status.text = 'BAJA'
@@ -846,7 +898,10 @@ MDRaisedButton:
 		else:
 			status.text = 'ALTA'
 
-		self.studentEquals()
+		if type_=='Teacher':
+			self.teacherEquals()
+		else:
+			self.studentEquals()
 
 
 	def onPressCancelStudent(self):
@@ -908,9 +963,34 @@ MDRaisedButton:
 			self.ids.student_status.text
 		]
 		valid = False
+		check = False
 		for f in field:
 			if self.ids[f].text != self.actual_student_info[f]:
+				print(self.ids[f].text)
+				print(self.actual_student_info[f])
 				valid = True
+		
+		if self.kardex != {}:
+			valid = True
+
+		if self.actual_student_info['name'] != self.ids.name.text:
+			check = True
+
+		elif self.actual_student_info['middle_name'] != self.ids.middle_name.text:
+			check = True
+
+		elif self.actual_student_info['last_name'] != self.ids.last_name.text:
+			check = True
+
+		if check == True:
+			get = self.sql.execute(f"EXECUTE getStudent '{self.ids.middle_name.text}', '{self.ids.last_name.text}', '{self.ids.name.text}'")
+			aux = ''
+			for g in get:
+				aux = g[0]
+				
+			if aux != '':
+				valid = False
+				self.studentDialog('Este estudiante ya existe.')
 					
 		equals = self.studentEquals()
 		if equals == True:
@@ -929,35 +1009,393 @@ MDRaisedButton:
 			self.sql.execute(
 				f'EXECUTE updateStudent [{self.ids.student_enrollment.text}], [{to[0]}], [{to[1]}], [{to[2]}], [{to[3]}], [{to[4]}], [{to[5]}], [{to[6]}], [{to[7]}], [{to[8]}]'
 			)
-			self.studentDialog('Se ha actualizado la información correctamente.')
 		
-		if self.kardex != {}:
-			self.sql.execute(
-				f'EXECUTE deleteKardex [{self.ids.student_enrollment.text}]'
-			)
-			id_faculty = self.id_faculty
-			id_career = self.id_career
-			id_subject = self.id_subject
+			if self.kardex != {}:
+				self.sql.execute(
+					f'EXECUTE deleteKardex [{self.ids.student_enrollment.text}]'
+				)
+				id_faculty = self.id_faculty
+				id_career = self.id_career
+				id_subject = self.id_subject
 
-			kard = self.kardex
-			for i in range(len(self.kardex)):
-				op1 = kard[str(i)][0]
-				op2 = kard[str(i)][1]
-				op3 = kard[str(i)][2]
-				op4 = kard[str(i)][3]
-				op5 = kard[str(i)][4]
-				op6 = kard[str(i)][5]
-				
-				save_kardex = f"EXECUTE saveKardex '{id_faculty}', '{id_career}', '{self.ids.student_enrollment.text}',"
-				save_kardex += f" '{id_subject[i]}', '{op1}', '{op2}', '{op3}', '{op4}', '{op5}', '{op6}'"
-				self.sql.execute(save_kardex)
-				self.sql.commit()
+				kard = self.kardex
+				for i in range(len(self.kardex)):
+					op1 = kard[str(i)][0]
+					op2 = kard[str(i)][1]
+					op3 = kard[str(i)][2]
+					op4 = kard[str(i)][3]
+					op5 = kard[str(i)][4]
+					op6 = kard[str(i)][5]
+					
+					save_kardex = f"EXECUTE saveKardex '{id_faculty}', '{id_career}', '{self.ids.student_enrollment.text}',"
+					save_kardex += f" '{id_subject[i]}', '{op1}', '{op2}', '{op3}', '{op4}', '{op5}', '{op6}'"
+					self.sql.execute(save_kardex)
 			self.sql.commit()
-			if (valid == True and equals == False) == False:
-				self.studentDialog('Se ha actualizado la información correctamente.')
+			self.studentDialog('Se ha actualizado la información correctamente.')
 		self.ids.update_student.disabled = True
 
 
+	#################################### T E A C H E R ###########################################
+	def teacherEquals(self):
+		equal = True
+		#to_continue = True
+		info = self.actual_teacher_info
+		
+		if self.ids.teacher_faculty.text != 'Facultad' and self.ids.teacher_faculty.text != info['teacher_faculty']:
+			equal = False
+			#to_comtinue = False
 
+
+		#if to_continue == True:
+		elif self.ids.teacher_career.text != 'Carrera' and self.ids.teacher_career.text != info['teacher_career']:
+			print(2)
+			print(2)
+			print(2)
+			print(2)
+			print(2)
+			print(2)
+			print(2)
+			print(2)
+			
+			equal = False
+			#to_continue = False
+
+			#if to_continue == True:
+		if self.teacher_faculty == info['teacher_faculty'] and self.teacher_career == info['teacher_career']:
+			print(3)
+			print(3)
+			print(3)
+			print(3)
+			print(3)
+			print(3)
+			print(3)
+			print(3)
+			
+			if self.ids.teacher_middle_name.text != info['teacher_middle_name']:
+				equal = False
+				print(3.1)
+
+			elif self.ids.teacher_last_name.text != info['teacher_last_name']:
+				equal = False
+				print(3.2)
+
+			elif self.ids.teacher_name.text != info['teacher_name']:
+				equal = False
+				print(3.3)
+
+			elif self.ids.teacher_email.text != info['teacher_email']:
+				equal = False
+				print(3.5)
+
+			elif self.ids.teacher_password.text != info['teacher_password']:
+				equal = False
+				print(3.6)
+
+			elif self.ids.teacher_status.text != info['teacher_status']:
+				equal = False
+				print(3.7)
+
+		self.ids.update_teacher.disabled = equal
+
+		return equal
+
+
+	def closeDialogTeacher(self, *args):
+		self.dialog_teacher.dismiss()
+
+
+	def dialogTeacher(self, title, text):
+		self.dialog_teacher = MDDialog(
+			title=title,
+			text=text,
+			buttons=[
+				MDRectangleFlatButton(
+					text='Aceptar',
+					on_press=self.closeDialogTeacher
+				)
+			]
+		)
+		self.dialog_teacher.open()
+
+
+	def delTeacherCareers(self, career:list):
+		self.ids.teacher_no_scroll.pos_hint = {'center_x': -1}
+
+		layout = self.ids.show_teacher
+
+		layout.clear_widgets()
+		
+		n = 0
+		for c in career:
+			n += 1
+			del self.ids[f'A{n}']
+
+
+	def onPressTeacherCareer(self):
+		layout = self.ids.show_teacher
+		#layout.cols = 1
+		#layout.row_default_height = 10
+		
+		if self.ids.teacher_enrollment.text != '':
+
+			careers = self.sql.execute(f'EXECUTE dbo.getTeacherCareers \'{self.ids.teacher_enrollment.text}\'')
+			career = []
+			for c in careers:
+				career.append(c[0])
+
+			if career != []:
+				self.ids.teacher_no_scroll.pos_hint = {'center_x': .5}
+				n = 0
+				for c in career:
+					n += 1
+					c = f"""
+MDRaisedButton:
+	id: A{n}
+	name: 'A{n}'
+
+	text: '{c}'
+	size_hint_x: .9
+	text_color: .9, .5, 0, 1
+	md_bg_color: 1, 1, 1, 1
+	line_color: .9, .5, 0, 1
+	on_press: 
+		screen = app.root.get_screen('mod')
+		screen.ids.teacher_careers.text = A{n}.text[:3] + '...'
+		screen.teacher_career = A{n}.text
+		screen.delTeacherCareers({career})
+					"""
+					self.ids[f'A{n}'] = Builder.load_string(c)
+					layout.add_widget(self.ids[f'A{n}'])
+
+			else:
+				self.dialogTeacher('Error', 'Este profesor o matricula no existen.')
+		else:
+			self.dialogTeacher('Error.', 'No has agregado ninguna matricula')
+
+
+	def getTeacher(self):
+		if self.ids.teacher_careers.text == 'Carrera':
+			self.dialogTeacher('Error.', 'Aún no especificas la carrera.')
+		
+		else:
+			getting = self.sql.execute(f'EXECUTE getTeacherInfo {self.ids.teacher_enrollment.text}, \'{self.teacher_career}\'')
+			for got in getting:
+				data = [
+					got[0], got[1], got[2], got[3],
+					got[4], got[5], got[6], got[7]
+				]
+
+			self.actual_teacher_info = {}
+			self.teacher_faculty = data[0]
+			self.teacher_career = data[1]
+			self.actual_teacher_info['teacher_faculty'] = data[0]
+			self.actual_teacher_info['teacher_career'] = data[1]
+			self.actual_teacher_info['teacher_middle_name'] = data[2]
+			self.actual_teacher_info['teacher_last_name'] = data[3]
+			self.actual_teacher_info['teacher_name'] = data[4]
+			self.actual_teacher_info['teacher_email'] = data[5]
+			self.actual_teacher_info['teacher_password'] = data[6]
+			self.actual_teacher_info['teacher_status'] = data[7]
+			
+			fields = [
+				'teacher_faculty',
+				'teacher_career',
+				'teacher_middle_name',
+				'teacher_last_name',
+				'teacher_name',
+				'teacher_email',
+				'teacher_password',
+				'teacher_status'
+			]
+
+			n = 0
+			for field in fields:
+				self.ids[field].text = data[n]
+				self.ids[field].diabled = False
+				n += 1
+
+			self.ids['teacher_faculty'].disabled = False
+			self.ids['teacher_career'].disabled = False
+			self.ids['teacher_middle_name'].disabled = False
+			self.ids['teacher_last_name'].disabled = False
+			self.ids['teacher_name'].disabled = False
+			self.ids['teacher_email'].disabled = False
+			self.ids['teacher_password'].disabled = False
+			self.ids['teacher_status'].disabled = False
+
+			self.ids.cancel_teacher.disabled = False
+			#self.ids.update_teacher.disabled = False
+			self.ids.teacher_enrollment.disabled = True
+			self.ids.teacher_careers.disabled = True
+			self.ids.search_teacher.disabled = True
+
+
+	def onPressTeacherFaculty(self):
+		self.Showing(
+			complete_layout='teacher_data',
+			layout='show_teacher',
+			layout_no_scroll='teacher_no_scroll', # no scroll layout
+			execute='getFaculties',
+			max_len=35,
+			widget='teacher_faculty'
+		)
+		self.ids.teacher_career.text = 'Carrera'
+		self.teacherEquals()
+
+
+	def onPressTeachCareer(self):
+		if self.ids.teacher_faculty.text == 'Facultad':
+				self.dialogTeacher('Error.','No ha Seleccionado ninguna facultad.')
+
+		else:
+			self.Showing(
+				complete_layout='teacher_data',
+				layout='show_teacher',
+				layout_no_scroll='teacher_no_scroll',
+				execute=f'getCareers [{self.teacher_faculty}]',
+				max_len=35,
+				widget='teacher_career'
+			)
+			self.teacherEquals()
+
+
+	def onTextTeacherMiddleName(self):
+		self.validName('teacher_middle_name')
+		self.setEmail(
+			email='teacher_email',
+			name='teacher_name',
+			middle_name='teacher_middle_name',
+			last_name='teacher_last_name'
+		)
+		self.teacherEquals()
+
+
+	def onTextTeacherLastName(self):
+		self.validName('teacher_last_name')
+		self.setEmail(
+			email='teacher_email',
+			name='teacher_name',
+			middle_name='teacher_middle_name',
+			last_name='teacher_last_name'
+		)
+		self.teacherEquals()
+
+
+	def onTextTeacherName(self):
+		self.validName('teacher_name')
+		self.setEmail(
+			email='teacher_email',
+			name='teacher_name',
+			middle_name='teacher_middle_name',
+			last_name='teacher_last_name'
+		)
+		self.teacherEquals()
+
+
+	def onTextTeacherPassword(self):
+		self.onTextPassword(password='teacher_password', type_='Teacher')
+
+
+	def onPressTeacherStatus(self):
+		self.onPressStatus(status='teacher_status', type_='Teacher')
+
+
+	def onPressUpdateTeacher(self):
+		field = [
+			'teacher_faculty',
+			'teacher_career',
+			'teacher_middle_name',
+			'teacher_last_name',
+			'teacher_name',
+			'teacher_email',
+			'teacher_password',
+			'teacher_status'
+		]
+		to = [
+			self.teacher_faculty,
+			self.teacher_career,
+			self.ids.teacher_middle_name.text,
+			self.ids.teacher_last_name.text,
+			self.ids.teacher_name.text,
+			self.ids.teacher_email.text,
+			self.ids.teacher_password.text,
+			self.ids.teacher_status.text
+		]
+		valid = False
+		check = False
+		for f in field:
+			if self.ids[f].text != self.actual_teacher_info[f]:
+				print(self.ids[f].text)
+				print(self.actual_teacher_info[f])
+				valid = True
+		
+		if self.actual_teacher_info['teacher_name'] != self.ids.teacher_name.text:
+			check = True
+
+		elif self.actual_teacher_info['teacher_middle_name'] != self.ids.teacher_middle_name.text:
+			check = True
+
+		elif self.actual_teacher_info['teacher_last_name'] != self.ids.teacher_last_name.text:
+			check = True
+
+		if check == True:
+			get = self.sql.execute(f"EXECUTE getTeacher '{self.ids.teacher_middle_name.text}', '{self.ids.last_name.text}', '{self.ids.name.text}'")
+			aux = ''
+			for g in get:
+				aux = g[0]
+				
+			if aux != '':
+				valid = False
+				self.dialogTeacher('Error.', 'Este estudiante ya existe.')
+					
+		equals = self.teacherEquals()
+		if equals == True:
+			self.dialogTeacher('Atención', 'No se ha hecho ninguna modificación o faltan datos por agregar.')
+
+		if valid == True and equals == False:
+			self.actual_teacher_info['teacher_faculty'] = to[0]
+			self.actual_teacher_info['teacher_career'] = to[1]
+			self.actual_teacher_info['teacher_middle_name'] = to[2]
+			self.actual_teacher_info['teacher_last_name'] = to[3]
+			self.actual_teacher_info['teacher_name'] = to[4]
+			self.actual_teacher_info['teacher_email'] = to[5]
+			self.actual_teacher_info['teacher_password'] = to[6]
+			self.actual_teacher_info['teacher_status'] = to[7]
+			self.sql.execute(
+				f'EXECUTE updateTeacher [{self.ids.teacher_enrollment.text}], [{to[0]}], [{to[1]}], [{to[2]}], [{to[3]}], [{to[4]}], [{to[5]}], [{to[6]}], [{to[7]}]'
+			)
+		
+			self.sql.commit()
+			self.dialogTeacher('Atención', 'Se ha actualizado la información correctamente.')
+		self.ids.update_teacher.disabled = True
+	
+
+	###
+	def resizeWindow(self):
+		Window.size = 1100, 650
+		Window.left = (1400 - 1100)/2
+		Window.top = ( 750 - 650)/2
+
+
+	def resizeWindowAdd(self):
+		Window.size = 1100, 650
+		Window.left = 150
+		Window.top = (750 - 650)/2
+
+
+	def resizeWindowDel(self):
+		Window.size = 500, 650
+		Window.left = 400
+		Window.top = (750 - 650)/2
+
+
+	def resizeWindowLogin(self):
+		Window.size = 700, 450
+		Window.left = 300
+		Window.top = (750 - 650)*2
+
+
+	def resizeWindowLogout(self):
+		self.resizeWindowDel()
 
 
