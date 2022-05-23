@@ -3,5 +3,7 @@ USE [UANL]
 
 
 
+SELECT * FROM Classroom
 
-select * from kardex where ID_student=1000
+
+

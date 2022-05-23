@@ -461,7 +461,7 @@ MDRaisedButton:
 			'banches',
 			'schedule_accept',
 			'cancel_classroom',
-			'del_classroom',
+			'update_classroom',
 			'continue_classroom'
 		]
 		count = 0
@@ -539,7 +539,7 @@ MDRaisedButton:
 			schedule.append(s[0])
 
 		if schedule == []:
-			self.dialogSchedule('No hay mas horarios por eliminar.')
+			self.dialogSchedule('No hay horario disponibles.')
 			self.restartClassroom_Schedule()
 			self.schedule_faculty = ''
 			self.schedule_classroom = ''

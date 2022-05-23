@@ -1972,6 +1972,19 @@ WindowManager:
 
 
 				MDTextField:
+					id: classroom
+					name: 'classroom'
+
+					hint_text: 'Capacidad de Alumnos'
+					disabled: True
+
+					color_mode: 'custom'
+					line_color_focus: 0, .2, .9, 1
+					multiline: False
+					size_hint_x: .9
+
+
+				MDTextField:
 					id: banches
 					name: 'banches'
 
@@ -2000,17 +2013,17 @@ WindowManager:
 						on_press: root.restartClassroom_Schedule()
 
 					MDRaisedButton:
-						id: del_classroom
-						name: 'del_classroom'
+						id: update_classroom
+						name: 'update_classroom'
 
-						text: 'Eliminar Aula'
+						text: 'Actualizar Aula'
 						disabled: True
 						theme_text_color: 'Custom'
 						text_color: 1, 1, 1, 1
 						size_hint_x: 1
 						md_bg_color: .24, .74, .53, 1
 						line_color: 0, 0, 0, 1
-						on_press: root.onPressDelClassroom()
+						on_press: root.onPressUpdateClassroom()
 
 					MDRaisedButton:
 						id: continue_classroom
@@ -2060,7 +2073,7 @@ WindowManager:
 					id: choose_schedule
 					name: 'choose_schedule'
 
-					text: 'Seleccionar Horario'
+					text: 'Seleccionar Horario a Editar'
 					disabled: True
 					theme_text_color: 'Custom'
 					text_color: 1, 1, 1, 1
@@ -2068,6 +2081,19 @@ WindowManager:
 					md_bg_color: .24, .74, .53, 1
 					line_color: 0, 0, 0, 1
 					on_press: root.onPressChooseSchedule()
+
+				MDRaisedButton:
+					id: edit_schedule
+					name: 'edit_schedule'
+
+					text: 'Agregar Nuevo Horario'
+					disabled: True
+					theme_text_color: 'Custom'
+					text_color: 1, 1, 1, 1
+					size_hint_x: 1
+					md_bg_color: .24, .74, .53, 1
+					line_color: 0, 0, 0, 1
+					on_press: root.onPressEditSchedule()
 
 				MDTextField:
 					id: schedule_career
@@ -2116,23 +2142,10 @@ WindowManager:
 						on_press: root.restartClassroom_Schedule()
 
 					MDRaisedButton:
-						id: del_all_schedule
-						name: 'del_all_schedule'
+						id: update_schedule
+						name: 'update_schedule'
 
-						text: 'Eliminar Horarios'
-						disabled: True
-						theme_text_color: 'Custom'
-						text_color: 1, 1, 1, 1
-						size_hint_x: 1
-						md_bg_color: .24, .74, .53, 1
-						line_color: 0, 0, 0, 1
-						on_press: root.onPressDelAllSchedule()
-
-					MDRaisedButton:
-						id: del_schedule
-						name: 'del_schedule'
-
-						text: 'Eliminar Horario'
+						text: 'Actualizar Horario'
 						disabled: True
 						theme_text_color: 'Custom'
 						text_color: 1, 1, 1, 1

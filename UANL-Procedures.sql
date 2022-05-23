@@ -34,7 +34,6 @@ DROP PROCEDURE saveKardex
 DROP PROCEDURE verifyExistingTeacherAsStudent
 DROP PROCEDURE getTeacherIds
 DROP PROCEDURE getTeacherEnrollment
--- DROP PROCEDURE getTacher
 DROP PROCEDURE verifyExistingTeacherEmail
 DROP PROCEDURE verifyExistingTeacher
 DROP PROCEDURE saveTeacher
@@ -52,7 +51,11 @@ DROP PROCEDURE saveSchedule
 DROP PROCEDURE updateStudent
 DROP PROCEDURE deleteKardex
 ------------- Teacher ----------------
+DROP PROCEDURE getTeacher
+DROP PROCEDURE getIDFac_CarTeacher
+DROP PROCEDURE updateTeacher
 ------------ Classroom ---------------
+DROP PROCEDURE updateClassroom
 ------------- Schedule ---------------
 ----------- D E L E T E --------------
 ------------- Student ----------------
@@ -427,16 +430,6 @@ CREATE PROCEDURE getTeacherEnrollment AS
 	SELECT ISNULL(MAX(enrollment), 1000) FROM Teacher
 GO
 
-/*CREATE PROCEDURE getTeacher(@middle_name VARCHAR(20), @last_name VARCHAR(20), @name VARCHAR(40)) AS
-	SELECT ISNULL(ID_faculty,''),ISNULL(ID_career,''),ISNULL(ID_teacher,''),ISNULL(enrollment,''),ISNULL(middle_name,''),ISNULL(last_name,''),ISNULL(name_,''),ISNULL(email,''),ISNULL(password_, '')
-		FROM Teacher t
-		RIGHT JOIN(
-			SELECT ISNULL(MAX(t.name_), '') AS Profesor FROM Teacher t
-				WHERE t.middle_name = @middle_name and t.last_name = @last_name and t.name_ = @name
-		) t2
-		ON t2.Profesor = '' or t2.Profesor != ''
-GO*/
-
 CREATE PROCEDURE verifyExistingTeacherEmail(@email VARCHAR(40)) AS
 	SELECT ISNULL(MAX(email), '') FROM Student
 	WHERE email = @email
@@ -544,7 +537,51 @@ CREATE PROCEDURE deleteKardex(@ID_student VARCHAR(MAX)) AS
 GO
 
 ---------------------------------------- Teacher ---------------------------------------------
+CREATE PROCEDURE getTeacher(@middle_name VARCHAR(20), @last_name VARCHAR(20), @name VARCHAR(40), @career VARCHAR(MAX)) AS
+	SELECT ISNULL(ID_teacher,'') FROM Teacher t
+	WHERE	middle_name=@middle_name
+				AND
+			last_name=@last_name
+				AND
+			name_=@name
+				AND
+			ID_career=(SELECT ID_career FROM Career WHERE name_career=@career)
+GO
+
+CREATE PROCEDURE getIDFac_CarTeacher(@faculty VARCHAR(MAX), @career VARCHAR(MAX)) AS
+	SELECT ID_faculty, ID_career FROM Career
+	WHERE	ID_faculty=(SELECT ID_faculty FROM Faculty WHERE name_faculty=@faculty)
+				AND
+			ID_career=(SELECT ID_career FROM Career WHERE name_career=@career)
+GO
+
+CREATE PROCEDURE updateTeacher(@id_faculty INT, @id_career INT, @enrollment INT, @faculty VARCHAR(MAX), @career VARCHAR(MAX), @middle_name VARCHAR(MAX), @last_name VARCHAR(MAX), @name VARCHAR(MAX), @email VARCHAR(MAX), @password VARCHAR(MAX), @status VARCHAR(MAX)) AS
+	UPDATE Teacher
+		SET ID_faculty=(SELECT ID_faculty FROM Faculty WHERE name_faculty=@faculty),
+			ID_career=(SELECT ID_career FROM Career WHERE name_career=@career)
+		WHERE ID_faculty=@id_faculty AND ID_career=@id_career AND enrollment=@enrollment
+	
+	UPDATE Teacher
+		SET	middle_name=@middle_name,
+			last_name=@last_name,
+			name_=@name,
+			email=@email,
+			password_=@password,
+			teacher_status=@status
+		WHERE enrollment=@enrollment
+GO
 --------------------------------------- Classroom --------------------------------------------
+CREATE PROCEDURE updateClassroom(@faculty VARCHAR(MAX), @classroom VARCHAR(MAX), @classroom2 VARCHAR(MAX), @banches VARCHAR(MAX), @banches2 VARCHAR(MAX)) AS
+	UPDATE Classroom
+		SET		classroom=@classroom2,
+				banches=@banches2
+
+		WHERE	ID_faculty=(SELECT ID_faculty FROM Faculty WHERE name_faculty=@faculty)
+					AND
+				classroom=@classroom
+					AND
+				banches=@banches
+GO
 -------------------------------------- D E L E T E -------------------------------------------
 ---------------------------------------- Student ---------------------------------------------
 CREATE PROCEDURE getStudentInfo(@ID_student INT) AS

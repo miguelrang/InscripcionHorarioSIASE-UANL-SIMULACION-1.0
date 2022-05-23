@@ -52,9 +52,9 @@ class main(MDApp):
 		#Window.left = (1400 - 1100)*2#1.3
 		#Window.top = 200#301
 
-		#Window.size = 500, 650
-		#Window.left = 400
-		#Window.top = (750 - 650)/2
+		Window.size = 500, 650
+		Window.left = 400
+		Window.top = (750 - 650)/2
 		self.root.current = "mod"
 		pass
 
